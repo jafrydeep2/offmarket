@@ -10,6 +10,7 @@ interface PropertyContextType {
   getProperty: (id: string) => Property | undefined;
   incrementViews: (id: string) => Promise<void>;
   incrementInquiries: (id: string) => Promise<void>;
+  clearProperties: () => void;
 }
 
 const PropertyContext = createContext<PropertyContextType | undefined>(undefined);
@@ -210,6 +211,10 @@ export const PropertyProvider: React.FC<PropertyProviderProps> = ({ children }) 
     setProperties(prev => prev.map(p => (p.id === id ? { ...p, inquiries: (p.inquiries || 0) + 1 } : p)));
   }, []);
 
+  const clearProperties = useCallback(() => {
+    setProperties([]);
+  }, []);
+
   const value: PropertyContextType = {
     properties,
     addProperty,
@@ -218,6 +223,7 @@ export const PropertyProvider: React.FC<PropertyProviderProps> = ({ children }) 
     getProperty,
     incrementViews,
     incrementInquiries,
+    clearProperties,
   };
 
   return (

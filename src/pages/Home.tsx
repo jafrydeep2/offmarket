@@ -1,17 +1,111 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Play, Home, Users, Award, Lock, Video, Key, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useProperties } from '@/contexts/PropertyContext';
+// Remove context dependency to avoid loading delays
+// import { useProperties } from '@/contexts/PropertyContext';
+import { supabase } from '@/lib/supabaseClient';
 import { Button } from '@/components/ui/button';
 import { PropertyCard } from '@/components/PropertyCard';
 
+// Properties section component
+const PropertiesSection: React.FC<{
+  properties: any[];
+  isLoading: boolean;
+  t: (key: string) => string;
+}> = ({ properties, isLoading, t }) => {
+  const content = useMemo(() => {
+    if (properties?.length === 0) {
+      return (
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-muted-foreground">
+              {t('language') === 'fr' ? 'Chargement des propriétés...' : 'Loading properties...'}
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    // Always show properties grid, even if empty
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {properties.map((property) => (
+          <PropertyCard 
+            key={property.id} 
+            property={property}
+            showContactInfo={false}
+          />
+        ))}
+      </div>
+    );
+  }, [properties, isLoading, t]);
+
+  return content;
+};
+
 export const HomePage: React.FC = () => {
   const { t } = useTranslation();
-  const { properties } = useProperties();
+  const [properties, setProperties] = useState<any[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLoadingProperties, setIsLoadingProperties] = useState(true);
+
+  // Memoized property mapping function
+  const mapPropertyData = useMemo(() => (row: any) => ({
+    id: String(row.id),
+    title: row.title,
+    description: row.description,
+    city: row.city,
+    neighborhood: row.neighborhood,
+    address: row.address ?? undefined,
+    propertyType: row.property_type,
+    rooms: Number(row.rooms),
+    surface: Number(row.surface),
+    listingType: row.listing_type ?? undefined,
+    price: row.price ?? undefined,
+    availabilityDate: row.availability_date ?? undefined,
+    availabilityStatus: row.availability_status || 'immediate',
+    images: Array.isArray(row.images) ? row.images : (row.images ? JSON.parse(row.images) : []),
+    videoUrl: row.video_url ?? undefined,
+    features: Array.isArray(row.features) ? row.features : (row.features ? JSON.parse(row.features) : []),
+    contactInfo: row.contact_info ?? undefined,
+    views: row.views ?? 0,
+    inquiries: row.inquiries ?? 0,
+    createdAt: row.created_at ?? undefined,
+    updatedAt: row.updated_at ?? undefined,
+    featured: row.featured ?? false,
+  }), []);
+
+  // Load properties directly from database
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        setIsLoadingProperties(true);
+        const { data, error } = await supabase
+          .from('properties')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(6);
+
+        if (error) {
+          console.error('Error fetching properties:', error);
+          setProperties([]);
+        } else {
+          const mappedProperties = (data || []).map(mapPropertyData);
+          setProperties(mappedProperties);
+        }
+      } catch (err) {
+        console.error('Error fetching properties:', err);
+        setProperties([]);
+      } finally {
+        setIsLoadingProperties(false);
+      }
+    };
+
+    fetchProperties();
+  }, [mapPropertyData]);
 
   // Handle hash navigation for smooth scrolling
   React.useEffect(() => {
@@ -94,21 +188,6 @@ export const HomePage: React.FC = () => {
           <div className="absolute inset-0 bg-black/40"></div>
         </div>
 
-
-        {/* Carousel Dots */}
-        {/* <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2">
-          {heroImages.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentImageIndex(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                index === currentImageIndex 
-                  ? 'bg-white scale-125' 
-                  : 'bg-white/50 hover:bg-white/70'
-              }`}
-            />
-          ))}
-        </div> */}
         
         {/* Hero Content */}
         <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-6">
@@ -179,50 +258,11 @@ export const HomePage: React.FC = () => {
             </p>
           </div>
 
-          {isLoadingProperties ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="bg-muted rounded-lg aspect-[4/3] mb-4"></div>
-                  <div className="space-y-3">
-                    <div className="h-4 bg-muted rounded w-3/4"></div>
-                    <div className="h-3 bg-muted rounded w-1/2"></div>
-                    <div className="h-3 bg-muted rounded w-2/3"></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : latestOffMarketProperties.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {latestOffMarketProperties.map((property) => (
-                <PropertyCard 
-                  key={property.id} 
-                  property={property}
-                  showContactInfo={false}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                <Home className="h-8 w-8 text-muted-foreground" />
-              </div>
-              <h3 className="text-xl font-heading font-semibold text-foreground mb-2">
-                {t('language') === 'fr' ? 'Aucune propriété disponible' : 'No properties available'}
-              </h3>
-              <p className="text-muted-foreground mb-6">
-                {t('language') === 'fr' 
-                  ? 'Nous travaillons actuellement sur de nouvelles offres exclusives. Revenez bientôt !'
-                  : 'We are currently working on new exclusive offers. Check back soon!'
-                }
-              </p>
-              <Link to="/properties">
-                <Button variant="outline">
-                  {t('language') === 'fr' ? 'Voir toutes les propriétés' : 'View all properties'}
-                </Button>
-              </Link>
-            </div>
-          )}
+          <PropertiesSection 
+            properties={properties}
+            isLoading={isLoadingProperties}
+            t={t}
+          />
 
           <div className="text-center mt-12">
             <Link to="/properties">

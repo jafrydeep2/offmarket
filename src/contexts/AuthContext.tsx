@@ -2,7 +2,8 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { supabase } from '@/lib/supabaseClient';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setUser, setLoading, loginSuccess, logout as logoutAction, clearAuth, clearLoginSuccess } from '@/store/authSlice';
-import { persistor } from '@/store';
+import { performCompleteLogout } from '@/lib/logoutUtils';
+import { userActivityTracker } from '@/lib/userActivityTracker';
 
 interface ProfileRow {
   id: string;
@@ -111,6 +112,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     });
   }, [user, isAuthenticated, isAdmin, isLoading, isRehydrated]);
 
+  // Additional safeguard: Clear user if no valid session exists
+  useEffect(() => {
+    if (user && !isLoading && isRehydrated) {
+      // Check if we have a valid session
+      supabase.auth.getSession().then(({ data: sessionResult }) => {
+        const session = sessionResult?.session;
+        if (!session || !session.user || session.user.id !== user.id) {
+          console.log('AuthProvider: No valid session found, clearing user');
+          dispatch(clearAuth());
+        }
+      }).catch(() => {
+        console.log('AuthProvider: Error checking session, clearing user');
+        dispatch(clearAuth());
+      });
+    }
+  }, [user, isLoading, isRehydrated, dispatch]);
+
   // Debug logging for user data changes
   useEffect(() => {
     console.log('AuthProvider: User data changed:', { 
@@ -138,38 +156,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('AuthProvider: Current user from Redux:', user);
       console.log('AuthProvider: isRehydrated:', isRehydrated);
       
-      // If we already have a user from persistence, just validate the session
-      if (user) {
-        console.log('AuthProvider: User already exists from persistence, validating session...');
-        
-        // Add a small delay to prevent race conditions
-        validationTimeout = setTimeout(async () => {
-          try {
-            const { data: sessionResult } = await supabase.auth.getSession();
-            const session = sessionResult?.session ?? null;
-            
-            // Only clear user if session is completely invalid or user ID doesn't match
-            // Don't clear on temporary session issues
-            if (session?.user?.id && session.user.id !== user.id) {
-              console.log('AuthProvider: Session user ID mismatch, clearing user');
-              dispatch(setUser(null));
-            } else if (!session?.user?.id) {
-              console.log('AuthProvider: No active session, but keeping user for now (may be temporary)');
-              // Don't clear user immediately - let the auth state change handler deal with it
-            } else {
-              console.log('AuthProvider: Session valid, keeping user');
-            }
-          } catch (error) {
-            console.error('AuthProvider: Session validation error:', error);
-            // Don't clear user on validation errors - might be temporary network issues
-            console.log('AuthProvider: Keeping user despite validation error');
-          }
-        }, 1000); // 1 second delay
-        
-        return;
-      }
-      
-      // No user from persistence, try to get session
+      // Always validate session on initialization, regardless of persisted user
       dispatch(setLoading(true));
       
       try {
@@ -178,17 +165,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.log('AuthProvider: Session result:', session);
         
         if (session?.user?.id) {
-          console.log('AuthProvider: User found, fetching profile...');
+          console.log('AuthProvider: Valid session found, fetching profile...');
           const profile = await fetchUserProfile(session.user.id);
           console.log('AuthProvider: Profile fetched:', profile);
-          if (mounted) {
+          if (mounted && profile) {
             dispatch(setUser(profile));
+          } else if (mounted) {
+            // No valid profile found, clear any persisted user
+            dispatch(clearAuth());
           }
         } else {
-          console.log('AuthProvider: No user session');
+          console.log('AuthProvider: No valid session, clearing any persisted user');
+          if (mounted) {
+            dispatch(clearAuth());
+          }
         }
       } catch (error) {
         console.error('AuthProvider: Initialization error:', error);
+        if (mounted) {
+          dispatch(clearAuth());
+        }
       } finally {
         if (mounted) {
           console.log('AuthProvider: Initialization complete');
@@ -216,10 +212,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       
       if (!session?.user?.id) {
-        // Only clear if we had a user before and this is not a temporary session issue
+        // Clear user if no session
         if (user) {
-          console.log('AuthProvider: No session user, but keeping user for now to prevent logout');
-          // Don't clear immediately - might be temporary network issue
+          console.log('AuthProvider: No session user, clearing user');
+          dispatch(clearAuth());
         }
         return;
       }
@@ -233,7 +229,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
         } catch (error) {
           console.error('Error fetching profile on auth state change:', error);
-          // Don't clear user on profile fetch errors
+          // Clear user on profile fetch errors
+          if (mounted) {
+            dispatch(clearAuth());
+          }
         }
       }
     });
@@ -344,6 +343,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.log('Dispatching login success to Redux');
         // Dispatch login success to Redux store
         dispatch(loginSuccess({ user: profile, redirectPath }));
+        
+        // Track login activity
+        userActivityTracker.setUserId(profile.id);
+        userActivityTracker.trackLogin();
+        
         console.log('Login success dispatched');
         return { success: true };
       } catch (supabaseError) {
@@ -432,56 +436,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = async () => {
     dispatch(setLoading(true));
     try {
-      // Sign out from Supabase first
+      console.log('Starting logout process...');
+      
+      // Track logout activity before signing out
+      if (user) {
+        userActivityTracker.setUserId(user.id);
+        userActivityTracker.trackLogout();
+      }
+      
+      // Clear all contexts first
+      console.log('Clearing all contexts...');
+      dispatch(clearAuth());
+      
+      // Sign out from Supabase
+      console.log('Signing out from Supabase...');
       const { error: signOutError } = await supabase.auth.signOut();
       if (signOutError) {
         console.error('Supabase signOut error:', signOutError);
       }
       
-      // Clear all Redux auth data
-      dispatch(clearAuth());
-      
-      // Purge persisted storage to completely clear all cached data
-      await persistor.purge();
-      
-      // Clear all localStorage items that might contain auth data
-      const keysToRemove = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && (
-          key.includes('supabase') || 
-          key.includes('sb-') || 
-          key.includes('auth') ||
-          key.includes('redux') ||
-          key.includes('persist') ||
-          key.includes('user') ||
-          key.includes('session')
-        )) {
-          keysToRemove.push(key);
-        }
-      }
-      keysToRemove.forEach(key => localStorage.removeItem(key));
-      
-      // Clear session storage completely
-      sessionStorage.clear();
-      
-      // Clear any cookies that might contain auth data
-      document.cookie.split(";").forEach((c) => {
-        const eqPos = c.indexOf("=");
-        const name = eqPos > -1 ? c.substr(0, eqPos) : c;
-        if (name.includes('supabase') || name.includes('auth') || name.includes('session')) {
-          document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
-          document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=" + window.location.hostname;
-        }
-      });
-      
-      // Force a page reload to ensure all state is completely reset
-      // This is a nuclear option but ensures clean logout
-      setTimeout(() => {
-        // Use replaceState to avoid adding to browser history
-        window.history.replaceState(null, '', '/');
-        window.location.reload();
-      }, 100);
+      // Use the comprehensive logout utility
+      await performCompleteLogout(dispatch);
       
       console.log('User logged out, all storage cleared, and page will reload');
     } catch (error) {
@@ -490,6 +465,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       dispatch(clearAuth());
       localStorage.clear();
       sessionStorage.clear();
+      
+      // Still reload the page to ensure clean state
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
     } finally {
       dispatch(setLoading(false));
     }

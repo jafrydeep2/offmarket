@@ -23,6 +23,7 @@ import {
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useNotifications } from '@/contexts/NotificationContext';
+import { NotificationService } from '@/lib/notificationService';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -293,10 +294,11 @@ export const AccountManagement: React.FC = () => {
     return daysUntilExpiry <= 30 && daysUntilExpiry > 0;
   };
 
-  const checkAndSendExpiryNotifications = () => {
+  const checkAndSendExpiryNotifications = async () => {
     let expired = 0;
     let expiring = 0;
-    users.forEach(user => {
+    
+    for (const user of users) {
       const expiry = new Date(user.subscription_expiry);
       const now = new Date();
       const daysUntilExpiry = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
@@ -306,15 +308,20 @@ export const AccountManagement: React.FC = () => {
         expired += 1;
         if (user.email) {
           sendSubscriptionExpiredNotification(user.email, { quiet: true });
+          // Create database notification
+          await NotificationService.createSubscriptionExpiredNotification(user.id);
         }
       } else if (daysUntilExpiry <= 7) {
         // Expiring in 7 days or less
         expiring += 1;
         if (user.email) {
           sendSubscriptionExpiryNotification(user.email, daysUntilExpiry, { quiet: true });
+          // Create database notification
+          await NotificationService.createSubscriptionExpiryNotification(user.id, daysUntilExpiry);
         }
       }
-    });
+    }
+    
     // Show a single summary toast
     const message = t('language') === 'fr' 
       ? `Notifications envoyées: ${expired} expirées, ${expiring} expirant bientôt`

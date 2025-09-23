@@ -19,6 +19,9 @@ import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useProperties } from '@/contexts/PropertyContext';
 import { useNotifications } from '@/contexts/NotificationContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { NotificationService } from '@/lib/notificationService';
+import { EmailNotificationService } from '@/lib/emailNotificationService';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -36,6 +39,7 @@ export const PropertyForm: React.FC = () => {
   const { id } = useParams();
   const { getProperty, addProperty, updateProperty } = useProperties();
   const { sendNewPropertyNotification } = useNotifications();
+  const { user } = useAuth();
   const isEdit = Boolean(id);
 
   const [formData, setFormData] = useState({
@@ -229,8 +233,13 @@ export const PropertyForm: React.FC = () => {
           // eslint-disable-next-line no-console
           console.error('Error processing alerts RPC:', rpcErr);
         }
-        // Optional local toast demo
-        sendNewPropertyNotification('all-users@offmarket.ch', propertyData.title, { quiet: true });
+        // Create admin notification for new property
+        if (user?.id) {
+          await NotificationService.createNewPropertyNotification(user.id, propertyData.title, created.id);
+        }
+
+        // Send email notifications to users who have new property notifications enabled
+        // This will be handled by the property alert processing system
       }
       
       navigate('/admin/properties');

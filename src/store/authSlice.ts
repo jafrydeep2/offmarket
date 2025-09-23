@@ -56,6 +56,7 @@ const authSlice = createSlice({
       state.redirectPath = null;
     },
     clearAuth: (state) => {
+      console.log('Auth slice: Clearing all auth state');
       state.user = null;
       state.isAuthenticated = false;
       state.isAdmin = false;
@@ -78,13 +79,24 @@ const authSlice = createSlice({
       if (action.payload?.auth) {
         const persistedAuth = action.payload.auth;
         console.log('Auth slice: Restored auth state:', persistedAuth);
-        // Don't override if we already have data
-        if (!state.user && persistedAuth.user) {
-          state.user = persistedAuth.user;
-          state.isAuthenticated = persistedAuth.isAuthenticated;
-          state.isAdmin = persistedAuth.isAdmin;
-          state.loginSuccess = false; // Reset login success on rehydration
-          state.redirectPath = null; // Reset redirect path on rehydration
+        // Only restore if we have valid user data and it's not already set
+        if (!state.user && persistedAuth.user && persistedAuth.user.id) {
+          // Validate that the persisted user data is complete
+          if (persistedAuth.user.id && persistedAuth.user.email) {
+            state.user = persistedAuth.user;
+            state.isAuthenticated = false; // Will be set to true after session validation
+            state.isAdmin = Boolean(persistedAuth.user.isAdmin);
+            state.loginSuccess = false; // Reset login success on rehydration
+            state.redirectPath = null; // Reset redirect path on rehydration
+            console.log('Auth slice: Restored user from persistence, will validate session');
+          } else {
+            console.log('Auth slice: Invalid persisted user data, clearing');
+            state.user = null;
+            state.isAuthenticated = false;
+            state.isAdmin = false;
+            state.loginSuccess = false;
+            state.redirectPath = null;
+          }
         }
       }
     });

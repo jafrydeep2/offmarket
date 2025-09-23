@@ -4,7 +4,8 @@ import { ArrowLeft, MapPin, Home, Maximize, Phone, Mail, User, Heart, Share2, Ca
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/contexts/AuthContext';
-import { useProperties } from '@/contexts/PropertyContext';
+// Remove context dependency to avoid loading delays
+// import { useProperties } from '@/contexts/PropertyContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,36 +18,34 @@ import { PropertyVideoPlayer } from '@/components/PropertyVideoPlayer';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'sonner';
+import { analyticsService } from '@/lib/analyticsService';
+import { NotificationService } from '@/lib/notificationService';
+import { userActivityTracker } from '@/lib/userActivityTracker';
 
 export const PropertyDetailPage: React.FC = () => {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
-  const { properties, getProperty, incrementViews, incrementInquiries } = useProperties();
+  // Remove context dependency to avoid loading delays
+  // const { properties, getProperty, incrementViews, incrementInquiries } = useProperties();
+  const [properties, setProperties] = useState<any[]>([]);
+  const [property, setProperty] = useState<any>(null);
   const [isFavorited, setIsFavorited] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [selectedTab, setSelectedTab] = useState('overview');
   const [showFavDialog, setShowFavDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const { isAuthenticated } = useAuth();
+  const { user } = useAuth(); // Keep user for optional tracking, but don't require authentication
 
-  const property = getProperty(id || '');
+  // Property will be loaded directly from database
   
-  // Debug logging
+  // Load property directly from database
   React.useEffect(() => {
-    console.log('PropertyDetail Debug:', {
-      id,
-      propertiesCount: properties.length,
-      property,
-      isAuthenticated
-    });
-  }, [id, properties.length, property, isAuthenticated]);
-
-  // Fallback: fetch property directly if not found in context
-  React.useEffect(() => {
-    const fetchPropertyDirectly = async () => {
-      if (!property && id && !isLoading) {
-        console.log('Property not found in context, fetching directly...');
+    const fetchProperty = async () => {
+      if (!id) return;
+      
+      try {
+        setIsLoading(true);
         const { data, error } = await supabase
           .from('properties')
           .select('*')
@@ -54,29 +53,112 @@ export const PropertyDetailPage: React.FC = () => {
           .single();
         
         if (error) {
-          console.error('Error fetching property directly:', error);
-        } else if (data) {
-          console.log('Property fetched directly:', data);
+          console.error('Error fetching property:', error);
+          setIsLoading(false);
+          return;
         }
+        
+        if (data) {
+          // Map database property to frontend format
+          const mappedProperty = {
+            id: String(data.id),
+            title: data.title,
+            description: data.description,
+            city: data.city,
+            neighborhood: data.neighborhood,
+            address: data.address ?? undefined,
+            propertyType: data.property_type,
+            rooms: Number(data.rooms),
+            surface: Number(data.surface),
+            listingType: data.listing_type ?? undefined,
+            price: data.price ?? undefined,
+            availabilityDate: data.availability_date ?? undefined,
+            availabilityStatus: data.availability_status || 'immediate',
+            images: Array.isArray(data.images) ? data.images : (data.images ? JSON.parse(data.images) : []),
+            videoUrl: data.video_url ?? undefined,
+            features: Array.isArray(data.features) ? data.features : (data.features ? JSON.parse(data.features) : []),
+            contactInfo: data.contact_info ?? undefined,
+            views: data.views ?? 0,
+            inquiries: data.inquiries ?? 0,
+            createdAt: data.created_at ?? undefined,
+            updatedAt: data.updated_at ?? undefined,
+            featured: data.featured ?? false,
+          };
+          
+          setProperty(mappedProperty);
+          
+          // Track property view if user is authenticated
+          if (user) {
+            userActivityTracker.setUserId(user.id);
+            userActivityTracker.trackPropertyView(mappedProperty.id, mappedProperty.title);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching property:', err);
+      } finally {
+        setIsLoading(false);
       }
     };
     
-    fetchPropertyDirectly();
-  }, [property, id, isLoading]);
-
-  // Handle loading state
+    fetchProperty();
+  }, [id]);
+  
+  // Debug logging
   React.useEffect(() => {
-    if (properties.length > 0) {
-      setIsLoading(false);
+    console.log('PropertyDetail Debug:', {
+      id,
+      property
+    });
+  }, [id, property]);
+
+  // Track property view
+  React.useEffect(() => {
+    if (property && id) {
+      // Track property view
+      analyticsService.trackPropertyView(id, user?.id);
+      
+      // Track user activity if user is logged in (optional tracking)
+      if (user) {
+        analyticsService.trackUserActivity(
+          user.id,
+          'property_view',
+          id,
+          undefined,
+          undefined,
+          {
+            property_title: property.title,
+            property_city: property.city,
+            property_type: property.propertyType
+          }
+        );
+      }
     }
-    
-    // Set a timeout to stop loading after 5 seconds
-    const timeout = setTimeout(() => {
-      setIsLoading(false);
-    }, 5000);
-    
-    return () => clearTimeout(timeout);
-  }, [properties.length]);
+  }, [property, id, user]);
+
+  // Loading state is handled in the fetch effect above
+  
+  // Helper functions for incrementing views and inquiries
+  const incrementViews = async (propertyId: string) => {
+    try {
+      await supabase
+        .from('properties')
+        .update({ views: (property?.views || 0) + 1 })
+        .eq('id', propertyId);
+    } catch (error) {
+      console.error('Error incrementing views:', error);
+    }
+  };
+
+  const incrementInquiries = async (propertyId: string) => {
+    try {
+      await supabase
+        .from('properties')
+        .update({ inquiries: (property?.inquiries || 0) + 1 })
+        .eq('id', propertyId);
+    } catch (error) {
+      console.error('Error incrementing inquiries:', error);
+    }
+  };
 
   const priceText = (property?.price || '').trim();
   const isOnRequest = !priceText || /on\s*request|sur\s*demande/i.test(priceText);
@@ -109,13 +191,26 @@ export const PropertyDetailPage: React.FC = () => {
       phone: inqPhone,
       message: inqMessage,
     };
-    const { error } = await supabase.from('inquiries').insert(payload);
+    const { data: inquiryData, error } = await supabase.from('inquiries').insert(payload).select().single();
     if (error) {
       setInqError(t('language') === 'fr' ? "Échec de l'envoi. Réessayez." : 'Failed to submit inquiry. Please try again.');
       toast.error(error.message);
       setInqSubmitting(false);
       return;
     }
+
+    // Create admin notification for new inquiry
+    const { data: adminUser } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('is_admin', true)
+      .limit(1)
+      .single();
+    
+    if (adminUser && property) {
+      await NotificationService.createInquiryNotification(adminUser.id, property.title, inquiryData.id);
+    }
+
     await incrementInquiries(id);
     setInqName(''); setInqEmail(''); setInqPhone(''); setInqMessage('');
     toast.success(t('language') === 'fr' ? 'Demande envoyée' : 'Inquiry sent');
@@ -330,7 +425,7 @@ export const PropertyDetailPage: React.FC = () => {
                         variant="outline"
                         size="icon"
                         onClick={() => {
-                          if (!isAuthenticated) {
+                          if (!user) {
                             setShowFavDialog(true);
                             return;
                           }
@@ -639,8 +734,7 @@ export const PropertyDetailPage: React.FC = () => {
                   <CardTitle>Listing Owner Details</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {isAuthenticated ? (
-                    <>
+                  <div>
                       <div className="flex items-center space-x-4">
                         <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
                           <span className="text-primary-foreground font-medium">
@@ -678,67 +772,26 @@ export const PropertyDetailPage: React.FC = () => {
                       </div>
 
                       <Separator />
-
+                      {/* replace bellow button with Phone and email with link */}
                       <div className="flex space-x-2">
-                        <Button className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white">
-                          WhatsApp
-                        </Button>
-                        <Button variant="outline" className="flex-1">
-                          Chat Now
-                        </Button>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="relative">
-                      {/* Blurred content */}
-                      <div className="filter blur-md pointer-events-none">
-                        <div className="flex items-center space-x-4">
-                          <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
-                            <span className="text-primary-foreground font-medium">JC</span>
-                          </div>
-                          <div>
-                            <h4 className="font-medium">John Carter</h4>
-                          </div>
-                        </div>
-
-                        <Separator />
-
-                        <div className="space-y-3 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Phone</span>
-                            <span>Call Us - +1 12345 45648</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Email</span>
-                            <span>info@example.com</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">No of Listings</span>
-                            <span>05</span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Overlay for non-members */}
-                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90 backdrop-blur-sm rounded-lg">
-                        <Lock className="h-8 w-8 text-muted-foreground mb-3" />
-                        <p className="text-sm font-medium text-foreground mb-3 text-center">
-                          {t('language') === 'fr' ? 'Information réservée aux membres' : 'Information reserved for members'}
-                        </p>
-                        <Link to="/contact">
-                          <Button size="sm" className="btn-primary">
-                            {t('language') === 'fr' ? 'Devenir membre' : 'Become a member'}
+                        <Link to={`tel:${property.contactInfo?.phone}`} className='w-full'>
+                          <Button className="w-full bg-green-500 hover:bg-emerald-600 text-white">
+                            WhatsApp
+                          </Button>
+                        </Link>
+                        <Link to={`mailto:${property.contactInfo?.email}`} className='w-full'>
+                          <Button className="w-full bg-blue-800 hover:bg-emerald-600 text-white">
+                            Email
                           </Button>
                         </Link>
                       </div>
-                    </div>
-                  )}
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>
 
             {/* Share Property */}
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.7 }}
@@ -762,7 +815,7 @@ export const PropertyDetailPage: React.FC = () => {
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
+            </motion.div> */}
 
             {/* Mortgage Calculator */}
             {/* Mortgage Calculator removed */}

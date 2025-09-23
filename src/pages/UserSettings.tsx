@@ -17,6 +17,7 @@ import {
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabaseClient';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -71,6 +72,9 @@ export const UserSettings: React.FC = () => {
 
     // Only initialize settings if we have a valid user
     if (user) {
+      // Load settings from database
+      loadUserSettings();
+      
       // Initialize settings with current language
       setSettings(prev => ({
         ...prev,
@@ -115,16 +119,57 @@ export const UserSettings: React.FC = () => {
     setMessage(null);
   };
 
+  // Load settings from database
+  const loadUserSettings = async () => {
+    if (!user?.id) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('notification_preferences, privacy_settings, user_preferences')
+        .eq('id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error loading user settings:', error);
+        return;
+      }
+
+      if (data) {
+        setSettings(prev => ({
+          notifications: data.notification_preferences || prev.notifications,
+          privacy: data.privacy_settings || prev.privacy,
+          preferences: data.user_preferences || prev.preferences
+        }));
+      }
+    } catch (error) {
+      console.error('Error loading user settings:', error);
+    }
+  };
+
   const handleSaveSettings = async () => {
     setIsLoading(true);
     setMessage(null);
 
     try {
-      // TODO: Implement actual settings save API call
-      // const result = await saveSettings(settings);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (!user?.id) {
+        throw new Error('User not authenticated');
+      }
+
+      // Save notification preferences to database
+      const { error: settingsError } = await supabase
+        .from('profiles')
+        .update({
+          notification_preferences: settings.notifications,
+          privacy_settings: settings.privacy,
+          user_preferences: settings.preferences,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (settingsError) {
+        throw new Error(settingsError.message);
+      }
       
       // Update language if changed
       if (settings.preferences.language !== language) {
@@ -136,6 +181,7 @@ export const UserSettings: React.FC = () => {
         text: t('language') === 'fr' ? 'Paramètres sauvegardés avec succès' : 'Settings saved successfully' 
       });
     } catch (error) {
+      console.error('Error saving settings:', error);
       setMessage({ 
         type: 'error', 
         text: t('language') === 'fr' ? 'Erreur lors de la sauvegarde des paramètres' : 'Error saving settings' 

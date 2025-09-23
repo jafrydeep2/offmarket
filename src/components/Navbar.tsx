@@ -1,40 +1,199 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Globe, LogOut, User, Menu, X, Phone, Mail, MapPin, Settings, Heart, Bell, BarChart3 } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Globe, LogOut, User, Menu, X, Phone, Mail, MapPin, Settings, Heart, Bell, BarChart3, Clock, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { supabase } from '@/lib/supabaseClient';
+import { LogoService } from '@/lib/logoService';
+
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'info' | 'warning' | 'error' | 'success';
+  is_read: boolean;
+  action_url?: string;
+  created_at: string;
+}
 
 export const Navbar: React.FC = () => {
   const { t, language, setLanguage } = useTranslation();
   const { isAuthenticated, user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [logoError, setLogoError] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [notificationsLoading, setNotificationsLoading] = useState(true);
 
   const toggleLanguage = () => {
     setLanguage(language === 'fr' ? 'en' : 'fr');
   };
 
-  useEffect(() => {
-    // Load logo from localStorage
-    const storedLogo = localStorage.getItem('site_logo');
-    if (storedLogo) {
-      setLogoUrl(storedLogo);
-    }
+  // Fetch notifications
+  const fetchNotifications = async () => {
+    if (!user?.id) return;
+    
+    try {
+      setNotificationsLoading(true);
+      console.log('Fetching notifications for user:', user.id);
+      
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(10);
 
-    // Listen for logo updates
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'site_logo') {
-        setLogoUrl(e.newValue);
+      if (error) {
+        console.error('Error fetching notifications:', error);
+        return;
       }
+
+      console.log('User notifications fetched:', data);
+      setNotifications(data || []);
+      setUnreadCount(data?.filter(n => !n.is_read).length || 0);
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    } finally {
+      setNotificationsLoading(false);
+    }
+  };
+
+  // Mark notification as read
+  const markAsRead = async (notificationId: string) => {
+    try {
+      await supabase
+        .from('notifications')
+        .update({ is_read: true })
+        .eq('id', notificationId);
+
+      setNotifications(prev => 
+        prev.map(n => n.id === notificationId ? { ...n, is_read: true } : n)
+      );
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
+  };
+
+  // Mark all as read
+  const markAllAsRead = async () => {
+    try {
+      await supabase
+        .from('notifications')
+        .update({ is_read: true })
+        .eq('user_id', user?.id)
+        .eq('is_read', false);
+
+      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+      setUnreadCount(0);
+    } catch (error) {
+      console.error('Error marking all notifications as read:', error);
+    }
+  };
+
+  // Get notification icon based on type
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case 'success':
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'warning':
+        return <AlertTriangle className="h-4 w-4 text-yellow-500" />;
+      case 'error':
+        return <AlertTriangle className="h-4 w-4 text-red-500" />;
+      default:
+        return <Clock className="h-4 w-4 text-blue-500" />;
+    }
+  };
+
+  // Format notification time
+  const formatNotificationTime = (createdAt: string) => {
+    const now = new Date();
+    const created = new Date(createdAt);
+    const diffInMinutes = Math.floor((now.getTime() - created.getTime()) / (1000 * 60));
+    
+    if (diffInMinutes < 1) return 'Just now';
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
+    return `${Math.floor(diffInMinutes / 1440)}d ago`;
+  };
+
+  useEffect(() => {
+    // Load logo using the logo service
+    const loadLogo = async () => {
+      const logo = await LogoService.loadLogo();
+      setLogoUrl(logo);
+      setLogoError(false); // Reset error state when loading new logo
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    loadLogo();
+
+    // Subscribe to logo changes
+    const unsubscribe = LogoService.subscribe((logo) => {
+      setLogoUrl(logo);
+      setLogoError(false); // Reset error state when logo changes
+    });
+
+    return unsubscribe;
   }, []);
+
+  // Fetch notifications when user is available
+  useEffect(() => {
+    if (isAuthenticated && user?.id) {
+      fetchNotifications();
+    }
+  }, [isAuthenticated, user?.id]);
+
+  // Set up real-time polling for notifications
+  useEffect(() => {
+    if (!isAuthenticated || !user?.id) return;
+
+    // Initial fetch
+    fetchNotifications();
+
+    // Set up polling every 30 seconds
+    const interval = setInterval(() => {
+      fetchNotifications();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [isAuthenticated, user?.id]);
+
+  // Test function to create a user notification (for debugging)
+  const createTestUserNotification = async () => {
+    if (!user?.id) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('notifications')
+        .insert({
+          user_id: user.id,
+          title: 'Test User Notification',
+          message: 'This is a test notification created from user side',
+          type: 'info',
+          is_read: false
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating test notification:', error);
+        return;
+      }
+
+      console.log('Test notification created:', data);
+      fetchNotifications(); // Refresh notifications
+    } catch (error) {
+      console.error('Error creating test notification:', error);
+    }
+  };
 
   const handleNavClick = (item: any) => {
     if (item.scrollTo) {
@@ -75,15 +234,32 @@ export const Navbar: React.FC = () => {
           to="/" 
           className="flex items-center space-x-3 text-2xl font-heading font-bold text-foreground hover:text-primary transition-all duration-300"
         >
-          {logoUrl ? (
+          {logoUrl && !logoError ? (
             <img 
               src={logoUrl} 
               alt="OffMarket" 
               className="h-12 w-auto object-contain"
               data-logo
+              onError={() => {
+                console.log('Logo failed to load, using default logo');
+                setLogoError(true);
+                setLogoUrl(LogoService.getDefaultLogoUrl());
+              }}
             />
           ) : (
-            <span>OffMarket</span>
+            <img 
+              src={LogoService.getDefaultLogoUrl()} 
+              alt="OffMarket" 
+              className="h-12 w-auto object-contain"
+              data-logo
+              onError={() => {
+                console.log('Default logo also failed to load, showing text fallback');
+                setLogoError(true);
+              }}
+            />
+          )}
+          {logoError && (
+            <span className="ml-2">OffMarket</span>
           )}
         </Link>
 
@@ -122,13 +298,91 @@ export const Navbar: React.FC = () => {
             </Button>
             
             {isAuthenticated ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="flex items-center space-x-2 px-4 py-2 border-border text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-200">
-                    <User className="h-4 w-4" />
-                    <span className="font-medium uppercase">{user?.username ? user?.username : user?.email?.split('@')[0]}</span>
-                  </Button>
-                </DropdownMenuTrigger>
+              <>
+                {/* Notifications */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="relative hover:bg-gray-100">
+                      <Bell className="h-5 w-5" />
+                      {unreadCount > 0 && (
+                        <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500 text-white">
+                          {unreadCount}
+                        </Badge>
+                      )}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-80">
+                    <div className="px-3 py-2 text-sm font-medium flex items-center justify-between">
+                      <span>Notifications</span>
+                      {unreadCount > 0 && (
+                        <Badge variant="secondary" className="text-xs">
+                          {unreadCount} unread
+                        </Badge>
+                      )}
+                    </div>
+                    <DropdownMenuSeparator />
+                    
+                    {notificationsLoading ? (
+                      <div className="px-3 py-4 text-center text-sm text-muted-foreground">
+                        Loading notifications...
+                      </div>
+                    ) : notifications.length === 0 ? (
+                      <div className="px-3 py-4 text-center text-sm text-muted-foreground">
+                        No notifications
+                      </div>
+                    ) : (
+                      <>
+                        {notifications.map((notification) => (
+                          <DropdownMenuItem
+                            key={notification.id}
+                            className="whitespace-normal p-3 cursor-pointer"
+                            onClick={() => {
+                              if (!notification.is_read) {
+                                markAsRead(notification.id);
+                              }
+                              if (notification.action_url) {
+                                navigate(notification.action_url);
+                              }
+                            }}
+                          >
+                            <div className="flex items-start space-x-3 w-full">
+                              {getNotificationIcon(notification.type)}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between">
+                                  <p className={`text-sm font-medium ${!notification.is_read ? 'text-foreground' : 'text-muted-foreground'}`}>
+                                    {notification.title}
+                                  </p>
+                                  <span className="text-xs text-muted-foreground ml-2">
+                                    {formatNotificationTime(notification.created_at)}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  {notification.message}
+                                </p>
+                              </div>
+                            </div>
+                          </DropdownMenuItem>
+                        ))}
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={markAllAsRead} disabled={unreadCount === 0}>
+                          Mark all as read
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={createTestUserNotification}>
+                          Create Test Notification
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                {/* User Menu */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="flex items-center space-x-2 px-4 py-2 border-border text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-200">
+                      <User className="h-4 w-4" />
+                      <span className="font-medium uppercase">{user?.username ? user?.username : user?.email?.split('@')[0]}</span>
+                    </Button>
+                  </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <div className="px-3 py-2 border-b">
                     <p className="text-sm font-medium text-foreground uppercase">
@@ -184,6 +438,7 @@ export const Navbar: React.FC = () => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+              </>
             ) : (
               <Link to="/login">
                 <Button 
@@ -220,15 +475,32 @@ export const Navbar: React.FC = () => {
               <SheetContent side="right" className="w-80 sm:w-96">
                 <SheetHeader className="pb-4">
                   <SheetTitle className="text-left text-xl font-heading font-bold text-foreground flex items-center space-x-3">
-                    {logoUrl ? (
+                    {logoUrl && !logoError ? (
                       <img 
                         src={logoUrl} 
                         alt="OffMarket" 
                         className="h-6 w-auto object-contain"
                         data-logo
+                        onError={() => {
+                          console.log('Mobile logo failed to load, using default logo');
+                          setLogoError(true);
+                          setLogoUrl(LogoService.getDefaultLogoUrl());
+                        }}
                       />
                     ) : (
-                      <span>OffMarket</span>
+                      <img 
+                        src={LogoService.getDefaultLogoUrl()} 
+                        alt="OffMarket" 
+                        className="h-6 w-auto object-contain"
+                        data-logo
+                        onError={() => {
+                          console.log('Mobile default logo also failed to load, showing text fallback');
+                          setLogoError(true);
+                        }}
+                      />
+                    )}
+                    {logoError && (
+                      <span className="ml-2">OffMarket</span>
                     )}
                   </SheetTitle>
                 </SheetHeader>

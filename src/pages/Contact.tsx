@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'sonner';
+import { NotificationService } from '@/lib/notificationService';
 
 export const ContactPage: React.FC = () => {
   const { t } = useTranslation();
@@ -29,13 +30,27 @@ export const ContactPage: React.FC = () => {
       email: formData.email, 
       message: formData.message 
     };
-    const { error } = await supabase.from('form_submissions').insert(payload);
+    const { data, error } = await supabase.from('form_submissions').insert(payload).select().single();
     if (error) {
       setError(t('language') === 'fr' ? "Échec de l'envoi. Réessayez." : 'Failed to send. Please try again.');
       toast.error(error.message);
       setIsSubmitting(false);
       return;
     }
+
+    // Create admin notification for new form submission
+    // Get the first admin user to send notification to
+    const { data: adminUser } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('is_admin', true)
+      .limit(1)
+      .single();
+    
+    if (adminUser) {
+      await NotificationService.createFormSubmissionNotification(adminUser.id, 'Contact Form', data.id);
+    }
+
     setFormData({ name: '', email: '', message: '' });
     toast.success(t('language') === 'fr' ? 'Message envoyé' : 'Message sent');
     setIsSubmitting(false);

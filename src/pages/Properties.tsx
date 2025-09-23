@@ -9,13 +9,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { PropertyCard } from '@/components/PropertyCard';
 import { PropertyListCard } from '@/components/PropertyListCard';
 import { swissCities, filterCities } from '@/data/swissCities';
-import { useProperties } from '@/contexts/PropertyContext';
+// Remove context dependency to avoid loading delays
+// import { useProperties } from '@/contexts/PropertyContext';
 import { supabase } from '@/lib/supabaseClient';
+import { analyticsService } from '@/lib/analyticsService';
 
 export const PropertiesPage: React.FC = () => {
   const { t } = useTranslation();
-  const { isAuthenticated } = useAuth();
-  const { properties: contextProperties } = useProperties();
+  const { user } = useAuth(); // Keep user for optional tracking, but don't require authentication
+  // Remove context dependency to avoid loading delays
+  // const { properties: contextProperties } = useProperties();
   const [properties, setProperties] = useState<any[]>([]);
   const [allProperties, setAllProperties] = useState<any[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -101,20 +104,41 @@ export const PropertiesPage: React.FC = () => {
     'Appartement', 'Maison', 'Villa', 'Loft', 'Penthouse', 'Studio', 'Duplex', 'Chalet', 'Château'
   ];
 
-  // Fetch properties immediately when page loads
+  // Fetch properties immediately when page loads (no auth dependency)
   useEffect(() => {
     fetchPropertiesDirectly();
-  }, [fetchPropertiesDirectly]);
+  }, []); // Remove fetchPropertiesDirectly dependency to avoid re-fetching
 
   // Debounce search term
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
       setPage(1); // Reset to first page when search changes
+      
+      // Track search query if user is logged in and search term is not empty (optional tracking)
+      if (user && searchTerm.trim()) {
+        const searchFilters = {
+          rooms: selectedRooms,
+          type: selectedType,
+          status: selectedStatus,
+          priceMin: priceRange.min,
+          priceMax: priceRange.max,
+          surfaceMin: surfaceRange.min,
+          surfaceMax: surfaceRange.max
+        };
+        
+        // Note: filteredProperties.length will be calculated after the search is processed
+        analyticsService.trackSearchQuery(
+          user.id,
+          searchTerm.trim(),
+          searchFilters,
+          0 // Will be updated with actual count later
+        );
+      }
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchTerm]);
+  }, [searchTerm, user, selectedRooms, selectedType, selectedStatus, priceRange, surfaceRange]);
 
   // Filter suggestions based on current search term
   const filteredSuggestions = useMemo(() => {
@@ -521,7 +545,7 @@ export const PropertiesPage: React.FC = () => {
                 >
                   <PropertyCard 
                     property={property}
-                    showContactInfo={isAuthenticated}
+                    showContactInfo={true}
                   />
                 </motion.div>
               ))}
@@ -537,7 +561,7 @@ export const PropertiesPage: React.FC = () => {
                 >
                   <PropertyListCard 
                     property={property}
-                    showContactInfo={isAuthenticated}
+                    showContactInfo={true}
                   />
                 </motion.div>
               ))}

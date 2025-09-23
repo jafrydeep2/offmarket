@@ -11,6 +11,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useToast } from '@/hooks/use-toast';
 import { Bell, Globe, UploadCloud, Image as ImageIcon, Save, RefreshCw } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
+import { LogoService } from '@/lib/logoService';
 
 interface SystemSettings {
   site_name: string;
@@ -160,17 +161,8 @@ export const AdminSettingsPage: React.FC = () => {
         }
       }
 
-      // Update logo in localStorage for immediate UI update
-      if (logoUrl) {
-        localStorage.setItem('site_logo', logoUrl);
-        // Update logo in both admin and user interfaces
-        const logoElements = document.querySelectorAll('[data-logo]');
-        logoElements.forEach(el => {
-          if (el instanceof HTMLImageElement) {
-            el.src = logoUrl;
-          }
-        });
-      }
+      // Update logo using the logo service
+      LogoService.updateLogo(logoUrl);
 
       toast({
         title: t('language') === 'fr' ? 'Succès' : 'Success',

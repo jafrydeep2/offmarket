@@ -49,6 +49,15 @@ begin
 
     insert into public.email_queue(to_email, subject, body_text, body_html, meta)
     values (recipient_email, subject_text, body_text, body_html, jsonb_build_object('property_id', prop.id, 'alert_id', r.id));
+
+    -- Create in-app notification for the user
+    insert into public.notifications(user_id, title, message, type, action_url)
+    values (r.user_id, 'New Property Match', 
+            format('A new property "%s" matches your alert criteria', prop.title),
+            'info', format('/property/%s', prop.id));
+
+    -- Send email notification if user has email notifications enabled
+    -- This will be handled by the application layer to respect user preferences
   end loop;
 end;
 $$;

@@ -14,12 +14,19 @@ import {
   ArrowRight,
   Edit,
   Shield,
-  CreditCard
+  CreditCard,
+  MessageCircle,
+  LogIn,
+  LogOut,
+  Activity
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppSelector } from '@/store/hooks';
+import { userStatsService, type UserStats } from '@/lib/userStatsService';
+import { userActivityTracker } from '@/lib/userActivityTracker';
+import { supabase } from '@/lib/supabaseClient';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -28,51 +35,60 @@ import { Progress } from '@/components/ui/progress';
 export const UserDashboard: React.FC = () => {
   const { t } = useTranslation();
   const { user, isAuthenticated } = useAuth();
-  const [stats, setStats] = useState({
-    favoritesCount: 0,
-    viewedProperties: 0,
-    searchesCount: 0,
-    alertsCount: 0
-  });
-  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [stats, setStats] = useState<UserStats | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Mock data - replace with real API calls
+  // Load real user stats
   useEffect(() => {
-    if (isAuthenticated && user) {
-      // Simulate loading user stats
-      setStats({
-        favoritesCount: 12,
-        viewedProperties: 45,
-        searchesCount: 8,
-        alertsCount: 3
-      });
-
-      // Simulate recent activity
-      setRecentActivity([
-        {
-          id: 1,
-          type: 'favorite',
-          property: 'Luxury Penthouse in Geneva',
-          timestamp: '2 hours ago',
-          icon: Heart
-        },
-        {
-          id: 2,
-          type: 'view',
-          property: 'Modern Villa in Zurich',
-          timestamp: '1 day ago',
-          icon: Eye
-        },
-        {
-          id: 3,
-          type: 'search',
-          property: 'Apartments in Lausanne',
-          timestamp: '2 days ago',
-          icon: Search
+    const loadUserStats = async () => {
+      if (isAuthenticated && user) {
+        try {
+          setLoading(true);
+          // Set user ID for activity tracking
+          userActivityTracker.setUserId(user.id);
+          
+          // Debug: Let's also test a direct query
+          console.log('Testing direct favorites query...');
+          const { data: directFavorites, error: directError } = await supabase
+            .from('favorites')
+            .select('*')
+            .eq('user_id', user.id);
+          
+          console.log('Direct favorites query result:', { directFavorites, directError });
+          
+          const userStats = await userStatsService.getUserStats(user.id);
+          setStats(userStats);
+        } catch (error) {
+          console.error('Error loading user stats:', error);
+          // Fallback to empty stats
+          setStats({
+            favoritesCount: 0,
+            viewedProperties: 0,
+            searchesCount: 0,
+            alertsCount: 0,
+            recentActivity: [],
+            subscriptionStatus: { status: 'active', daysLeft: 365 }
+          });
+        } finally {
+          setLoading(false);
         }
-      ]);
-    }
+      }
+    };
+
+    loadUserStats();
   }, [isAuthenticated, user]);
+
+  // Show loading state
+  if (loading || !stats) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Only show loading or redirect if we truly have no user data
   if (!user) {
@@ -86,17 +102,7 @@ export const UserDashboard: React.FC = () => {
     );
   }
 
-  const getSubscriptionStatus = () => {
-    const expiryDate = new Date(user.subscriptionExpiry);
-    const today = new Date();
-    const daysLeft = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-
-    if (daysLeft < 0) return { status: 'expired', color: 'destructive', days: 0 };
-    if (daysLeft < 30) return { status: 'expiring', color: 'warning', days: daysLeft };
-    return { status: 'active', color: 'success', days: daysLeft };
-  };
-
-  const subscriptionStatus = getSubscriptionStatus();
+  const subscriptionStatus = stats.subscriptionStatus;
 
   return (
     <div className="min-h-screen bg-background">
@@ -124,12 +130,12 @@ export const UserDashboard: React.FC = () => {
               </p>
             </div>
             <div className="flex items-center space-x-3">
-              <Badge
-                variant={subscriptionStatus.color as any}
-                className="text-sm px-3 py-1"
-              >
-                {user.subscriptionType.toUpperCase()}
-              </Badge>
+                <Badge
+                  variant={subscriptionStatus.status === 'expired' ? 'destructive' : 'default'}
+                  className="text-sm px-3 py-1"
+                >
+                  {user.subscriptionType.toUpperCase()}
+                </Badge>
               <Link to="/profile">
                 <Button variant="outline" size="sm">
                   <Edit className="h-4 w-4 mr-2" />
@@ -257,9 +263,9 @@ export const UserDashboard: React.FC = () => {
                         <span>
                           {t('language') === 'fr' ? 'Jours restants' : 'Days remaining'}
                         </span>
-                        <span className="font-medium">{subscriptionStatus.days}</span>
+                        <span className="font-medium">{subscriptionStatus.daysLeft}</span>
                       </div>
-                      <Progress value={(subscriptionStatus.days / 30) * 100} className="h-2" />
+                      <Progress value={(subscriptionStatus.daysLeft / 30) * 100} className="h-2" />
                     </div>
                   )}
                 </div>
@@ -294,28 +300,52 @@ export const UserDashboard: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentActivity.map((activity, index) => (
-                    <motion.div
-                      key={activity.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.4, delay: index * 0.1 }}
-                      className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                    >
-                      <div className="h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center">
-                        <activity.icon className="h-5 w-5 text-gray-600" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-foreground truncate">
-                          {activity.property}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {activity.timestamp}
-                        </p>
-                      </div>
-                      <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                    </motion.div>
-                  ))}
+                  {stats.recentActivity.length > 0 ? (
+                    stats.recentActivity.slice(0,3).map((activity, index) => (
+                      <motion.div
+                        key={activity.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.4, delay: index * 0.1 }}
+                        className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center">
+                          {activity.icon === 'Heart' && <Heart className="h-5 w-5 text-red-600" />}
+                          {activity.icon === 'Eye' && <Eye className="h-5 w-5 text-blue-600" />}
+                          {activity.icon === 'Search' && <Search className="h-5 w-5 text-green-600" />}
+                          {activity.icon === 'MessageCircle' && <MessageCircle className="h-5 w-5 text-purple-600" />}
+                          {activity.icon === 'LogIn' && <LogIn className="h-5 w-5 text-green-600" />}
+                          {activity.icon === 'LogOut' && <LogOut className="h-5 w-5 text-red-600" />}
+                          {activity.icon === 'Activity' && <Activity className="h-5 w-5 text-gray-600" />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground truncate">
+                            {activity.property}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {activity.timestamp}
+                          </p>
+                        </div>
+                        <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                      </motion.div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8">
+                      <Activity className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-muted-foreground">
+                        {t('language') === 'fr' 
+                          ? 'Aucune activité récente' 
+                          : 'No recent activity'
+                        }
+                      </p>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        {t('language') === 'fr' 
+                          ? 'Commencez à explorer des propriétés pour voir votre activité ici' 
+                          : 'Start exploring properties to see your activity here'
+                        }
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-4 pt-4 border-t">

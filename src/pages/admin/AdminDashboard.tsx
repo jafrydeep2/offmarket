@@ -22,23 +22,29 @@ import { Badge } from '@/components/ui/badge';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { supabase } from '@/lib/supabaseClient';
 import { useProperties } from '@/contexts/PropertyContext';
+import { analyticsService, type AnalyticsData } from '@/lib/analyticsService';
 
 // Properties Chart Component
-const PropertiesChart: React.FC = () => {
-  const chartData = [
-    { month: 'Jan', properties: 2 },
-    { month: 'Feb', properties: 4 },
-    { month: 'Mar', properties: 3 },
-    { month: 'Apr', properties: 6 },
-    { month: 'May', properties: 5 },
-    { month: 'Jun', properties: 8 },
-    { month: 'Jul', properties: 7 },
-    { month: 'Aug', properties: 9 },
-    { month: 'Sep', properties: 6 },
-    { month: 'Oct', properties: 8 },
-    { month: 'Nov', properties: 10 },
-    { month: 'Dec', properties: 12 }
-  ];
+const PropertiesChart: React.FC<{ data?: Array<{ date: string; count: number }> }> = ({ data = [] }) => {
+  // Convert analytics data to chart format - limit to last 12 months
+  const chartData = data.length > 0 ? data.slice(-12).map(item => ({
+    month: new Date(item.date).toLocaleDateString('en-US', { month: 'short' }),
+    year: new Date(item.date).getFullYear(),
+    properties: item.count
+  })) : [];
+  
+  // If no data, generate empty data for last 12 months
+  if (chartData.length === 0) {
+    const currentDate = new Date();
+    for (let i = 11; i >= 0; i--) {
+      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+      chartData.push({
+        month: date.toLocaleDateString('en-US', { month: 'short' }),
+        year: date.getFullYear(),
+        properties: 0
+      });
+    }
+  }
 
   const maxValue = Math.max(...chartData.map(d => d.properties));
   const minValue = Math.min(...chartData.map(d => d.properties));
@@ -99,6 +105,7 @@ interface DashboardStats {
   totalInquiries: number;
   recentProperties: any[];
   recentUsers: any[];
+  analyticsData?: AnalyticsData;
 }
 
 export const AdminDashboard: React.FC = () => {
@@ -119,10 +126,8 @@ export const AdminDashboard: React.FC = () => {
       try {
         setLoading(true);
         
-        // Load properties data
-        const totalProperties = properties.length;
-        const totalViews = properties.reduce((sum, p) => sum + (p.views || 0), 0);
-        const totalInquiries = properties.reduce((sum, p) => sum + (p.inquiries || 0), 0);
+        // Load analytics data
+        const analyticsData = await analyticsService.getAnalyticsData('30d');
         
         // Load users data
         const { data: usersData, error: usersError } = await supabase
@@ -158,15 +163,29 @@ export const AdminDashboard: React.FC = () => {
         }));
 
         setStats({
-          totalProperties,
-          totalUsers: usersData?.length || 0,
-          totalViews,
-          totalInquiries,
+          totalProperties: analyticsData.totalProperties,
+          totalUsers: analyticsData.totalUsers,
+          totalViews: analyticsData.totalViews,
+          totalInquiries: analyticsData.totalInquiries,
           recentProperties,
-          recentUsers
+          recentUsers,
+          analyticsData
         });
       } catch (error) {
         console.error('Error loading dashboard data:', error);
+        // Fallback to basic data if analytics fails
+        const totalProperties = properties.length;
+        const totalViews = properties.reduce((sum, p) => sum + (p.views || 0), 0);
+        const totalInquiries = properties.reduce((sum, p) => sum + (p.inquiries || 0), 0);
+        
+        setStats({
+          totalProperties,
+          totalUsers: 0,
+          totalViews,
+          totalInquiries,
+          recentProperties: [],
+          recentUsers: []
+        });
       } finally {
         setLoading(false);
       }
@@ -292,7 +311,7 @@ export const AdminDashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="h-64">
-                <PropertiesChart />
+                <PropertiesChart data={stats.analyticsData?.propertyGrowth} />
               </div>
             </CardContent>
           </Card>
