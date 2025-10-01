@@ -349,13 +349,10 @@ export const HomePage: React.FC = () => {
             className="text-center space-y-4 mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground">
-              {t('language') === 'fr' ? 'Nos Services Hors-Marché' : 'Our Off-Market Services'}
+              {t('becomeMember.services.title')}
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              {t('language') === 'fr' 
-                ? 'Solutions complètes pour tous vos besoins immobiliers'
-                : 'Comprehensive solutions for all your real estate needs'
-              }
+              {t('becomeMember.services.subtitle')}
             </p>
           </motion.div>
 
@@ -375,17 +372,14 @@ export const HomePage: React.FC = () => {
                     <Lock className="h-6 w-6 text-primary" />
                   </div>
                   <h3 className="text-xl font-heading font-bold text-foreground mb-3">
-                    {t('language') === 'fr' ? 'Ventes Privées de Propriétés' : 'Private Property Sales'}
+                    {t('becomeMember.services.privateSales.title')}
                   </h3>
                   <p className="text-muted-foreground leading-relaxed mb-6">
-                    {t('language') === 'fr' 
-                      ? 'Pour les propriétaires souhaitant vendre avec une discrétion totale. Connexion avec des acheteurs qualifiés sans mise en ligne publique.'
-                      : 'For owners wishing to sell with complete discretion. Connection with qualified buyers without public listing.'
-                    }
+                    {t('becomeMember.services.privateSales.description')}
                   </p>
                   <Link to="/private-sales">
                     <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">
-                      {t('language') === 'fr' ? 'Contactez-nous pour votre vente privée' : 'Contact us for your private sale'}
+                      {t('becomeMember.services.privateSales.cta')}
                     </Button>
                   </Link>
                 </div>
@@ -407,17 +401,14 @@ export const HomePage: React.FC = () => {
                     <Video className="h-6 w-6 text-primary" />
                   </div>
                   <h3 className="text-xl font-heading font-bold text-foreground mb-3">
-                    {t('language') === 'fr' ? 'Vidéos de Présentation de Propriétés' : 'Property Showcase Videos'}
+                    {t('becomeMember.services.videos.title')}
                   </h3>
                   <p className="text-muted-foreground leading-relaxed mb-6">
-                    {t('language') === 'fr' 
-                      ? 'Création de vidéos professionnelles : visite guidée, prises de vue drone, ambiance. Mise en valeur des caractéristiques clés de la propriété pour attirer les acheteurs sérieux.'
-                      : 'Creation of professional videos: guided tour, drone shots, ambiance. Highlighting the key features of the property to attract serious buyers.'
-                    }
+                    {t('becomeMember.services.videos.description')}
                   </p>
                   <Link to="/property-videos">
                     <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">
-                      {t('language') === 'fr' ? 'Demandez votre vidéo professionnelle' : 'Request your professional video'}
+                      {t('becomeMember.services.videos.cta')}
                     </Button>
                   </Link>
                 </div>
@@ -439,17 +430,14 @@ export const HomePage: React.FC = () => {
                     <Key className="h-6 w-6 text-primary" />
                   </div>
                   <h3 className="text-xl font-heading font-bold text-foreground mb-3">
-                    {t('language') === 'fr' ? 'Accès Exclusif' : 'Exclusive Access'}
+                    {t('becomeMember.services.exclusiveAccess.title')}
                   </h3>
                   <p className="text-muted-foreground leading-relaxed mb-6">
-                    {t('language') === 'fr' 
-                      ? 'Accédez aux propriétés hors-marché les plus exclusives et confidentielles. Un accès privilégié réservé à nos membres les plus fidèles.'
-                      : 'Access the most exclusive and confidential off-market properties. Privileged access reserved for our most loyal members.'
-                    }
+                    {t('becomeMember.services.exclusiveAccess.description')}
                   </p>
-                  <Link to="/exclusive-access">
+                  <Link to="/become-member">
                     <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">
-                      {t('language') === 'fr' ? 'Découvrir l\'accès exclusif' : 'Discover exclusive access'}
+                      {t('becomeMember.services.exclusiveAccess.cta')}
                     </Button>
                   </Link>
                 </div>
@@ -471,17 +459,14 @@ export const HomePage: React.FC = () => {
                     <Search className="h-6 w-6 text-primary" />
                   </div>
                   <h3 className="text-xl font-heading font-bold text-foreground mb-3">
-                    {t('language') === 'fr' ? 'Assistance Personnalisée' : 'Personalized Assistance'}
+                    {t('becomeMember.services.personalized.title')}
                   </h3>
                   <p className="text-muted-foreground leading-relaxed mb-6">
-                    {t('language') === 'fr' 
-                      ? 'Un accompagnement sur mesure pour trouver la propriété parfaite selon vos critères spécifiques. Notre équipe d\'experts vous guide à chaque étape.'
-                      : 'Tailored support to find the perfect property according to your specific criteria. Our team of experts guides you through every step.'
-                    }
+                    {t('becomeMember.services.personalized.description')}
                   </p>
                   <Link to="/property-finder">
                     <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">
-                      {t('language') === 'fr' ? 'Trouver ma propriété idéale' : 'Find my ideal property'}
+                      {t('becomeMember.services.personalized.cta')}
                     </Button>
                   </Link>
                 </div>
@@ -492,7 +477,7 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* Trust Section */}
-      <section className="section-padding bg-muted/20">
+      {/* <section className="section-padding bg-muted/20">
         <div className="container-custom">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
@@ -533,7 +518,7 @@ export const HomePage: React.FC = () => {
             </div>
           </motion.div>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 };

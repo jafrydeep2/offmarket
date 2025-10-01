@@ -94,24 +94,15 @@ export const PropertyVideosPage: React.FC = () => {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
-                        className="text-5xl md:text-7xl font-heading font-bold leading-tight mb-6"
+                        className="text-5xl md:text-7xl font-heading font-bold leading-tight mb-8"
                     >
                         {t('propertyVideos.title')}
                     </motion.h1>
 
-                    <motion.p
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                        className="text-xl md:text-2xl mb-8 leading-relaxed max-w-4xl mx-auto"
-                    >
-                        {t('propertyVideos.subtitle')}
-                    </motion.p>
-
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.4 }}
+                        transition={{ duration: 0.8, delay: 0.2 }}
                         className="flex flex-col sm:flex-row gap-4 justify-center items-center"
                     >
                         <Button

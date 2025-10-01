@@ -108,7 +108,7 @@
       "exclusiveAccess": {
         "title": "Accès Exclusif aux Propriétés",
         "description": "Nos membres bénéficient d'un accès privilégié aux propriétés hors-marché. Opportunités rares soigneusement sélectionnées selon leurs critères.",
-        "cta": "Devenez membre et accédez aux propriétés exclusives"
+        "cta": "Devenez membre"
       },
       "personalized": {
         "title": "Assistance Personnalisée",
@@ -135,23 +135,27 @@
     }
   },
   "privateSales": {
-    "title": "Ventes Privées – Discrétion & Efficacité",
+    "title": "Vendez votre bien",
     "subtitle": "Offrez votre propriété avec une discrétion totale, en dehors des canaux publics. Nous vous connectons avec des acheteurs qualifiés tout en garantissant la confidentialité complète de votre projet.",
     "cta": "Contactez-nous pour votre vente privée",
     "process": {
       "title": "Comment Ça Marche",
       "subtitle": "Notre processus éprouvé garantit que votre vente privée est gérée avec la plus grande discrétion et efficacité",
-      "discretion": {
-        "title": "Discrétion Totale",
-        "description": "Votre vente reste complètement confidentielle"
+      "estimation": {
+        "title": "Estimation de votre bien",
+        "description": "Nous établissons une estimation rigoureuse en intégrant le marché actuel, la localisation et les spécificités de votre propriété. L'objectif est de déterminer un prix juste qui favorise une vente rapide et met en avant la valeur réelle de votre bien immobilier."
       },
-      "connection": {
-        "title": "Acheteurs Qualifiés",
-        "description": "Connexion avec des acheteurs sérieux pré-qualifiés"
+      "strategy": {
+        "title": "Stratégie de vente",
+        "description": "Chaque bien est unique, c'est pourquoi nous élaborons une stratégie de vente personnalisée. Nous analysons votre marché cible, adaptons le positionnement et mettons en place les actions marketing nécessaires pour attirer des acheteurs sérieux et vendre dans les meilleures conditions."
       },
-      "optimization": {
-        "title": "Meilleur Prix",
-        "description": "Optimisez votre prix de vente sans exposition publique"
+      "showcase": {
+        "title": "Mise en valeur de votre bien",
+        "description": "La première impression est déterminante. Nous valorisons votre propriété à travers des vidéos immersives et des vues aériennes par drone, afin de capter l'attention des acheteurs et provoquer un véritable coup de cœur."
+      },
+      "accompaniment": {
+        "title": "Accompagnement jusqu'à la signature",
+        "description": "Nous vous accompagnons à chaque étape du processus de vente : de la mise en marché à la négociation, jusqu'à la signature de l'acte de vente. Vous bénéficiez d'un suivi personnalisé, de conseils avisés et d'une tranquillité d'esprit totale."
       }
     },
     "description": {
@@ -184,8 +188,8 @@
       }
     },
     "form": {
-      "title": "Commencez Votre Vente Privée",
-      "subtitle": "Parlez-nous de votre propriété et nous nous occupons du reste",
+      "title": "Démarrez la vente de votre bien",
+      "subtitle": "Un service complet, de l'estimation à la signature.",
       "firstName": "Prénom",
       "lastName": "Nom de famille",
       "email": "Email",
@@ -211,7 +215,7 @@
     }
   },
   "propertyVideos": {
-    "title": "Vidéos Professionnelles – Mettez en Valeur Votre Propriété",
+    "title": "Vidéos immobilières professionnelles",
     "subtitle": "Nous créons des vidéos professionnelles personnalisées pour chaque propriété : visites guidées, prises de vue drone et vidéos d'ambiance. Ces vidéos mettent en valeur l'architecture, la disposition et l'atmosphère, aidant à attirer rapidement les acheteurs sérieux.",
     "cta": "Demandez votre vidéo professionnelle",
     "process": {
@@ -362,9 +366,9 @@
     }
   },
   "propertyFinder": {
-    "title": "Recherche de Propriété – Sur Mesure pour Votre Projet",
+    "title": "Déléguez votre recherche immobilière",
     "subtitle": "Nous vous guidons étape par étape pour trouver votre propriété idéale. Notre service de recherche de propriété comprend la recherche, la sélection et la négociation, vous faisant gagner du temps et vous aidant à trouver la propriété qui correspond parfaitement à vos critères.",
-    "cta": "Commencez votre recherche personnalisée",
+    "cta": "Commencer maintenant",
     "process": {
       "title": "Notre Processus de Recherche de Propriété",
       "subtitle": "De la consultation initiale à l'achat final, nous vous guidons à chaque étape pour trouver votre propriété parfaite",

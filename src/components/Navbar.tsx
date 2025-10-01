@@ -221,7 +221,7 @@ export const Navbar: React.FC = () => {
     { key: 'home', path: '/' },
     { key: 'properties', path: '/properties' },
     { key: 'services', path: '/services', scrollTo: 'services-section' },
-    { key: 'becomeMember', path: '/become-member' },
+    ...(isAuthenticated ? [] : [{ key: 'becomeMember', path: '/become-member' }]),
     { key: 'contact', path: '/contact' },
   ];
 

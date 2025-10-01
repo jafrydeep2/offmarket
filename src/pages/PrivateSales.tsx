@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Send, Lock, Shield, Users, Award, CheckCircle, Star, Home, MapPin, DollarSign, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Send, Lock, Shield, Users, Award, CheckCircle, Star, Home, MapPin, DollarSign, MessageSquare, Calculator, Target, Video, PenTool } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -94,24 +94,15 @@ export const PrivateSalesPage: React.FC = () => {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
-                        className="text-5xl md:text-7xl font-heading font-bold leading-tight mb-6"
+                        className="text-5xl md:text-7xl font-heading font-bold leading-tight mb-8"
                     >
                         {t('privateSales.title')}
                     </motion.h1>
 
-                    <motion.p
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                        className="text-xl md:text-2xl mb-8 leading-relaxed max-w-4xl mx-auto"
-                    >
-                        {t('privateSales.subtitle')}
-                    </motion.p>
-
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.4 }}
+                        transition={{ duration: 0.8, delay: 0.2 }}
                         className="flex flex-col sm:flex-row gap-4 justify-center items-center"
                     >
                         <Button
@@ -169,7 +160,7 @@ export const PrivateSalesPage: React.FC = () => {
                         </p>
                     </motion.div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
@@ -178,13 +169,13 @@ export const PrivateSalesPage: React.FC = () => {
                             className="text-center group"
                         >
                             <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
-                                <Shield className="h-8 w-8 text-primary" />
+                                <Calculator className="h-8 w-8 text-primary" />
                             </div>
                             <h3 className="font-semibold text-foreground mb-2">
-                                {t('privateSales.process.discretion.title')}
+                                {t('privateSales.process.estimation.title')}
                             </h3>
                             <p className="text-sm text-muted-foreground">
-                                {t('privateSales.process.discretion.description')}
+                                {t('privateSales.process.estimation.description')}
                             </p>
                         </motion.div>
                         <motion.div
@@ -195,13 +186,13 @@ export const PrivateSalesPage: React.FC = () => {
                             className="text-center group"
                         >
                             <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
-                                <Users className="h-8 w-8 text-primary" />
+                                <Target className="h-8 w-8 text-primary" />
                             </div>
                             <h3 className="font-semibold text-foreground mb-2">
-                                {t('privateSales.process.connection.title')}
+                                {t('privateSales.process.strategy.title')}
                             </h3>
                             <p className="text-sm text-muted-foreground">
-                                {t('privateSales.process.connection.description')}
+                                {t('privateSales.process.strategy.description')}
                             </p>
                         </motion.div>
                         <motion.div
@@ -212,13 +203,30 @@ export const PrivateSalesPage: React.FC = () => {
                             className="text-center group"
                         >
                             <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
-                                <Award className="h-8 w-8 text-primary" />
+                                <Video className="h-8 w-8 text-primary" />
                             </div>
                             <h3 className="font-semibold text-foreground mb-2">
-                                {t('privateSales.process.optimization.title')}
+                                {t('privateSales.process.showcase.title')}
                             </h3>
                             <p className="text-sm text-muted-foreground">
-                                {t('privateSales.process.optimization.description')}
+                                {t('privateSales.process.showcase.description')}
+                            </p>
+                        </motion.div>
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.8 }}
+                            viewport={{ once: true }}
+                            className="text-center group"
+                        >
+                            <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
+                                <PenTool className="h-8 w-8 text-primary" />
+                            </div>
+                            <h3 className="font-semibold text-foreground mb-2">
+                                {t('privateSales.process.accompaniment.title')}
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                                {t('privateSales.process.accompaniment.description')}
                             </p>
                         </motion.div>
                     </div>
@@ -226,7 +234,7 @@ export const PrivateSalesPage: React.FC = () => {
             </section>
 
             {/* Description Section */}
-            <section className="py-20 bg-muted/20">
+            {/* <section className="py-20 bg-muted/20">
                 <div className="container-custom">
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
@@ -242,7 +250,6 @@ export const PrivateSalesPage: React.FC = () => {
                             {t('privateSales.description.content')}
                         </p>
 
-                        {/* Benefits Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             {[
                                 { icon: Lock, text: t('privateSales.benefits.confidentiality') },
@@ -265,7 +272,7 @@ export const PrivateSalesPage: React.FC = () => {
                         </div>
                     </motion.div>
                 </div>
-            </section>
+            </section> */}
 
 
             {/* Contact Form Section */}

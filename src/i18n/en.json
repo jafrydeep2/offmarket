@@ -108,7 +108,7 @@
       "exclusiveAccess": {
         "title": "Exclusive Access to Properties",
         "description": "Our members enjoy privileged access to off-market properties. Rare opportunities carefully selected according to their criteria.",
-        "cta": "Become a member and access exclusive properties"
+        "cta": "Become a member"
       },
       "personalized": {
         "title": "Personalized Assistance",
@@ -135,23 +135,27 @@
     }
   },
   "privateSales": {
-    "title": "Private Sales – Discretion & Efficiency",
+    "title": "Private Property Sales",
     "subtitle": "Offer your property with complete discretion, outside of public channels. We connect you with qualified buyers while ensuring full confidentiality of your project.",
     "cta": "Contact us for your private sale",
     "process": {
       "title": "How It Works",
       "subtitle": "Our proven process ensures your private sale is handled with the utmost discretion and efficiency",
-      "discretion": {
-        "title": "Complete Discretion",
-        "description": "Your property sale remains completely confidential"
+      "estimation": {
+        "title": "Property Valuation",
+        "description": "We establish a rigorous valuation by integrating the current market, location, and specific characteristics of your property. The goal is to determine a fair price that promotes a quick sale and highlights the real value of your real estate."
       },
-      "connection": {
-        "title": "Qualified Buyers",
-        "description": "Connection with pre-qualified serious buyers"
+      "strategy": {
+        "title": "Sales Strategy",
+        "description": "Each property is unique, which is why we develop a personalized sales strategy. We analyze your target market, adapt positioning, and implement the necessary marketing actions to attract serious buyers and sell under the best conditions."
       },
-      "optimization": {
-        "title": "Best Price",
-        "description": "Optimize your sale price without public exposure"
+      "showcase": {
+        "title": "Property Showcase",
+        "description": "First impressions are crucial. We enhance your property through immersive videos and aerial drone shots to capture buyers' attention and create a true emotional connection."
+      },
+      "accompaniment": {
+        "title": "Support Until Signature",
+        "description": "We accompany you through every step of the sales process: from market launch to negotiation, right up to the signing of the sales deed. You benefit from personalized follow-up, expert advice, and complete peace of mind."
       }
     },
     "description": {
@@ -184,8 +188,8 @@
       }
     },
     "form": {
-      "title": "Start Your Private Sale",
-      "subtitle": "Tell us about your property and we'll handle the rest",
+      "title": "Start Your Property Sale",
+      "subtitle": "A complete service, from valuation to signature.",
       "firstName": "First Name",
       "lastName": "Last Name",
       "email": "Email",
@@ -211,7 +215,7 @@
     }
   },
   "propertyVideos": {
-    "title": "Professional Videos – Showcase Your Property",
+    "title": "Professional Real Estate Videos",
     "subtitle": "We create custom professional videos for each property: guided tours, drone shots, and ambiance videos. These videos highlight architecture, layout, and atmosphere, helping attract serious buyers quickly.",
     "cta": "Request your professional video",
     "process": {
@@ -362,9 +366,9 @@
     }
   },
   "propertyFinder": {
-    "title": "Property Finder – Tailored to Your Project",
+    "title": "Delegate Your Property Search",
     "subtitle": "We guide you step by step in finding your ideal property. Our property finder service includes search, selection, and negotiation, saving you time and helping you find the property that perfectly matches your criteria.",
-    "cta": "Start your personalized search",
+    "cta": "Start Now",
     "process": {
       "title": "Our Property Finding Process",
       "subtitle": "From initial consultation to final purchase, we guide you through every step of finding your perfect property",
