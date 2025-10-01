@@ -47,7 +47,13 @@
     "contactInfo": "Contact Information",
     "results": "properties found",
     "clearFilters": "Clear Filters",
-    "noResults": "No properties found"
+    "noResults": "No properties found",
+    "ownerDetails": "Property Owner Details",
+    "memberAccessRequired": "Member Access Required",
+    "memberAccessDescription": "Become a member to access owner contact information and other exclusive benefits.",
+    "becomeMember": "Become a Member",
+    "name": "Name",
+    "phone": "Phone"
   },
   "property": {
     "details": "Property Details",
@@ -60,6 +66,7 @@
       "sale": "For Sale",
       "rent": "For Rent"
     },
+    "perMonth": "/month",
     "surface": "Surface",
     "availability": "Availability"
   },

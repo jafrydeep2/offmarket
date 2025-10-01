@@ -72,11 +72,15 @@ export const PropertyListCard: React.FC<PropertyListCardProps> = ({
           </button>
 
           {/* Price Tag or On Request */}
-          <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2">
+          <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2 max-w-[calc(100%-8rem)]">
             {!isOnRequest ? (
               <span className="text-lg font-bold text-foreground">
-                {inferredListing ? `${inferredListing === 'rent' ? t('property.listing.rent') : t('property.listing.sale')} • ` : ''}
-                {priceText}
+                CHF {priceText}
+                {inferredListing === 'rent' && (
+                  <span className="text-sm font-normal text-muted-foreground ml-1">
+                    {t('property.perMonth')}
+                  </span>
+                )}
               </span>
             ) : (
               <Link to="/contact" className="text-lg font-bold text-primary hover:underline">

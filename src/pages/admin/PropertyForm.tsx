@@ -25,6 +25,7 @@ import { EmailNotificationService } from '@/lib/emailNotificationService';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -370,13 +371,11 @@ export const PropertyForm: React.FC = () => {
                     <Label htmlFor="description">
                       {t('language') === 'fr' ? 'Description' : 'Description'} *
                     </Label>
-                    <Textarea
-                      id="description"
-                      value={formData.description}
-                      onChange={(e) => handleInputChange('description', e.target.value)}
+                    <RichTextEditor
+                      content={formData.description}
+                      onChange={(content) => handleInputChange('description', content)}
                       placeholder={t('language') === 'fr' ? 'Décrivez la propriété en détail...' : 'Describe the property in detail...'}
-                      rows={4}
-                      className={errors.description ? 'border-red-500' : ''}
+                      error={!!errors.description}
                     />
                     {errors.description && (
                       <p className="text-sm text-red-500">{errors.description}</p>

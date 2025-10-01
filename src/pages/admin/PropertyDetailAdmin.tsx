@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { ArrowLeft, Edit, Trash2, MapPin, Home, DollarSign, Calendar, Image as ImageIcon, List, Maximize, Bath } from 'lucide-react';
 import { PropertyGallery } from '@/components/PropertyGallery';
+import { RichTextDisplay } from '@/components/ui/rich-text-display';
 
 export const AdminPropertyDetailPage: React.FC = () => {
   const { id } = useParams();
@@ -84,7 +85,14 @@ export const AdminPropertyDetailPage: React.FC = () => {
                   <CardDescription className="text-sm text-muted-foreground flex items-center"><MapPin className="h-4 w-4 mr-1" />{property.city}{property.neighborhood ? `, ${property.neighborhood}` : ''}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="text-gray-700">{property.description || (t('language') === 'fr' ? 'Aucune description fournie.' : 'No description provided.')}</div>
+                  {property.description ? (
+                    <RichTextDisplay 
+                      content={property.description}
+                      className="text-gray-700"
+                    />
+                  ) : (
+                    <div className="text-gray-700">{t('language') === 'fr' ? 'Aucune description fournie.' : 'No description provided.'}</div>
+                  )}
                   <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                     <div className="flex items-center"><DollarSign className="h-4 w-4 mr-1" />{property.price || '-'}</div>
                     <div className="flex items-center"><Calendar className="h-4 w-4 mr-1" />{property.availabilityDate || '-'}</div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Home, User, Heart, Eye } from 'lucide-react';
+import { MapPin, Home, User, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
@@ -182,54 +182,74 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
             <Heart className={`h-5 w-5 ${isFavorited ? 'fill-primary text-primary' : 'text-white'}`} />
           </button>
 
-          {/* Image Navigation Dots */}
-          {property.images.length > 1 && (
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex flex-col items-center space-y-2 z-10">
-              {/* Image Counter */}
-              <div className="bg-black/50 backdrop-blur-sm rounded-full px-2 py-1 text-white text-xs font-medium">
-                {currentImageIndex + 1} / {property.images.length}
-              </div>
 
-              {/* Navigation Dots */}
-              <div className="flex space-x-2">
-                {property.images.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setCurrentImageIndex(index);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setCurrentImageIndex(index);
-                      }
-                    }}
-                    className={`w-3 h-3 rounded-full transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white/50 ${index === currentImageIndex
-                        ? 'bg-white shadow-lg'
-                        : 'bg-white/60 hover:bg-white/80'
-                      }`}
-                    aria-label={`View image ${index + 1} of ${property.images.length}`}
-                    tabIndex={0}
-                  />
-                ))}
-              </div>
-            </div>
+          {/* Left Arrow */}
+          {property.images.length > 1 && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setCurrentImageIndex((prev) => 
+                  prev === 0 ? property.images.length - 1 : prev - 1
+                );
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setCurrentImageIndex((prev) => 
+                    prev === 0 ? property.images.length - 1 : prev - 1
+                  );
+                }
+              }}
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors focus:outline-none focus:ring-2 focus:ring-white/50 z-10"
+              aria-label="Previous image"
+              tabIndex={0}
+            >
+              <ChevronLeft className="h-5 w-5 text-white" />
+            </button>
+          )}
+
+          {/* Right Arrow */}
+          {property.images.length > 1 && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setCurrentImageIndex((prev) => 
+                  prev === property.images.length - 1 ? 0 : prev + 1
+                );
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setCurrentImageIndex((prev) => 
+                    prev === property.images.length - 1 ? 0 : prev + 1
+                  );
+                }
+              }}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors focus:outline-none focus:ring-2 focus:ring-white/50 z-10"
+              aria-label="Next image"
+              tabIndex={0}
+            >
+              <ChevronRight className="h-5 w-5 text-white" />
+            </button>
           )}
 
           {/* Manual Image Navigation - No Auto Cycling */}
 
           {/* Price Tag or On Request */}
-          <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2">
+          <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2 max-w-[calc(100%-8rem)]">
             {!isOnRequest ? (
               <div className="flex flex-col">
-                {/* <span className="text-sm text-muted-foreground">
-                {listingType === 'rent' ? t('property.listing.rent') : t('property.listing.sale')}
-              </span> */}
-                <span className="text-lg font-bold text-foreground">
+                <span className="text-md font-bold text-foreground">
                   CHF {priceText}
+                  {listingType === 'rent' && (
+                    <span className="text-sm font-normal text-muted-foreground ml-1">
+                      {t('property.perMonth')}
+                    </span>
+                  )}
                 </span>
               </div>
             ) : (
@@ -239,11 +259,12 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
             )}
           </div>
 
-          {/* Views Counter */}
-          <div className="absolute bottom-4 right-4 flex items-center space-x-1 bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 text-white text-sm">
-            <Eye className="h-4 w-4" />
-            <span>{property.views || 0}</span>
-          </div>
+          {/* Image Counter */}
+          {property.images.length > 1 && (
+            <div className="absolute bottom-4 right-4 bg-black/50 backdrop-blur-sm rounded-full px-2 py-1 text-white text-xs font-medium">
+              {currentImageIndex + 1} / {property.images.length}
+            </div>
+          )}
         </div>
 
         {/* Property Content */}

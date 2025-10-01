@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, MapPin, Home, Maximize, Phone, Mail, User, Heart, Share2, Calendar, Eye, Wifi, Car, Dumbbell, Waves, TreePine, Shield, Snowflake, Camera, Play, MessageCircle, ChevronDown, Bath, FileText, Lock, Award } from 'lucide-react';
+import { ArrowLeft, MapPin, Home, Maximize, Phone, Mail, User, Heart, Share2, Calendar, Wifi, Car, Dumbbell, Waves, TreePine, Shield, Snowflake, Camera, Play, MessageCircle, ChevronDown, Bath, FileText, Lock, Award } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/contexts/AuthContext';
@@ -15,6 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { PropertyGallery } from '@/components/PropertyGallery';
 import { PropertyVideoPlayer } from '@/components/PropertyVideoPlayer';
+import { RichTextDisplay } from '@/components/ui/rich-text-display';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'sonner';
@@ -31,19 +32,19 @@ export const PropertyDetailPage: React.FC = () => {
   const [property, setProperty] = useState<any>(null);
   const [isFavorited, setIsFavorited] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
-  const [selectedTab, setSelectedTab] = useState('overview');
+  const [selectedTab, setSelectedTab] = useState('description');
   const [showFavDialog, setShowFavDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const { user } = useAuth(); // Keep user for optional tracking, but don't require authentication
+  const { user, isAuthenticated } = useAuth(); // Keep user for optional tracking, but don't require authentication
 
   // Property will be loaded directly from database
-  
+
   // Load property directly from database
   React.useEffect(() => {
     const fetchProperty = async () => {
       if (!id) return;
-      
+
       try {
         setIsLoading(true);
         const { data, error } = await supabase
@@ -51,13 +52,13 @@ export const PropertyDetailPage: React.FC = () => {
           .select('*')
           .eq('id', id)
           .single();
-        
+
         if (error) {
           console.error('Error fetching property:', error);
           setIsLoading(false);
           return;
         }
-        
+
         if (data) {
           // Map database property to frontend format
           const mappedProperty = {
@@ -84,9 +85,9 @@ export const PropertyDetailPage: React.FC = () => {
             updatedAt: data.updated_at ?? undefined,
             featured: data.featured ?? false,
           };
-          
+
           setProperty(mappedProperty);
-          
+
           // Track property view if user is authenticated
           if (user) {
             userActivityTracker.setUserId(user.id);
@@ -99,10 +100,10 @@ export const PropertyDetailPage: React.FC = () => {
         setIsLoading(false);
       }
     };
-    
+
     fetchProperty();
   }, [id]);
-  
+
   // Debug logging
   React.useEffect(() => {
     console.log('PropertyDetail Debug:', {
@@ -116,7 +117,7 @@ export const PropertyDetailPage: React.FC = () => {
     if (property && id) {
       // Track property view
       analyticsService.trackPropertyView(id, user?.id);
-      
+
       // Track user activity if user is logged in (optional tracking)
       if (user) {
         analyticsService.trackUserActivity(
@@ -136,7 +137,7 @@ export const PropertyDetailPage: React.FC = () => {
   }, [property, id, user]);
 
   // Loading state is handled in the fetch effect above
-  
+
   // Helper functions for incrementing views and inquiries
   const incrementViews = async (propertyId: string) => {
     try {
@@ -179,7 +180,7 @@ export const PropertyDetailPage: React.FC = () => {
   const [inqSubmitting, setInqSubmitting] = useState(false);
   const [inqError, setInqError] = useState('');
   const hasIncrementedViews = useRef(false);
-  
+
   const handleInquiry = async () => {
     if (!id) return;
     setInqSubmitting(true);
@@ -206,7 +207,7 @@ export const PropertyDetailPage: React.FC = () => {
       .eq('is_admin', true)
       .limit(1)
       .single();
-    
+
     if (adminUser && property) {
       await NotificationService.createInquiryNotification(adminUser.id, property.title, inquiryData.id);
     }
@@ -240,8 +241,8 @@ export const PropertyDetailPage: React.FC = () => {
             {t('language') === 'fr' ? 'Propriété non trouvée' : 'Property not found'}
           </h1>
           <p className="text-muted-foreground">
-            {t('language') === 'fr' 
-              ? 'La propriété que vous recherchez n\'existe pas ou a été supprimée.' 
+            {t('language') === 'fr'
+              ? 'La propriété que vous recherchez n\'existe pas ou a été supprimée.'
               : 'The property you are looking for does not exist or has been removed.'
             }
           </p>
@@ -256,20 +257,8 @@ export const PropertyDetailPage: React.FC = () => {
   }
 
 
-  // Enhanced property features with icons
-  const propertyFeatures = [
-    { icon: Home, label: `${property.rooms} ${t('properties.rooms')}`, category: 'layout' },
-    { icon: Maximize, label: `${property.surface} m²`, category: 'layout' },
-    { icon: Car, label: 'Parking: 1', category: 'amenities' },
-    { icon: Wifi, label: 'High-speed WiFi', category: 'amenities' },
-    { icon: Dumbbell, label: 'Fitness Center', category: 'amenities' },
-    { icon: Waves, label: 'Swimming Pool', category: 'amenities' },
-    { icon: TreePine, label: 'Garden View', category: 'view' },
-    { icon: Shield, label: '24/7 Security', category: 'security' },
-  ];
-
   const amenityIcons = {
-    'Vue lac': Eye,
+    'Vue lac': Home,
     'Balcon': Home,
     'Cave': Shield,
     'Place de parc': Car,
@@ -283,7 +272,19 @@ export const PropertyDetailPage: React.FC = () => {
     'Concierge': User,
   };
 
-  
+  // Enhanced property features with icons - using actual property data
+  const propertyFeatures = [
+    { icon: Home, label: `${property.rooms} ${t('properties.rooms')}`, category: 'layout' },
+    { icon: Maximize, label: `${property.surface} m²`, category: 'layout' },
+    // Add actual features from property.features array
+    ...(property.features || []).map(feature => ({
+      icon: amenityIcons[feature] || Home,
+      label: feature,
+      category: 'amenities'
+    }))
+  ];
+
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -311,14 +312,6 @@ export const PropertyDetailPage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-wrap items-center justify-end mb-6"
           >
-            {/* Stats */}
-            <div className="flex items-center space-x-6 text-muted-foreground">
-              <span className="text-sm">{t('language') === 'fr' ? 'Total de visites' : 'Total No of Visits'}: {property.views || 0}</span>
-              <div className="flex items-center space-x-2">
-                <Eye className="h-4 w-4" />
-                <span className="text-sm">Last Updated: 24 Feb 2025</span>
-              </div>
-            </div>
           </motion.div>
 
           {/* Property Gallery */}
@@ -330,7 +323,7 @@ export const PropertyDetailPage: React.FC = () => {
             <PropertyGallery
               images={property.images}
               title={property.title}
-              hasVideo={true}
+              hasVideo={Boolean(property.videoUrl)}
             />
           </motion.div>
         </div>
@@ -353,9 +346,17 @@ export const PropertyDetailPage: React.FC = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                   <div className="flex items-center space-x-3">
                     <span className="text-sm text-muted-foreground">
-                      318-330 S Oakley Blvd, Chicago, IL 60612, USA
+                      {property.address || `${property.city}, Switzerland`}
                     </span>
-                    <Button variant="link" className="text-muted-foreground hover:text-primary p-0 h-auto text-sm">
+                    <Button
+                      variant="link"
+                      className="text-muted-foreground hover:text-primary p-0 h-auto text-sm"
+                      onClick={() => {
+                        const address = property.address || `${property.city}, Switzerland`;
+                        const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+                        window.open(googleMapsUrl, '_blank');
+                      }}
+                    >
                       View Location
                     </Button>
                   </div>
@@ -367,15 +368,14 @@ export const PropertyDetailPage: React.FC = () => {
                   <div className="space-y-3">
                     {/* Availability Status */}
                     <div>
-                      <Badge 
+                      <Badge
                         variant={property.availabilityStatus === 'immediate' ? 'default' : 'secondary'}
-                        className={`text-sm px-3 py-1 ${
-                          property.availabilityStatus === 'immediate' 
-                            ? 'bg-green-100 text-green-800 border-green-200' 
-                            : 'bg-orange-100 text-orange-800 border-orange-200'
-                        }`}
+                        className={`text-sm px-3 py-1 ${property.availabilityStatus === 'immediate'
+                          ? 'bg-green-100 text-green-800 border-green-200'
+                          : 'bg-orange-100 text-orange-800 border-orange-200'
+                          }`}
                       >
-                        {property.availabilityStatus === 'immediate' 
+                        {property.availabilityStatus === 'immediate'
                           ? (t('language') === 'fr' ? 'Disponible immédiatement' : 'Available immediately')
                           : (t('language') === 'fr' ? 'À convenir' : 'To be arranged')
                         }
@@ -385,12 +385,10 @@ export const PropertyDetailPage: React.FC = () => {
                     <h1 className="text-3xl md:text-4xl font-bold text-foreground leading-tight">
                       {property.title}
                     </h1>
-                    
+
                     <div className="flex items-center space-x-2 text-muted-foreground">
                       <MapPin className="h-4 w-4" />
                       <span className="text-sm">{property.city}</span>
-                      <span className="text-muted-foreground">•</span>
-                      <span className="text-sm">{property.neighborhood}</span>
                     </div>
                   </div>
 
@@ -404,7 +402,12 @@ export const PropertyDetailPage: React.FC = () => {
                             {listingType === 'rent' ? t('property.listing.rent') : t('property.listing.sale')}
                           </div>
                           <div className="text-2xl md:text-3xl font-bold text-foreground">
-                            {priceText}
+                            {'CHF ' + priceText}
+                            {listingType === 'rent' && (
+                              <span className="text-lg font-normal text-muted-foreground ml-1">
+                                {t('property.perMonth')}
+                              </span>
+                            )}
                           </div>
                         </div>
                       ) : (
@@ -431,16 +434,15 @@ export const PropertyDetailPage: React.FC = () => {
                           }
                           setIsFavorited(!isFavorited);
                         }}
-                        className={`h-10 w-10 rounded-full border transition-all duration-200 ${
-                          isFavorited 
-                            ? 'bg-primary/10 border-primary/20 text-primary hover:bg-primary/20' 
-                            : 'hover:border-primary/50 hover:bg-primary/5'
-                        }`}
+                        className={`h-10 w-10 rounded-full border transition-all duration-200 ${isFavorited
+                          ? 'bg-primary/10 border-primary/20 text-primary hover:bg-primary/20'
+                          : 'hover:border-primary/50 hover:bg-primary/5'
+                          }`}
                       >
                         <Heart className={`h-4 w-4 ${isFavorited ? 'fill-primary text-primary' : ''}`} />
                       </Button>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="icon"
                         className="h-10 w-10 rounded-full border hover:border-primary/50 hover:bg-primary/5 transition-all duration-200"
                       >
@@ -498,7 +500,7 @@ export const PropertyDetailPage: React.FC = () => {
             </motion.div>
 
             {/* Tabs Navigation */}
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
@@ -525,63 +527,61 @@ export const PropertyDetailPage: React.FC = () => {
                   ))}
                 </nav>
               </div>
-            </motion.div>
-
-            {/* Tab Content */}
-            <motion.div
-              key={selectedTab}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-8"
-            >
-              {selectedTab === 'overview' && (
-                <div className="space-y-6">
-                  <div>
-                    <p className="text-muted-foreground leading-relaxed mb-4">
-                      {property.description}
-                    </p>
-                    {!showFullDescription && (
-                      <Button
-                        variant="link"
-                        onClick={() => setShowFullDescription(true)}
-                        className="text-primary p-0"
-                      >
-                        Read More ↓
-                      </Button>
-                    )}
-                  </div>
-
-                  {/* Key Points */}
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-heading font-bold">Key Highlights</h3>
-                    <div className="space-y-3">
-                      {[
-                        '100 meters from school. 3km away from bypass.',
-                        'First floor - 2 large bedrooms with attached bathrooms.',
-                        'Spacious and well-Equipped kitchen.',
-                        'Inviting living room with balcony.',
-                        'Terrace with breathtaking views.',
-                        'Independent electric and water connections.'
-                      ].map((point, index) => (
-                        <div key={index} className="flex items-start space-x-3">
-                          <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                          <span className="text-muted-foreground">{point}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Description Tab Content */}
-              {selectedTab === 'description' && (
-                <div className="space-y-6">
-                  {property.description ? (
-                    <div className="prose prose-lg max-w-none">
-                      <p className="text-muted-foreground leading-relaxed text-base">
+            </motion.div> */}
+            {/* Discription */}
+            <div>
+              <h3 className="text-2xl font-heading font-bold mb-6">
+                {t('property.description')}
+              </h3>
+              {/* Tab Content */}
+              <motion.div
+                key={selectedTab}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-8"
+              >
+                {/* {selectedTab === 'overview' && (
+                  <div className="space-y-6">
+                    <div>
+                      <p className="text-muted-foreground leading-relaxed mb-4">
                         {property.description}
                       </p>
+                      {!showFullDescription && (
+                        <Button
+                          variant="link"
+                          onClick={() => setShowFullDescription(true)}
+                          className="text-primary p-0"
+                        >
+                          Read More ↓
+                        </Button>
+                      )}
                     </div>
+
+                    {property.features && property.features.length > 0 && (
+                      <div className="space-y-4">
+                        <h3 className="text-xl font-heading font-bold">
+                          {t('language') === 'fr' ? 'Points clés' : 'Key Highlights'}
+                        </h3>
+                        <div className="space-y-3">
+                          {property.features.slice(0, 6).map((feature, index) => (
+                            <div key={index} className="flex items-start space-x-3">
+                              <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
+                              <span className="text-muted-foreground">{feature}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )} */}
+
+                {/* Description Tab Content */}
+                <div className="space-y-6">
+                  {property.description ? (
+                    <RichTextDisplay 
+                      content={property.description}
+                      className="text-muted-foreground leading-relaxed"
+                    />
                   ) : (
                     <div className="text-center py-16">
                       <div className="w-20 h-20 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -591,7 +591,7 @@ export const PropertyDetailPage: React.FC = () => {
                         {t('language') === 'fr' ? 'Aucune description disponible' : 'No description available'}
                       </h3>
                       <p className="text-muted-foreground max-w-md mx-auto">
-                        {t('language') === 'fr' 
+                        {t('language') === 'fr'
                           ? 'La description détaillée de cette propriété sera bientôt disponible. Contactez-nous pour plus d\'informations.'
                           : 'Detailed description of this property will be available soon. Contact us for more information.'
                         }
@@ -599,37 +599,41 @@ export const PropertyDetailPage: React.FC = () => {
                     </div>
                   )}
                 </div>
-              )}
 
-              {selectedTab === 'video' && (
-                <div className="space-y-6">
-                  {property.videoUrl ? (
-                    <PropertyVideoPlayer
-                      videoUrl={property.videoUrl}
-                      title={property.title}
+                {/* Reviews removed */}
+              </motion.div>
+            </div>
+
+            {/* Videos */}
+            {/* <div>
+              <h3 className="text-2xl font-heading font-bold mb-6">
+                {t('language') === 'fr' ? 'Vidéos' : 'Videos'}
+              </h3>
+              <div className="space-y-6">
+                {property.videoUrl ? (
+                  <PropertyVideoPlayer
+                    videoUrl={property.videoUrl}
+                    title={property.title}
+                  />
+                ) : (
+                  <div className="aspect-video bg-muted rounded-2xl flex items-center justify-center relative overflow-hidden">
+                    <img
+                      src="/placeholder.svg"
+                      alt="Property Video Thumbnail"
+                      className="w-full h-full object-cover"
                     />
-                  ) : (
-                    <div className="aspect-video bg-muted rounded-2xl flex items-center justify-center relative overflow-hidden">
-                      <img
-                        src="/placeholder.svg"
-                        alt="Property Video Thumbnail"
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                        <div className="text-center text-white">
-                          <Play className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                          <p className="text-lg font-medium">
-                            {t('language') === 'fr' ? 'Aucune vidéo disponible' : 'No video available'}
-                          </p>
-                        </div>
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                      <div className="text-center text-white">
+                        <Play className="h-16 w-16 mx-auto mb-4 opacity-50" />
+                        <p className="text-lg font-medium">
+                          {t('language') === 'fr' ? 'Aucune vidéo disponible' : 'No video available'}
+                        </p>
                       </div>
                     </div>
-                  )}
-                </div>
-              )}
-
-              {/* Reviews removed */}
-            </motion.div>
+                  </div>
+                )}
+              </div>
+            </div> */}
 
             {/* Features and Amenities Sections */}
             <div className="space-y-12 mt-12">
@@ -723,7 +727,7 @@ export const PropertyDetailPage: React.FC = () => {
               </Card>
             </motion.div>
 
-            {/* Owner Details */}
+            {/* Owner Details - Member Only */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -731,61 +735,47 @@ export const PropertyDetailPage: React.FC = () => {
             >
               <Card>
                 <CardHeader>
-                  <CardTitle>Listing Owner Details</CardTitle>
+                  <CardTitle className="flex items-center space-x-2">
+                    <span>{t('properties.ownerDetails')}</span>
+                    {!isAuthenticated && <Lock className="h-4 w-4 text-muted-foreground" />}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div>
-                      <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
-                          <span className="text-primary-foreground font-medium">
-                            {property.contactInfo?.name?.split(' ').map(n => n[0]).join('') || 'JC'}
-                          </span>
-                        </div>
-                        <div>
-                          <h4 className="font-medium">{property.contactInfo?.name || 'John Carter'}</h4>
-                        </div>
-                      </div>
-
-                      <Separator />
-
+                  {isAuthenticated ? (
+                    <div>
                       <div className="space-y-3 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Phone</span>
-                          <span>{property.contactInfo?.phone || 'Call Us - +1 12345 45648'}</span>
+                          <span className="text-muted-foreground">{t('properties.name')}</span>
+                          <span className="font-medium">{property.contactInfo?.name || t('language') === 'fr' ? 'Non disponible' : 'Not available'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">{t('properties.phone')}</span>
+                          <span className="font-medium">{property.contactInfo?.phone || t('language') === 'fr' ? 'Non disponible' : 'Not available'}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Email</span>
-                          <span>{property.contactInfo?.email || 'info@example.com'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">No of Listings</span>
-                          <span>05</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">No of Bookings</span>
-                          <span>225</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Member on</span>
-                          <span>15 Jan2014</span>
+                          <span className="font-medium">{property.contactInfo?.email || t('language') === 'fr' ? 'Non disponible' : 'Not available'}</span>
                         </div>
                       </div>
-
-                      <Separator />
-                      {/* replace bellow button with Phone and email with link */}
-                      <div className="flex space-x-2">
-                        <Link to={`tel:${property.contactInfo?.phone}`} className='w-full'>
-                          <Button className="w-full bg-green-500 hover:bg-emerald-600 text-white">
-                            WhatsApp
-                          </Button>
-                        </Link>
-                        <Link to={`mailto:${property.contactInfo?.email}`} className='w-full'>
-                          <Button className="w-full bg-blue-800 hover:bg-emerald-600 text-white">
-                            Email
-                          </Button>
-                        </Link>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Lock className="h-8 w-8 text-muted-foreground" />
                       </div>
-                  </div>
+                      <h3 className="text-lg font-semibold text-foreground mb-2">
+                        {t('properties.memberAccessRequired')}
+                      </h3>
+                      <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                        {t('properties.memberAccessDescription')}
+                      </p>
+                      <Link to="/become-member">
+                        <Button className="w-full">
+                          {t('properties.becomeMember')}
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>

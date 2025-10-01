@@ -200,4 +200,117 @@
   .form-label {
     @apply block text-sm font-medium text-foreground mb-1;
   }
+
+  /* Rich text editor styles */
+  .rich-text-editor .ProseMirror ul {
+    list-style-type: disc !important;
+    padding-left: 1.5rem !important;
+    margin: 0.5rem 0 !important;
+  }
+  
+  .rich-text-editor .ProseMirror ol {
+    list-style-type: decimal !important;
+    padding-left: 1.5rem !important;
+    margin: 0.5rem 0 !important;
+  }
+  
+  .rich-text-editor .ProseMirror li {
+    margin: 0.25rem 0 !important;
+    display: list-item !important;
+  }
+  
+  .rich-text-editor .ProseMirror li p {
+    margin: 0 !important;
+    display: inline !important;
+  }
+  
+  .rich-text-editor .ProseMirror ul ul,
+  .rich-text-editor .ProseMirror ol ol,
+  .rich-text-editor .ProseMirror ul ol,
+  .rich-text-editor .ProseMirror ol ul {
+    margin: 0.25rem 0 !important;
+  }
+
+  /* Additional styles for better list display */
+  .rich-text-editor .ProseMirror ul li::marker {
+    color: hsl(var(--primary));
+  }
+  
+  .rich-text-editor .ProseMirror ol li::marker {
+    color: hsl(var(--primary));
+  }
+
+  /* Fallback for any ProseMirror elements */
+  .ProseMirror ul {
+    list-style-type: disc !important;
+    padding-left: 1.5rem !important;
+    margin: 0.5rem 0 !important;
+  }
+  
+  .ProseMirror ol {
+    list-style-type: decimal !important;
+    padding-left: 1.5rem !important;
+    margin: 0.5rem 0 !important;
+  }
+  
+  .ProseMirror li {
+    margin: 0.25rem 0 !important;
+    display: list-item !important;
+  }
+  
+  .ProseMirror li p {
+    margin: 0 !important;
+    display: inline !important;
+  }
+
+  /* Additional list styling for better visibility */
+  .rich-text-editor ul {
+    list-style-type: disc !important;
+    padding-left: 1.5rem !important;
+    margin: 0.5rem 0 !important;
+  }
+  
+  .rich-text-editor ol {
+    list-style-type: decimal !important;
+    padding-left: 1.5rem !important;
+    margin: 0.5rem 0 !important;
+  }
+  
+  .rich-text-editor li {
+    margin: 0.25rem 0 !important;
+    display: list-item !important;
+  }
+
+  /* Ensure lists show in the editor */
+  .rich-text-editor .list-disc {
+    list-style-type: disc !important;
+    padding-left: 1.5rem !important;
+  }
+  
+  .rich-text-editor .list-decimal {
+    list-style-type: decimal !important;
+    padding-left: 1.5rem !important;
+  }
+
+  /* Heading styles for rich text editor */
+  .rich-text-editor .ProseMirror h1 {
+    font-size: 2rem !important;
+    font-weight: bold !important;
+    margin: 1rem 0 0.5rem 0 !important;
+    line-height: 1.2 !important;
+  }
+  
+  .rich-text-editor .ProseMirror h2 {
+    font-size: 1.5rem !important;
+    font-weight: bold !important;
+    margin: 0.875rem 0 0.5rem 0 !important;
+    line-height: 1.3 !important;
+  }
+  
+  .rich-text-editor .ProseMirror h3 {
+    font-size: 1.25rem !important;
+    font-weight: bold !important;
+    margin: 0.75rem 0 0.5rem 0 !important;
+    line-height: 1.4 !important;
+  }
 }

@@ -47,7 +47,13 @@
     "contactInfo": "Informations de contact",
     "results": "propriétés trouvées",
     "clearFilters": "Effacer les filtres",
-    "noResults": "Aucune propriété trouvée"
+    "noResults": "Aucune propriété trouvée",
+    "ownerDetails": "Détails du propriétaire",
+    "memberAccessRequired": "Accès réservé aux membres",
+    "memberAccessDescription": "Devenez membre pour accéder aux informations de contact du propriétaire et à d'autres avantages exclusifs.",
+    "becomeMember": "Devenir membre",
+    "name": "Nom",
+    "phone": "Téléphone"
   },
   "property": {
     "details": "Détails de la Propriété",
@@ -61,7 +67,8 @@
     "listing": {
       "sale": "Vente",
       "rent": "Location"
-    }
+    },
+    "perMonth": "/mois"
   },
   "auth": {
     "login": "Connexion",
