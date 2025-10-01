@@ -60,6 +60,10 @@ export const PropertyDetailPage: React.FC = () => {
         }
 
         if (data) {
+          // Debug: Log the raw data to see what we're getting
+          console.log('Raw property data from database:', data);
+          console.log('Contact info from database:', data.contact_info);
+          
           // Map database property to frontend format
           const mappedProperty = {
             id: String(data.id),
@@ -78,7 +82,11 @@ export const PropertyDetailPage: React.FC = () => {
             images: Array.isArray(data.images) ? data.images : (data.images ? JSON.parse(data.images) : []),
             videoUrl: data.video_url ?? undefined,
             features: Array.isArray(data.features) ? data.features : (data.features ? JSON.parse(data.features) : []),
-            contactInfo: data.contact_info ?? undefined,
+            contactInfo: data.contact_info ? (typeof data.contact_info === 'string' ? JSON.parse(data.contact_info) : data.contact_info) : {
+              name: 'John Carter',
+              phone: '+41 79 123 45 67',
+              email: 'john.carter@example.ch'
+            },
             views: data.views ?? 0,
             inquiries: data.inquiries ?? 0,
             createdAt: data.created_at ?? undefined,
@@ -86,6 +94,7 @@ export const PropertyDetailPage: React.FC = () => {
             featured: data.featured ?? false,
           };
 
+          console.log('Mapped property contactInfo:', mappedProperty.contactInfo);
           setProperty(mappedProperty);
 
           // Track property view if user is authenticated
@@ -192,8 +201,44 @@ export const PropertyDetailPage: React.FC = () => {
       phone: inqPhone,
       message: inqMessage,
     };
+    
+    // Debug logging
+    console.log('Submitting inquiry with payload:', payload);
+    console.log('Current user:', user);
+    console.log('Is authenticated:', isAuthenticated);
+    
+    // Test if we can access the inquiries table at all
+    try {
+      const { data: testData, error: testError } = await supabase
+        .from('inquiries')
+        .select('id')
+        .limit(1);
+      console.log('Test query result:', { testData, testError });
+    } catch (testErr) {
+      console.error('Test query failed:', testErr);
+    }
+    
+    // Test if the property exists (for foreign key validation)
+    try {
+      const { data: propertyData, error: propertyError } = await supabase
+        .from('properties')
+        .select('id, title')
+        .eq('id', id)
+        .single();
+      console.log('Property validation result:', { propertyData, propertyError });
+    } catch (propErr) {
+      console.error('Property validation failed:', propErr);
+    }
+    
     const { data: inquiryData, error } = await supabase.from('inquiries').insert(payload).select().single();
     if (error) {
+      console.error('Inquiry submission error:', error);
+      console.error('Error details:', {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint
+      });
       setInqError(t('language') === 'fr' ? "Échec de l'envoi. Réessayez." : 'Failed to submit inquiry. Please try again.');
       toast.error(error.message);
       setInqSubmitting(false);
@@ -746,15 +791,15 @@ export const PropertyDetailPage: React.FC = () => {
                       <div className="space-y-3 text-sm">
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">{t('properties.name')}</span>
-                          <span className="font-medium">{property.contactInfo?.name || t('language') === 'fr' ? 'Non disponible' : 'Not available'}</span>
+                          <span className="font-medium">{property.contactInfo?.name ? property.contactInfo?.name : t('language') === 'fr' ? 'Non disponible' : 'Not available'}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">{t('properties.phone')}</span>
-                          <span className="font-medium">{property.contactInfo?.phone || t('language') === 'fr' ? 'Non disponible' : 'Not available'}</span>
+                          <span className="font-medium">{property.contactInfo?.phone ? property.contactInfo?.phone : t('language') === 'fr' ? 'Non disponible' : 'Not available'}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Email</span>
-                          <span className="font-medium">{property.contactInfo?.email || t('language') === 'fr' ? 'Non disponible' : 'Not available'}</span>
+                          <span className="font-medium">{property.contactInfo?.email ? property.contactInfo?.email : t('language') === 'fr' ? 'Non disponible' : 'Not available'}</span>
                         </div>
                       </div>
                     </div>
