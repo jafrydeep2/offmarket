@@ -22,6 +22,7 @@ export const PropertyListCard: React.FC<PropertyListCardProps> = ({
   const { t } = useTranslation();
   const [isFavorited, setIsFavorited] = useState(false);
   const [showFavDialog, setShowFavDialog] = useState(false);
+  const [showRemoveConfirmDialog, setShowRemoveConfirmDialog] = useState(false);
   const { isAuthenticated } = useAuth();
   const { isFavorited: isFav, toggleFavorite } = useFavorites();
   const priceText = (property.price || '').trim();
@@ -61,6 +62,10 @@ export const PropertyListCard: React.FC<PropertyListCardProps> = ({
               e.preventDefault();
               if (!isAuthenticated) {
                 setShowFavDialog(true);
+                return;
+              }
+              if (isFavorited) {
+                setShowRemoveConfirmDialog(true);
                 return;
               }
               await toggleFavorite(property.id);
@@ -227,6 +232,32 @@ export const PropertyListCard: React.FC<PropertyListCardProps> = ({
               {t('language') === 'fr' ? 'Devenir membre' : 'Become a member'}
             </AlertDialogAction>
           </Link>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
+    {/* Remove Favorite Confirmation Dialog */}
+    <AlertDialog open={showRemoveConfirmDialog} onOpenChange={setShowRemoveConfirmDialog}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{t('alerts.removeFavoriteTitle')}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {t('alerts.removeFavoriteConfirm')}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <Button variant="outline" onClick={() => setShowRemoveConfirmDialog(false)}>
+            {t('language') === 'fr' ? 'Annuler' : 'Cancel'}
+          </Button>
+          <AlertDialogAction
+            onClick={async () => {
+              await toggleFavorite(property.id);
+              setIsFavorited(isFav(property.id));
+              setShowRemoveConfirmDialog(false);
+            }}
+          >
+            {t('language') === 'fr' ? 'Retirer' : 'Remove'}
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

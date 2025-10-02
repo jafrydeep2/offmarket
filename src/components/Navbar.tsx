@@ -393,12 +393,12 @@ export const Navbar: React.FC = () => {
                     </p>
                   </div>
                   
-                  <Link to="/dashboard">
+                  {/* <Link to="/dashboard">
                     <DropdownMenuItem className="px-4 py-2">
                       <BarChart3 className="mr-3 h-4 w-4" />
                       {t('language') === 'fr' ? 'Tableau de bord' : 'Dashboard'}
                     </DropdownMenuItem>
-                  </Link>
+                  </Link> */}
                   
                   <Link to="/profile">
                     <DropdownMenuItem className="px-4 py-2">

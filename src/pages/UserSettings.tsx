@@ -391,7 +391,7 @@ export const UserSettings: React.FC = () => {
           </motion.div>
 
           {/* Privacy */}
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -468,10 +468,10 @@ export const UserSettings: React.FC = () => {
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </motion.div> */}
 
           {/* Preferences */}
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
@@ -530,7 +530,7 @@ export const UserSettings: React.FC = () => {
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </motion.div> */}
 
           {/* Data Management */}
           <motion.div
@@ -539,7 +539,7 @@ export const UserSettings: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.4 }}
           >
             <Card>
-              <CardHeader>
+              {/* <CardHeader>
                 <CardTitle className="flex items-center">
                   <Download className="h-5 w-5 mr-2" />
                   {t('language') === 'fr' ? 'Gestion des données' : 'Data Management'}
@@ -550,10 +550,10 @@ export const UserSettings: React.FC = () => {
                     : 'Export or delete your data'
                   }
                 </CardDescription>
-              </CardHeader>
+              </CardHeader> */}
               <CardContent className="space-y-6">
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
+                  {/* <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
                       <Label className="text-base">
                         {t('language') === 'fr' ? 'Exporter mes données' : 'Export My Data'}
@@ -572,9 +572,9 @@ export const UserSettings: React.FC = () => {
                     </Button>
                   </div>
 
-                  <Separator />
+                  <Separator /> */}
 
-                  <div className="space-y-4">
+                  <div className="space-y-4 mt-5">
                     <div className="space-y-0.5">
                       <Label className="text-base text-red-600">
                         {t('language') === 'fr' ? 'Supprimer mon compte' : 'Delete My Account'}

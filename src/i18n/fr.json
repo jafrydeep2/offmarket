@@ -491,6 +491,8 @@
     "lastUpdated": "Dernière mise à jour:",
     "delete": "Supprimer",
     "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cette alerte ?",
+    "removeFavoriteConfirm": "Êtes-vous sûr de vouloir retirer cette propriété de vos favoris ?",
+    "removeFavoriteTitle": "Retirer des favoris",
     "createdSuccess": "Alerte créée avec succès",
     "deletedSuccess": "Alerte supprimée avec succès",
     "errorLoading": "Erreur lors du chargement des alertes",

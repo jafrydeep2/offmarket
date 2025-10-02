@@ -491,6 +491,8 @@
     "lastUpdated": "Last updated:",
     "delete": "Delete",
     "deleteConfirm": "Are you sure you want to delete this alert?",
+    "removeFavoriteConfirm": "Are you sure you want to remove this property from your favorites?",
+    "removeFavoriteTitle": "Remove from Favorites",
     "createdSuccess": "Alert created successfully",
     "deletedSuccess": "Alert deleted successfully",
     "errorLoading": "Error loading alerts",

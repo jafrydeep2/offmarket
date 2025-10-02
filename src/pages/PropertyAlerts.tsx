@@ -10,7 +10,6 @@ import {
   Filter,
   Search,
   MapPin,
-  DollarSign,
   Home,
   Calendar,
   CheckCircle,
@@ -179,6 +178,7 @@ const PropertyAlertsPage: React.FC = () => {
         if (!Number.isFinite(rooms) || rooms < 1) {
           throw new Error(t('alerts.invalidRooms'));
         }
+        // Allow half rooms (e.g., 3.5)
         payload.rooms = rooms;
       }
 
@@ -454,7 +454,7 @@ const PropertyAlertsPage: React.FC = () => {
                             {(alert.min_budget || alert.max_budget) && (
                               <div className="flex items-center space-x-3 p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg border border-gray-200/50 dark:border-gray-700/50">
                                 <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
-                                  <DollarSign className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                                  <Home className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                                 </div>
                                 <div>
                                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t('property.price')}</p>
@@ -633,6 +633,7 @@ const PropertyAlertsPage: React.FC = () => {
                             id="rooms"
                             type="number"
                             min="1"
+                            step="0.5"
                             placeholder={t('alerts.roomsPlaceholder')}
                             value={formData.rooms}
                             onChange={(e) => setFormData(prev => ({ ...prev, rooms: e.target.value }))}
@@ -646,13 +647,12 @@ const PropertyAlertsPage: React.FC = () => {
                           {t('alerts.minBudget')}
                         </Label>
                         <div className="relative">
-                          <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                           <Input
                             id="min_budget"
                             placeholder={t('alerts.minBudgetPlaceholder')}
                             value={formData.min_budget}
                             onChange={(e) => setFormData(prev => ({ ...prev, min_budget: e.target.value }))}
-                            className="h-12 pl-10 border-2 border-gray-200 dark:border-gray-700 focus:border-primary transition-colors"
+                            className="h-12 pl-4 border-2 border-gray-200 dark:border-gray-700 focus:border-primary transition-colors"
                           />
                         </div>
                       </div>
@@ -662,13 +662,12 @@ const PropertyAlertsPage: React.FC = () => {
                           {t('alerts.maxBudget')}
                         </Label>
                         <div className="relative">
-                          <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                           <Input
                             id="max_budget"
                             placeholder={t('alerts.maxBudgetPlaceholder')}
                             value={formData.max_budget}
                             onChange={(e) => setFormData(prev => ({ ...prev, max_budget: e.target.value }))}
-                            className="h-12 pl-10 border-2 border-gray-200 dark:border-gray-700 focus:border-primary transition-colors"
+                            className="h-12 pl-4 border-2 border-gray-200 dark:border-gray-700 focus:border-primary transition-colors"
                           />
                         </div>
                       </div>
