@@ -32,7 +32,7 @@ export const LoginPage: React.FC = () => {
   // Handle redirect after successful login
   useEffect(() => {
     if (loginSuccess) {
-      const targetPath = redirectPath || '/dashboard';
+      const targetPath = redirectPath || '/';
       console.log('Login successful, redirecting to:', targetPath);
       navigate(targetPath);
       dispatch(clearLoginSuccess());
@@ -62,7 +62,7 @@ export const LoginPage: React.FC = () => {
     
     try {
       console.log('Starting login with:', { email, passwordLength: password.length });
-      const result = await login(email, password, '/dashboard');
+      const result = await login(email, password, '/');
       console.log('Login result:', result);
       
       if (result.success) {

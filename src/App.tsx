@@ -124,7 +124,7 @@ const App = () => (
                         <Route path="/access-expired" element={<AccessExpiredPage />} />
                         
                         {/* User Panel Routes */}
-                        <Route path="/dashboard" element={<UserDashboard />} />
+                        {/* <Route path="/dashboard" element={<UserDashboard />} /> */}
                         <Route path="/profile" element={<UserProfilePage />} />
                         <Route path="/settings" element={<UserSettings />} />
                         <Route path="/alerts" element={<PropertyAlertsPage />} />
