@@ -371,7 +371,7 @@ export const UserSettings: React.FC = () => {
                     />
                   </div>
 
-                  <div className="flex items-center justify-between">
+                  {/* <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
                       <Label className="text-base">
                         {t('language') === 'fr' ? 'Résumé hebdomadaire' : 'Weekly Digest'}
@@ -384,7 +384,7 @@ export const UserSettings: React.FC = () => {
                       checked={settings.notifications.weeklyDigest}
                       onCheckedChange={(value) => handleNotificationChange('weeklyDigest', value)}
                     />
-                  </div>
+                  </div> */}
                 </div>
               </CardContent>
             </Card>

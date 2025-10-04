@@ -349,14 +349,62 @@ export const PropertyDetailPage: React.FC = () => {
         </motion.div>
       </div>
 
-      {/* Hero Section with Status Badges */}
+      {/* Hero Section with Action Buttons */}
       <div className="relative bg-background pb-8">
         <div className="container-custom">
+          {/* Action Buttons - Above Property Gallery */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-wrap items-center justify-end mb-6"
           >
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => {
+                  if (!user) {
+                    setShowFavDialog(true);
+                    return;
+                  }
+                  setIsFavorited(!isFavorited);
+                }}
+                className={`h-10 w-10 rounded-full border transition-all duration-200 ${isFavorited
+                  ? 'bg-primary/10 border-primary/20 text-primary hover:bg-primary/20'
+                  : 'hover:border-primary/50 hover:bg-primary/5'
+                  }`}
+              >
+                <Heart className={`h-4 w-4 ${isFavorited ? 'fill-primary text-primary' : ''}`} />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => {
+                  const url = window.location.href;
+                  const title = property.title;
+                  const text = `Check out this property: ${title}`;
+                  
+                  if (navigator.share) {
+                    navigator.share({
+                      title: title,
+                      text: text,
+                      url: url,
+                    });
+                  } else {
+                    // Fallback: copy to clipboard
+                    navigator.clipboard.writeText(url).then(() => {
+                      toast.success(t('language') === 'fr' ? 'Lien copié dans le presse-papiers' : 'Link copied to clipboard');
+                    }).catch(() => {
+                      // Fallback: show URL in alert
+                      alert(`${t('language') === 'fr' ? 'Partager cette propriété:' : 'Share this property:'} ${url}`);
+                    });
+                  }
+                }}
+                className="h-10 w-10 rounded-full border hover:border-primary/50 hover:bg-primary/5 transition-all duration-200"
+              >
+                <Share2 className="h-4 w-4" />
+              </Button>
+            </div>
           </motion.div>
 
           {/* Property Gallery */}
@@ -408,8 +456,8 @@ export const PropertyDetailPage: React.FC = () => {
                 </div>
 
                 {/* Main Content Row */}
-                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between space-y-4 lg:space-y-0">
-                  {/* Left Side - Title and Location */}
+                <div className="space-y-4">
+                  {/* Left Side - Title, Price and Location */}
                   <div className="space-y-3">
                     {/* Availability Status */}
                     <div>
@@ -431,18 +479,10 @@ export const PropertyDetailPage: React.FC = () => {
                       {property.title}
                     </h1>
 
-                    <div className="flex items-center space-x-2 text-muted-foreground">
-                      <MapPin className="h-4 w-4" />
-                      <span className="text-sm">{property.city}</span>
-                    </div>
-                  </div>
-
-                  {/* Right Side - Price and Actions */}
-                  <div className="flex flex-col items-end space-y-4">
-                    {/* Price Section */}
-                    <div className="text-right">
+                    {/* Price Section - Below Title */}
+                    <div className="text-left">
                       {!isOnRequest ? (
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                           <div className="text-lg text-muted-foreground">
                             {listingType === 'rent' ? t('property.listing.rent') : t('property.listing.sale')}
                           </div>
@@ -467,33 +507,10 @@ export const PropertyDetailPage: React.FC = () => {
                       )}
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => {
-                          if (!user) {
-                            setShowFavDialog(true);
-                            return;
-                          }
-                          setIsFavorited(!isFavorited);
-                        }}
-                        className={`h-10 w-10 rounded-full border transition-all duration-200 ${isFavorited
-                          ? 'bg-primary/10 border-primary/20 text-primary hover:bg-primary/20'
-                          : 'hover:border-primary/50 hover:bg-primary/5'
-                          }`}
-                      >
-                        <Heart className={`h-4 w-4 ${isFavorited ? 'fill-primary text-primary' : ''}`} />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-10 w-10 rounded-full border hover:border-primary/50 hover:bg-primary/5 transition-all duration-200"
-                      >
-                        <Share2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    {/* <div className="flex items-center space-x-2 text-muted-foreground">
+                      <MapPin className="h-4 w-4" />
+                      <span className="text-sm">{property.city}</span>
+                    </div> */}
                   </div>
                 </div>
               </div>
@@ -530,11 +547,11 @@ export const PropertyDetailPage: React.FC = () => {
               </div>
 
               {/* Listed Info */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
-                <div>
+              <div className="grid grid-cols-1 md:grid-cols-1 gap-6 py-4">
+                {/* <div>
                   <span className="text-muted-foreground">Listed on:</span>
                   <span className="ml-2 font-medium">02 May 2025</span>
-                </div>
+                </div> */}
                 <div>
                   <span className="text-muted-foreground">Category:</span>
                   <span className="ml-2 font-medium">
@@ -680,60 +697,62 @@ export const PropertyDetailPage: React.FC = () => {
               </div>
             </div> */}
 
-            {/* Features and Amenities Sections */}
-            <div className="space-y-12 mt-12">
-              {/* Property Features Section */}
-              <div>
-                <h3 className="text-2xl font-heading font-bold mb-6">
-                  {t('language') === 'fr' ? 'Caractéristiques de la propriété' : 'Property Features'}
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                  {propertyFeatures.map((feature, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="flex flex-col items-center p-6 bg-muted/20 rounded-2xl text-center space-y-3 hover:bg-muted/40 transition-colors"
-                    >
-                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                        <feature.icon className="h-6 w-6 text-primary" />
-                      </div>
-                      <span className="font-medium text-sm">{feature.label}</span>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Amenities Section */}
-              <div>
-                <h3 className="text-2xl font-heading font-bold mb-6">
-                  {t('language') === 'fr' ? 'Commodités et services' : 'Amenities & Services'}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {property.features.map((feature, index) => {
-                    const IconComponent = amenityIcons[feature as keyof typeof amenityIcons] || Home;
-                    return (
+            {/* Features and Amenities Sections - Hidden for Rental Properties */}
+            {listingType !== 'rent' && (
+              <div className="space-y-12 mt-12">
+                {/* Property Features Section */}
+                <div>
+                  <h3 className="text-2xl font-heading font-bold mb-6">
+                    {t('language') === 'fr' ? 'Caractéristiques de la propriété' : 'Property Features'}
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    {propertyFeatures.map((feature, index) => (
                       <motion.div
                         key={index}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: index * 0.1 }}
-                        className="flex items-center space-x-3 p-4 bg-muted/20 rounded-lg"
+                        className="flex flex-col items-center p-6 bg-muted/20 rounded-2xl text-center space-y-3 hover:bg-muted/40 transition-colors"
                       >
-                        <IconComponent className="h-5 w-5 text-primary" />
-                        <span className="font-medium">{feature}</span>
+                        <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                          <feature.icon className="h-6 w-6 text-primary" />
+                        </div>
+                        <span className="font-medium text-sm">{feature.label}</span>
                       </motion.div>
-                    );
-                  })}
+                    ))}
+                  </div>
+                </div>
+
+                {/* Amenities Section */}
+                <div>
+                  <h3 className="text-2xl font-heading font-bold mb-6">
+                    {t('language') === 'fr' ? 'Commodités et services' : 'Amenities & Services'}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {property.features.map((feature, index) => {
+                      const IconComponent = amenityIcons[feature as keyof typeof amenityIcons] || Home;
+                      return (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="flex items-center space-x-3 p-4 bg-muted/20 rounded-lg"
+                        >
+                          <IconComponent className="h-5 w-5 text-primary" />
+                          <span className="font-medium">{feature}</span>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Enhanced Sidebar */}
           <div className="space-y-8">
-            {/* Inquiry Form */}
+            {/* Inquiry Form - Member Only */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -741,67 +760,34 @@ export const PropertyDetailPage: React.FC = () => {
             >
               <Card className="overflow-hidden">
                 <CardHeader className="bg-primary text-primary-foreground">
-                  <CardTitle className="text-xl">
-                    {t('language') === 'fr' ? 'Demande' : 'Enquiry'}
+                  <CardTitle className="text-xl flex items-center space-x-2">
+                    <span>{t('language') === 'fr' ? 'Demande' : 'Enquiry'}</span>
+                    {!isAuthenticated && <Lock className="h-4 w-4" />}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6 space-y-6">
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Name</label>
-                      <Input placeholder="Your Name" value={inqName} onChange={(e) => setInqName(e.target.value)} />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Email</label>
-                      <Input placeholder="Your Email" type="email" value={inqEmail} onChange={(e) => setInqEmail(e.target.value)} />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Phone</label>
-                      <Input placeholder="Your Phone Number" value={inqPhone} onChange={(e) => setInqPhone(e.target.value)} />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Description</label>
-                      <Textarea placeholder="Tell us about your requirements..." rows={4} value={inqMessage} onChange={(e) => setInqMessage(e.target.value)} />
-                    </div>
-                    {inqError && <p className="text-sm text-red-600">{inqError}</p>}
-                    <Button className="w-full btn-primary" disabled={inqSubmitting} onClick={handleInquiry}>
-                      {inqSubmitting ? (t('common.loading')) : 'Submit'}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Owner Details - Member Only */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.6 }}
-            >
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <span>{t('properties.ownerDetails')}</span>
-                    {!isAuthenticated && <Lock className="h-4 w-4 text-muted-foreground" />}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
                   {isAuthenticated ? (
-                    <div>
-                      <div className="space-y-3 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">{t('properties.name')}</span>
-                          <span className="font-medium">{property.contactInfo?.name ? property.contactInfo?.name : t('language') === 'fr' ? 'Non disponible' : 'Not available'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">{t('properties.phone')}</span>
-                          <span className="font-medium">{property.contactInfo?.phone ? property.contactInfo?.phone : t('language') === 'fr' ? 'Non disponible' : 'Not available'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Email</span>
-                          <span className="font-medium">{property.contactInfo?.email ? property.contactInfo?.email : t('language') === 'fr' ? 'Non disponible' : 'Not available'}</span>
-                        </div>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-sm font-medium mb-2 block">Name</label>
+                        <Input placeholder="Your Name" value={inqName} onChange={(e) => setInqName(e.target.value)} />
                       </div>
+                      <div>
+                        <label className="text-sm font-medium mb-2 block">Email</label>
+                        <Input placeholder="Your Email" type="email" value={inqEmail} onChange={(e) => setInqEmail(e.target.value)} />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium mb-2 block">Phone</label>
+                        <Input placeholder="Your Phone Number" value={inqPhone} onChange={(e) => setInqPhone(e.target.value)} />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium mb-2 block">Description</label>
+                        <Textarea placeholder="Tell us about your requirements..." rows={4} value={inqMessage} onChange={(e) => setInqMessage(e.target.value)} />
+                      </div>
+                      {inqError && <p className="text-sm text-red-600">{inqError}</p>}
+                      <Button className="w-full btn-primary" disabled={inqSubmitting} onClick={handleInquiry}>
+                        {inqSubmitting ? (t('common.loading')) : 'Submit'}
+                      </Button>
                     </div>
                   ) : (
                     <div className="text-center py-8">
@@ -824,6 +810,61 @@ export const PropertyDetailPage: React.FC = () => {
                 </CardContent>
               </Card>
             </motion.div>
+
+            {/* Owner Details - Member Only - Hidden for Sales Properties */}
+            {listingType !== 'sale' && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.6 }}
+              >
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <span>{t('properties.ownerDetails')}</span>
+                      {!isAuthenticated && <Lock className="h-4 w-4 text-muted-foreground" />}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {isAuthenticated ? (
+                      <div>
+                        <div className="space-y-3 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">{t('properties.name')}</span>
+                            <span className="font-medium">{property.contactInfo?.name ? property.contactInfo?.name : t('language') === 'fr' ? 'Non disponible' : 'Not available'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">{t('properties.phone')}</span>
+                            <span className="font-medium">{property.contactInfo?.phone ? property.contactInfo?.phone : t('language') === 'fr' ? 'Non disponible' : 'Not available'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Email</span>
+                            <span className="font-medium">{property.contactInfo?.email ? property.contactInfo?.email : t('language') === 'fr' ? 'Non disponible' : 'Not available'}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <Lock className="h-8 w-8 text-muted-foreground" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-foreground mb-2">
+                          {t('properties.memberAccessRequired')}
+                        </h3>
+                        <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                          {t('properties.memberAccessDescription')}
+                        </p>
+                        <Link to="/become-member">
+                          <Button className="w-full">
+                            {t('properties.becomeMember')}
+                          </Button>
+                        </Link>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
 
             {/* Share Property */}
             {/* <motion.div

@@ -129,7 +129,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   const isAlertMatch = alertMatch || (alertCriteria && matchesAlertCriteria(property, alertCriteria));
 
   return (
-    <Link to={`/property/${property.id}`} className="block">
+    <>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -194,7 +194,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                setCurrentImageIndex((prev) => 
+                setCurrentImageIndex((prev) =>
                   prev === 0 ? property.images.length - 1 : prev - 1
                 );
               }}
@@ -202,7 +202,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
                   e.stopPropagation();
-                  setCurrentImageIndex((prev) => 
+                  setCurrentImageIndex((prev) =>
                     prev === 0 ? property.images.length - 1 : prev - 1
                   );
                 }
@@ -221,7 +221,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                setCurrentImageIndex((prev) => 
+                setCurrentImageIndex((prev) =>
                   prev === property.images.length - 1 ? 0 : prev + 1
                 );
               }}
@@ -229,7 +229,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
                   e.stopPropagation();
-                  setCurrentImageIndex((prev) => 
+                  setCurrentImageIndex((prev) =>
                     prev === property.images.length - 1 ? 0 : prev + 1
                   );
                 }
@@ -279,8 +279,8 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
             <Badge
               variant={property.availabilityStatus === 'immediate' ? 'default' : 'secondary'}
               className={`text-xs px-2 py-1 ${property.availabilityStatus === 'immediate'
-                  ? 'bg-green-100 text-green-800 border-green-200'
-                  : 'bg-orange-100 text-orange-800 border-orange-200'
+                ? 'bg-green-100 text-green-800 border-green-200'
+                : 'bg-orange-100 text-orange-800 border-orange-200'
                 }`}
             >
               {property.availabilityStatus === 'immediate'
@@ -292,9 +292,11 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
 
           {/* Title & Location */}
           <div className="space-y-2">
-            <h3 className="text-lg font-heading font-bold text-foreground line-clamp-2 group-hover:text-primary transition-colors min-h-[3.5rem] flex items-start">
-              {property.title}
-            </h3>
+            <Link to={`/property/${property.id}`} className="block">
+              <h3 className="text-lg font-heading font-bold text-foreground line-clamp-2 group-hover:text-primary transition-colors min-h-[3.5rem] flex items-start">
+                {property.title}
+              </h3>
+            </Link>
             <div className="flex items-center space-x-2 text-muted-foreground">
               <MapPin className="h-4 w-4" />
               <span className="text-sm">{property.city}, {property.neighborhood}</span>
@@ -388,21 +390,27 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
       </motion.div>
       {/* Favorites Auth Dialog */}
       <AlertDialog open={showFavDialog} onOpenChange={setShowFavDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('language') === 'fr' ? 'Devenez membre' : 'Become a member'}</AlertDialogTitle>
-            <AlertDialogDescription>
+        <AlertDialogContent className="w-[95vw] max-w-md mx-4 sm:mx-auto">
+          <AlertDialogHeader className="text-center sm:text-left">
+            <AlertDialogTitle className="text-lg sm:text-xl">
+              {t('language') === 'fr' ? 'Devenez membre' : 'Become a member'}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm sm:text-base leading-relaxed">
               {t('language') === 'fr'
                 ? 'Devenez membre pour enregistrer vos favoris et accéder aux avantages réservés aux membres.'
                 : 'Become a member to save favorites and access member benefits.'}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <Button variant="outline" onClick={() => setShowFavDialog(false)}>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-3 sm:gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowFavDialog(false)}
+              className="w-full sm:w-auto order-2 sm:order-1"
+            >
               {t('language') === 'fr' ? 'Plus tard' : 'Not now'}
             </Button>
-            <Link to="/become-member">
-              <AlertDialogAction>
+            <Link to="/become-member" className="w-full sm:w-auto order-1 sm:order-2">
+              <AlertDialogAction className="w-full sm:w-auto">
                 {t('language') === 'fr' ? 'Devenir membre' : 'Become a member'}
               </AlertDialogAction>
             </Link>
@@ -412,15 +420,21 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
 
       {/* Remove Favorite Confirmation Dialog */}
       <AlertDialog open={showRemoveConfirmDialog} onOpenChange={setShowRemoveConfirmDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('alerts.removeFavoriteTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>
+        <AlertDialogContent className="w-[95vw] max-w-md mx-4 sm:mx-auto">
+          <AlertDialogHeader className="text-center sm:text-left">
+            <AlertDialogTitle className="text-lg sm:text-xl">
+              {t('alerts.removeFavoriteTitle')}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm sm:text-base leading-relaxed">
               {t('alerts.removeFavoriteConfirm')}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <Button variant="outline" onClick={() => setShowRemoveConfirmDialog(false)}>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-3 sm:gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowRemoveConfirmDialog(false)}
+              className="w-full sm:w-auto order-2 sm:order-1"
+            >
               {t('language') === 'fr' ? 'Annuler' : 'Cancel'}
             </Button>
             <AlertDialogAction
@@ -429,12 +443,13 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                 setIsFavorited(isFav(property.id));
                 setShowRemoveConfirmDialog(false);
               }}
+              className="w-full sm:w-auto order-1 sm:order-2"
             >
               {t('language') === 'fr' ? 'Retirer' : 'Remove'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </Link>
+    </>
   );
 };

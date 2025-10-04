@@ -275,7 +275,7 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* Services Section */}
-      <section id="services-section" className="section-padding bg-background">
+      {/* <section id="services-section" className="section-padding bg-background">
         <div className="container-custom">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
@@ -336,7 +336,7 @@ export const HomePage: React.FC = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Off-Market Services Section */}
       <section className="section-padding bg-background">

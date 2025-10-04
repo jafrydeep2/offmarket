@@ -608,30 +608,52 @@ export const PropertiesPage: React.FC = () => {
         </motion.div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-between mt-6">
-          <div className="text-sm text-gray-500">
+        <div className="mt-6 space-y-4">
+          {/* Results Info - Mobile: Full width, Desktop: Left aligned */}
+          <div className="text-sm text-gray-500 text-center sm:text-left">
             {t('language') === 'fr' 
               ? `Affichage de ${(page - 1) * pageSize + 1} à ${Math.min(page * pageSize, totalCount)} sur ${totalCount} résultats`
               : `Showing ${(page - 1) * pageSize + 1} to ${Math.min(page * pageSize, totalCount)} of ${totalCount} results`
             }
           </div>
-          <div className="flex items-center space-x-3">
-            <span className="text-sm text-gray-500">{t('language') === 'fr' ? `Page ${page} sur ${totalPages}` : `Page ${page} of ${totalPages}`}</span>
-            <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(parseInt(v)); setPage(1); }}>
-              <SelectTrigger className="w-24">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="12">12 / page</SelectItem>
-                <SelectItem value="24">24 / page</SelectItem>
-                <SelectItem value="48">48 / page</SelectItem>
-              </SelectContent>
-            </Select>
-            <div className="flex space-x-2">
-              <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(p => Math.max(1, p - 1))}>
+          
+          {/* Controls - Mobile: Stacked, Desktop: Horizontal */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            {/* Page Info and Items Per Page - Mobile: Stacked, Desktop: Side by side */}
+            <div className="flex flex-col sm:flex-row items-center gap-3">
+              <span className="text-sm text-gray-500">
+                {t('language') === 'fr' ? `Page ${page} sur ${totalPages}` : `Page ${page} of ${totalPages}`}
+              </span>
+              <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(parseInt(v)); setPage(1); }}>
+                <SelectTrigger className="w-20 sm:w-24">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="12">12 / page</SelectItem>
+                  <SelectItem value="24">24 / page</SelectItem>
+                  <SelectItem value="48">48 / page</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Navigation Buttons - Mobile: Full width, Desktop: Auto width */}
+            <div className="flex w-full sm:w-auto space-x-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                disabled={page === 1} 
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                className="flex-1 sm:flex-none"
+              >
                 {t('language') === 'fr' ? 'Précédent' : 'Previous'}
               </Button>
-              <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))}>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                disabled={page === totalPages} 
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                className="flex-1 sm:flex-none"
+              >
                 {t('language') === 'fr' ? 'Suivant' : 'Next'}
               </Button>
             </div>
