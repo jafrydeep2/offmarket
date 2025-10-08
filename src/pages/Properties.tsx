@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PropertyCard } from '@/components/PropertyCard';
 import { PropertyListCard } from '@/components/PropertyListCard';
-import { swissCities, filterCities } from '@/data/swissCities';
+import { CityAutocomplete } from '@/components/CityAutocomplete';
+import { CitySuggestion } from '@/lib/cityService';
 // Remove context dependency to avoid loading delays
 // import { useProperties } from '@/contexts/PropertyContext';
 import { supabase } from '@/lib/supabaseClient';
@@ -27,12 +28,12 @@ export const PropertiesPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRooms, setSelectedRooms] = useState('');
   const [selectedType, setSelectedType] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('rent');
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
   const [surfaceRange, setSurfaceRange] = useState({ min: '', max: '' });
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedCity, setSelectedCity] = useState<CitySuggestion | null>(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
@@ -45,16 +46,18 @@ export const PropertiesPage: React.FC = () => {
   }
   roomOptions.push('10+');
 
-  // Direct fetch function for properties
+  // Direct fetch function for properties - optimized for immediate display
   const fetchPropertiesDirectly = useCallback(async () => {
     try {
       setIsInitialLoading(true);
       setError('');
       
+      // Fetch properties with optimized query for latest properties first
       const { data, error } = await supabase
         .from('properties')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(50); // Limit initial fetch for faster loading
 
       if (error) {
         console.error('Error fetching properties:', error);
@@ -88,7 +91,13 @@ export const PropertiesPage: React.FC = () => {
         featured: row.featured ?? false,
       }));
 
+      // Set properties immediately for faster display
       setAllProperties(mappedProperties);
+      
+      // If we have more than 50 properties, fetch the rest in background
+      if (mappedProperties.length === 50) {
+        fetchRemainingProperties();
+      }
     } catch (err: any) {
       console.error('Error fetching properties:', err);
       setError('Failed to load properties');
@@ -97,12 +106,60 @@ export const PropertiesPage: React.FC = () => {
     }
   }, []);
 
-  // Generate search suggestions
-  const searchSuggestions = [
-    'All locations',
-    ...swissCities,
-    'Appartement', 'Maison', 'Villa', 'Loft', 'Penthouse', 'Studio', 'Duplex', 'Chalet', 'Château'
-  ];
+  // Background fetch for remaining properties
+  const fetchRemainingProperties = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('properties')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .range(50, 999); // Fetch remaining properties
+
+      if (error) {
+        console.error('Error fetching remaining properties:', error);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        const mappedProperties = data.map((row: any) => ({
+          id: String(row.id),
+          title: row.title,
+          description: row.description,
+          city: row.city,
+          neighborhood: row.neighborhood,
+          address: row.address ?? undefined,
+          propertyType: row.property_type,
+          rooms: Number(row.rooms),
+          surface: Number(row.surface),
+          listingType: row.listing_type ?? undefined,
+          price: row.price ?? undefined,
+          availabilityDate: row.availability_date ?? undefined,
+          availabilityStatus: row.availability_status || 'immediate',
+          images: Array.isArray(row.images) ? row.images : (row.images ? JSON.parse(row.images) : []),
+          videoUrl: row.video_url ?? undefined,
+          features: Array.isArray(row.features) ? row.features : (row.features ? JSON.parse(row.features) : []),
+          contactInfo: row.contact_info ?? undefined,
+          views: row.views ?? 0,
+          inquiries: row.inquiries ?? 0,
+          createdAt: row.created_at ?? undefined,
+          updatedAt: row.updated_at ?? undefined,
+          featured: row.featured ?? false,
+        }));
+
+        // Append remaining properties to existing ones
+        setAllProperties(prev => [...prev, ...mappedProperties]);
+      }
+    } catch (err: any) {
+      console.error('Error fetching remaining properties:', err);
+    }
+  }, []);
+
+  // Handle city selection
+  const handleCitySelect = (suggestion: CitySuggestion) => {
+    setSelectedCity(suggestion);
+    setSearchTerm(suggestion.name);
+    setPage(1);
+  };
 
   // Fetch properties immediately when page loads (no auth dependency)
   useEffect(() => {
@@ -140,14 +197,12 @@ export const PropertiesPage: React.FC = () => {
     return () => clearTimeout(timer);
   }, [searchTerm, user, selectedRooms, selectedType, selectedStatus, priceRange, surfaceRange]);
 
-  // Filter suggestions based on current search term
-  const filteredSuggestions = useMemo(() => {
-    return searchTerm 
-      ? searchSuggestions.filter(suggestion => 
-          suggestion.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      : searchSuggestions;
-  }, [searchTerm]);
+  // Clear city selection when search term changes manually
+  useEffect(() => {
+    if (searchTerm && selectedCity && searchTerm !== selectedCity.name) {
+      setSelectedCity(null);
+    }
+  }, [searchTerm, selectedCity]);
 
   // Memoized filtered properties
   const filteredProperties = useMemo(() => {
@@ -203,11 +258,18 @@ export const PropertiesPage: React.FC = () => {
 
   // Remove old context-based loading logic - now using direct fetch
 
-  // Update properties and loading state
+  // Update properties and loading state - optimized for immediate display
   useEffect(() => {
     if (isInitialLoading) return;
     
-    setLoading(true);
+    // Only show loading if we're actually filtering/searching
+    const isFiltering = debouncedSearchTerm || selectedRooms || selectedType || selectedStatus || 
+                       priceRange.min || priceRange.max || surfaceRange.min || surfaceRange.max;
+    
+    if (isFiltering) {
+      setLoading(true);
+    }
+    
     setError('');
     
     try {
@@ -220,23 +282,23 @@ export const PropertiesPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [paginatedProperties, filteredProperties.length, isInitialLoading]);
+  }, [paginatedProperties, filteredProperties.length, isInitialLoading, debouncedSearchTerm, selectedRooms, selectedType, selectedStatus, priceRange, surfaceRange]);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 
-  // Page loader component
+  // Page loader component - optimized for latest properties
   const PageLoader = () => (
     <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="text-center space-y-6">
         <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
         <div className="space-y-2">
           <h3 className="text-xl font-heading font-semibold text-foreground">
-            {t('language') === 'fr' ? 'Chargement des propriétés...' : 'Loading properties...'}
+            {t('language') === 'fr' ? 'Chargement des dernières propriétés...' : 'Loading latest properties...'}
           </h3>
           <p className="text-muted-foreground">
             {t('language') === 'fr' 
-              ? 'Nous récupérons les dernières offres pour vous'
-              : 'We are fetching the latest offers for you'
+              ? 'Nous récupérons les offres les plus récentes pour vous'
+              : 'We are fetching the most recent properties for you'
             }
           </p>
         </div>
@@ -244,8 +306,8 @@ export const PropertiesPage: React.FC = () => {
     </div>
   );
 
-  // Show page loader during initial loading
-  if (isInitialLoading) {
+  // Show page loader during initial loading only if no properties are available yet
+  if (isInitialLoading && allProperties.length === 0) {
     return <PageLoader />;
   }
 
@@ -296,47 +358,23 @@ export const PropertiesPage: React.FC = () => {
 
           {/* Enhanced Search and Filters */}
           <div className="max-w-6xl mx-auto space-y-6">
-            {/* Main Search Bar */}
+            {/* Main Search Bar with City Autocomplete */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               className="relative"
             >
-              <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 h-6 w-6 text-muted-foreground z-10" />
-              <Input
-                type="text"
+              <CityAutocomplete
                 value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setShowSuggestions(true);
+                onChange={(value) => {
+                  setSearchTerm(value);
                   setPage(1);
                 }}
-                onFocus={() => setShowSuggestions(true)}
-                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                placeholder="Search by city, neighbourhood or type..."
-                className="pl-16 py-8 text-lg rounded-2xl border-2 shadow-lg focus:shadow-2xl transition-all"
+                onSelect={handleCitySelect}
+                placeholder={t('language') === 'fr' ? 'Rechercher par ville ou code postal' : 'Search by city or postal code'}
                 disabled={isInitialLoading}
               />
-              
-              {/* Search Suggestions Dropdown */}
-              {showSuggestions && filteredSuggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-background border border-border rounded-2xl shadow-xl z-50 max-h-60 overflow-y-auto">
-                  {filteredSuggestions.slice(0, 10).map((suggestion, index) => (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        setSearchTerm(suggestion === 'All locations' ? 'all' : suggestion.toLowerCase());
-                        setShowSuggestions(false);
-                        setPage(1);
-                      }}
-                      className="w-full px-6 py-4 text-left hover:bg-muted/50 transition-colors first:rounded-t-2xl last:rounded-b-2xl"
-                    >
-                      <span className="text-lg">{suggestion}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
             </motion.div>
 
             {/* View Toggle and Filters Bar */}
@@ -480,6 +518,7 @@ export const PropertiesPage: React.FC = () => {
                     variant="outline"
                     onClick={() => {
                       setSearchTerm('');
+                      setSelectedCity(null);
                       setSelectedRooms('');
                       setSelectedType('');
                       setSelectedStatus('');
@@ -592,6 +631,7 @@ export const PropertiesPage: React.FC = () => {
                   variant="outline" 
                   onClick={() => {
                     setSearchTerm('');
+                    setSelectedCity(null);
                     setSelectedRooms('');
                     setSelectedStatus('');
                     setSelectedType('');

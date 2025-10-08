@@ -8,7 +8,6 @@ import {
   Trash2,
   ArrowLeft,
   Filter,
-  Search,
   MapPin,
   Home,
   Calendar,
@@ -22,19 +21,20 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppSelector } from '@/store/hooks';
 import { supabase } from '@/lib/supabaseClient';
-import { swissCities, filterCities } from '@/data/swissCities';
+import { CityAutocomplete } from '@/components/CityAutocomplete';
+import { CitySuggestion } from '@/lib/cityService';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+// Removed unused Select imports - now using NativeSelect
+import { NativeSelect, NativeSelectItem } from '@/components/ui/NativeSelect';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 
 interface PropertyAlert {
   id: string;
@@ -44,7 +44,8 @@ interface PropertyAlert {
   max_budget?: number;
   min_budget?: number;
   location?: string;
-  rooms?: number;
+  min_rooms?: number;
+  max_rooms?: number;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -60,11 +61,26 @@ const PropertyAlertsPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   const [isEditing, setIsEditing] = useState<string | null>(null);
+  const [editingAlert, setEditingAlert] = useState<PropertyAlert | null>(null);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
   const [activeTab, setActiveTab] = useState('manage');
-  const [cityOpen, setCityOpen] = useState(false);
-  const [citySearch, setCitySearch] = useState('');
+  const [selectedCity, setSelectedCity] = useState<CitySuggestion | null>(null);
+
+  // Handle city selection
+  const handleCitySelect = (suggestion: CitySuggestion) => {
+    setSelectedCity(suggestion);
+    setFormData(prev => ({ ...prev, location: suggestion.name }));
+  };
+
+  // Handle input change for location
+  const handleLocationChange = (value: string) => {
+    setFormData(prev => ({ ...prev, location: value }));
+    // Clear selected city when user types manually
+    if (!value) {
+      setSelectedCity(null);
+    }
+  };
 
   // Form state
   const [formData, setFormData] = useState({
@@ -73,7 +89,8 @@ const PropertyAlertsPage: React.FC = () => {
     min_budget: '',
     max_budget: '',
     location: '',
-    rooms: ''
+    min_rooms: '',
+    max_rooms: ''
   });
 
   useEffect(() => {
@@ -173,13 +190,32 @@ const PropertyAlertsPage: React.FC = () => {
         payload.location = formData.location;
       }
 
-      if (formData.rooms) {
-        const rooms = Number(formData.rooms);
-        if (!Number.isFinite(rooms) || rooms < 1) {
-          throw new Error(t('alerts.invalidRooms'));
+      // Handle room range
+      if (formData.min_rooms || formData.max_rooms) {
+        if (formData.min_rooms) {
+          const minRooms = Number(formData.min_rooms);
+          if (!Number.isFinite(minRooms) || minRooms < 1) {
+            throw new Error(t('alerts.invalidMinRooms'));
+          }
+          payload.min_rooms = minRooms;
         }
-        // Allow half rooms (e.g., 3.5)
-        payload.rooms = rooms;
+        
+        if (formData.max_rooms) {
+          const maxRooms = Number(formData.max_rooms);
+          if (!Number.isFinite(maxRooms) || maxRooms < 1) {
+            throw new Error(t('alerts.invalidMaxRooms'));
+          }
+          payload.max_rooms = maxRooms;
+        }
+        
+        // Validate range
+        if (formData.min_rooms && formData.max_rooms) {
+          const minRooms = Number(formData.min_rooms);
+          const maxRooms = Number(formData.max_rooms);
+          if (minRooms > maxRooms) {
+            throw new Error(t('alerts.invalidRoomRange'));
+          }
+        }
       }
 
       const { error: insertError } = await supabase
@@ -195,7 +231,8 @@ const PropertyAlertsPage: React.FC = () => {
         min_budget: '',
         max_budget: '',
         location: '',
-        rooms: ''
+        min_rooms: '',
+        max_rooms: ''
       });
       fetchAlerts();
     } catch (err: any) {
@@ -245,6 +282,145 @@ const PropertyAlertsPage: React.FC = () => {
     }
   };
 
+  const handleEditAlert = (alert: PropertyAlert) => {
+    setEditingAlert(alert);
+    setIsEditing(alert.id);
+    setFormData({
+      transaction_type: alert.transaction_type,
+      property_type: alert.property_type,
+      min_budget: alert.min_budget ? alert.min_budget.toString() : '',
+      max_budget: alert.max_budget ? alert.max_budget.toString() : '',
+      location: alert.location || '',
+      min_rooms: alert.min_rooms ? alert.min_rooms.toString() : '',
+      max_rooms: alert.max_rooms ? alert.max_rooms.toString() : ''
+    });
+    setActiveTab('create');
+  };
+
+  const handleUpdateAlert = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentUser || !editingAlert) return;
+
+    setError('');
+    setSuccess('');
+
+    if (!formData.transaction_type || !formData.property_type) {
+      setError(t('alerts.selectTransactionType'));
+      return;
+    }
+
+    setIsCreating(true);
+    try {
+      const payload: any = {
+        transaction_type: formData.transaction_type,
+        property_type: formData.property_type,
+        is_active: editingAlert.is_active
+      };
+
+      if (formData.min_budget) {
+        const minBudget = Number(formData.min_budget.replace(/[^0-9.]/g, ''));
+        if (!Number.isFinite(minBudget) || minBudget <= 0) {
+          throw new Error(t('alerts.invalidMinBudget'));
+        }
+        payload.min_budget = minBudget;
+      } else {
+        payload.min_budget = null;
+      }
+
+      if (formData.max_budget) {
+        const maxBudget = Number(formData.max_budget.replace(/[^0-9.]/g, ''));
+        if (!Number.isFinite(maxBudget) || maxBudget <= 0) {
+          throw new Error(t('alerts.invalidMaxBudget'));
+        }
+        payload.max_budget = maxBudget;
+      } else {
+        payload.max_budget = null;
+      }
+
+      if (formData.location) {
+        payload.location = formData.location;
+      } else {
+        payload.location = null;
+      }
+
+      // Handle room range
+      if (formData.min_rooms || formData.max_rooms) {
+        if (formData.min_rooms) {
+          const minRooms = Number(formData.min_rooms);
+          if (!Number.isFinite(minRooms) || minRooms < 1) {
+            throw new Error(t('alerts.invalidMinRooms'));
+          }
+          payload.min_rooms = minRooms;
+        } else {
+          payload.min_rooms = null;
+        }
+        
+        if (formData.max_rooms) {
+          const maxRooms = Number(formData.max_rooms);
+          if (!Number.isFinite(maxRooms) || maxRooms < 1) {
+            throw new Error(t('alerts.invalidMaxRooms'));
+          }
+          payload.max_rooms = maxRooms;
+        } else {
+          payload.max_rooms = null;
+        }
+        
+        // Validate range
+        if (formData.min_rooms && formData.max_rooms) {
+          const minRooms = Number(formData.min_rooms);
+          const maxRooms = Number(formData.max_rooms);
+          if (minRooms > maxRooms) {
+            throw new Error(t('alerts.invalidRoomRange'));
+          }
+        }
+      } else {
+        payload.min_rooms = null;
+        payload.max_rooms = null;
+      }
+
+      const { error: updateError } = await supabase
+        .from('property_alerts')
+        .update(payload)
+        .eq('id', editingAlert.id);
+
+      if (updateError) throw updateError;
+
+      setSuccess(t('alerts.updatedSuccess'));
+      setFormData({
+        transaction_type: '',
+        property_type: '',
+        min_budget: '',
+        max_budget: '',
+        location: '',
+        min_rooms: '',
+        max_rooms: ''
+      });
+      setEditingAlert(null);
+      setIsEditing(null);
+      fetchAlerts();
+    } catch (err: any) {
+      console.error('Error updating alert:', err);
+      setError(err.message || t('alerts.errorUpdating'));
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingAlert(null);
+    setIsEditing(null);
+    setFormData({
+      transaction_type: '',
+      property_type: '',
+      min_budget: '',
+      max_budget: '',
+      location: '',
+      min_rooms: '',
+      max_rooms: ''
+    });
+    setSelectedCity(null);
+  };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('fr-CH', {
       style: 'currency',
@@ -289,8 +465,9 @@ const PropertyAlertsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container-custom py-8">
+    <ErrorBoundary>
+      <div className="min-h-screen bg-background">
+        <div className="container-custom py-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -440,14 +617,21 @@ const PropertyAlertsPage: React.FC = () => {
                                 </div>
                               </div>
                             )}
-                            {alert.rooms && (
+                            {(alert.min_rooms || alert.max_rooms) && (
                               <div className="flex items-center space-x-3 p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg border border-gray-200/50 dark:border-gray-700/50">
                                 <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
                                   <Home className="h-4 w-4 text-green-600 dark:text-green-400" />
                                 </div>
                                 <div>
                                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t('alerts.rooms')}</p>
-                                  <p className="text-sm font-semibold text-gray-900 dark:text-white">{alert.rooms}</p>
+                                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                                    {alert.min_rooms && alert.max_rooms 
+                                      ? `${alert.min_rooms} - ${alert.max_rooms} rooms`
+                                      : alert.min_rooms 
+                                        ? `${alert.min_rooms}+ rooms`
+                                        : `Up to ${alert.max_rooms} rooms`
+                                    }
+                                  </p>
                                 </div>
                               </div>
                             )}
@@ -478,15 +662,26 @@ const PropertyAlertsPage: React.FC = () => {
                                 {t('alerts.lastUpdated')} {new Date(alert.updated_at).toLocaleDateString()}
                               </span>
                             </div>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleDeleteAlert(alert.id)}
-                              className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20 border-red-200 dark:border-red-800"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              {t('alerts.delete')}
-                            </Button>
+                            <div className="flex items-center space-x-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleEditAlert(alert)}
+                                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-900/20 border-blue-200 dark:border-blue-800"
+                              >
+                                <Edit className="h-4 w-4 mr-2" />
+                                {t('alerts.edit')}
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDeleteAlert(alert.id)}
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20 border-red-200 dark:border-red-800"
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                {t('alerts.delete')}
+                              </Button>
+                            </div>
                           </div>
                         </CardContent>
                       </Card>
@@ -502,144 +697,101 @@ const PropertyAlertsPage: React.FC = () => {
                 <CardHeader className="pb-6">
                   <div className="flex items-center space-x-3">
                     <div className="p-2 bg-gradient-to-br from-primary/10 to-primary/20 rounded-xl">
-                      <Plus className="h-6 w-6 text-primary" />
+                      {isEditing ? <Edit className="h-6 w-6 text-primary" /> : <Plus className="h-6 w-6 text-primary" />}
                     </div>
                     <div>
                       <CardTitle className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-                        {t('alerts.createNew')}
+                        {isEditing ? t('alerts.editAlert') : t('alerts.createNew')}
                       </CardTitle>
                       <CardDescription className="text-base mt-1">
-                        {t('alerts.createSubtitle')}
+                        {isEditing ? t('alerts.editSubtitle') : t('alerts.createSubtitle')}
                       </CardDescription>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-8">
-                  <form onSubmit={handleCreateAlert} className="space-y-8">
+                  <form onSubmit={isEditing ? handleUpdateAlert : handleCreateAlert} className="space-y-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       <div className="space-y-3">
                         <Label htmlFor="transaction_type" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                           {t('alerts.transactionType')} *
                         </Label>
-                        <Select
+                        <NativeSelect
                           value={formData.transaction_type}
                           onValueChange={(value: 'rent' | 'sale') => setFormData(prev => ({ ...prev, transaction_type: value }))}
+                          className="h-12 border-2 border-gray-200 dark:border-gray-700 focus:border-primary transition-colors"
+                          placeholder={t('alerts.select')}
                         >
-                          <SelectTrigger className="h-12 border-2 border-gray-200 dark:border-gray-700 focus:border-primary transition-colors">
-                            <SelectValue placeholder={t('alerts.select')} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="rent">{t('alerts.rent')}</SelectItem>
-                            <SelectItem value="sale">{t('alerts.sale')}</SelectItem>
-                          </SelectContent>
-                        </Select>
+                          <NativeSelectItem value="rent">{t('alerts.rent')}</NativeSelectItem>
+                          <NativeSelectItem value="sale">{t('alerts.sale')}</NativeSelectItem>
+                        </NativeSelect>
                       </div>
 
                       <div className="space-y-3">
                         <Label htmlFor="property_type" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                           {t('alerts.propertyType')} *
                         </Label>
-                        <Select
+                        <NativeSelect
                           value={formData.property_type}
                           onValueChange={(value: 'apartment' | 'house' | 'villa' | 'land') => setFormData(prev => ({ ...prev, property_type: value }))}
+                          className="h-12 border-2 border-gray-200 dark:border-gray-700 focus:border-primary transition-colors"
+                          placeholder={t('alerts.select')}
                         >
-                          <SelectTrigger className="h-12 border-2 border-gray-200 dark:border-gray-700 focus:border-primary transition-colors">
-                            <SelectValue placeholder={t('alerts.select')} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="apartment">{t('alerts.apartment')}</SelectItem>
-                            <SelectItem value="house">{t('alerts.house')}</SelectItem>
-                            <SelectItem value="villa">{t('alerts.villa')}</SelectItem>
-                            <SelectItem value="land">{t('alerts.land')}</SelectItem>
-                          </SelectContent>
-                        </Select>
+                          <NativeSelectItem value="apartment">{t('alerts.apartment')}</NativeSelectItem>
+                          <NativeSelectItem value="house">{t('alerts.house')}</NativeSelectItem>
+                          <NativeSelectItem value="villa">{t('alerts.villa')}</NativeSelectItem>
+                          <NativeSelectItem value="land">{t('alerts.land')}</NativeSelectItem>
+                        </NativeSelect>
                       </div>
 
                       <div className="space-y-3">
                         <Label htmlFor="location" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                           {t('alerts.location')}
                         </Label>
-                        <Popover open={cityOpen} onOpenChange={setCityOpen}>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              aria-expanded={cityOpen}
-                              className="h-12 w-full justify-between border-2 border-gray-200 dark:border-gray-700 focus:border-primary transition-colors"
-                            >
-                              <div className="flex items-center space-x-2">
-                                <MapPin className="h-4 w-4 text-gray-400" />
-                                <span className={formData.location ? "text-gray-900 dark:text-white" : "text-muted-foreground"}>
-                                  {formData.location || t('alerts.locationPlaceholder')}
-                                </span>
-                              </div>
-                              <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-full p-0" align="start">
-                            <Command>
-                              <CommandInput
-                                placeholder={t('alerts.searchCity')}
-                                value={citySearch}
-                                onValueChange={setCitySearch}
-                                className="h-9"
-                              />
-                              <CommandList>
-                                <CommandEmpty>{t('alerts.noCityFound')}</CommandEmpty>
-                                <CommandGroup>
-                                  {formData.location && (
-                                    <CommandItem
-                                      value=""
-                                      onSelect={() => {
-                                        setFormData(prev => ({ ...prev, location: '' }));
-                                        setCityOpen(false);
-                                        setCitySearch('');
-                                      }}
-                                      className="cursor-pointer text-red-600 hover:text-red-700"
-                                    >
-                                      <Trash2 className="mr-2 h-4 w-4" />
-                                      Clear selection
-                                    </CommandItem>
-                                  )}
-                                  {filterCities(citySearch).map((city) => (
-                                    <CommandItem
-                                      key={city}
-                                      value={city}
-                                      onSelect={(currentValue) => {
-                                        setFormData(prev => ({ ...prev, location: currentValue }));
-                                        setCityOpen(false);
-                                        setCitySearch('');
-                                      }}
-                                      className="cursor-pointer"
-                                    >
-                                      <MapPin className="mr-2 h-4 w-4" />
-                                      {city}
-                                    </CommandItem>
-                                  ))}
-                                </CommandGroup>
-                              </CommandList>
-                            </Command>
-                          </PopoverContent>
-                        </Popover>
+                        <CityAutocomplete
+                          value={formData.location || ''}
+                          onChange={handleLocationChange}
+                          onSelect={handleCitySelect}
+                          placeholder={t('alerts.searchCity')}
+                          variant="alert"
+                        />
                       </div>
 
                       <div className="space-y-3">
-                        <Label htmlFor="rooms" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                           {t('alerts.rooms')}
                         </Label>
-                        <div className="relative">
-                          <Home className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                          <Input
-                            id="rooms"
-                            type="number"
-                            min="1"
-                            step="0.5"
-                            placeholder={t('alerts.roomsPlaceholder')}
-                            value={formData.rooms}
-                            onChange={(e) => setFormData(prev => ({ ...prev, rooms: e.target.value }))}
-                            className="h-12 pl-10 border-2 border-gray-200 dark:border-gray-700 focus:border-primary transition-colors"
-                          />
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="relative">
+                            <Home className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            <Input
+                              id="min_rooms"
+                              type="number"
+                              min="1"
+                              step="0.5"
+                              placeholder={t('alerts.minRoomsPlaceholder') || 'Min rooms'}
+                              value={formData.min_rooms}
+                              onChange={(e) => setFormData(prev => ({ ...prev, min_rooms: e.target.value }))}
+                              className="h-12 pl-10 border-2 border-gray-200 dark:border-gray-700 focus:border-primary transition-colors"
+                            />
+                          </div>
+                          <div className="relative">
+                            <Home className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            <Input
+                              id="max_rooms"
+                              type="number"
+                              min="1"
+                              step="0.5"
+                              placeholder={t('alerts.maxRoomsPlaceholder') || 'Max rooms'}
+                              value={formData.max_rooms}
+                              onChange={(e) => setFormData(prev => ({ ...prev, max_rooms: e.target.value }))}
+                              className="h-12 pl-10 border-2 border-gray-200 dark:border-gray-700 focus:border-primary transition-colors"
+                            />
+                          </div>
                         </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {t('alerts.roomsHelpText') || 'Leave empty to search all room counts'}
+                        </p>
                       </div>
 
                       <div className="space-y-3">
@@ -691,7 +843,7 @@ const PropertyAlertsPage: React.FC = () => {
                       <Button
                         type="button"
                         variant="outline"
-                        onClick={() => setActiveTab('manage')}
+                        onClick={isEditing ? handleCancelEdit : () => setActiveTab('manage')}
                       >
                         {t('alerts.cancel')}
                       </Button>
@@ -703,12 +855,12 @@ const PropertyAlertsPage: React.FC = () => {
                         {isCreating ? (
                           <>
                             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                            {t('alerts.creating')}
+                            {isEditing ? t('alerts.updating') : t('alerts.creating')}
                           </>
                         ) : (
                           <>
-                            <Plus className="h-4 w-4 mr-2" />
-                            {t('alerts.createAlert')}
+                            {isEditing ? <Edit className="h-4 w-4 mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
+                            {isEditing ? t('alerts.updateAlert') : t('alerts.createAlert')}
                           </>
                         )}
                       </Button>
@@ -719,8 +871,9 @@ const PropertyAlertsPage: React.FC = () => {
             </TabsContent>
           </Tabs>
         </motion.div>
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 };
 

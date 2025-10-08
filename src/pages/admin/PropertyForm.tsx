@@ -13,8 +13,7 @@ import {
   Eye,
   Star,
   Trash2,
-  Play,
-  Search
+  Play
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -32,11 +31,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { supabase } from '@/lib/supabaseClient';
-import { swissCities, filterCities } from '@/data/swissCities';
+import { CityAutocomplete } from '@/components/CityAutocomplete';
+import { CitySuggestion } from '@/lib/cityService';
 
 export const PropertyForm: React.FC = () => {
   const { t } = useTranslation();
@@ -74,8 +72,13 @@ export const PropertyForm: React.FC = () => {
   const [newFeature, setNewFeature] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [cityOpen, setCityOpen] = useState(false);
-  const [citySearch, setCitySearch] = useState('');
+  const [selectedCity, setSelectedCity] = useState<CitySuggestion | null>(null);
+
+  // Handle city selection
+  const handleCitySelect = (suggestion: CitySuggestion) => {
+    setSelectedCity(suggestion);
+    handleInputChange('city', suggestion.name);
+  };
 
   // Load property data if editing
   React.useEffect(() => {
@@ -404,70 +407,19 @@ export const PropertyForm: React.FC = () => {
                       <Label htmlFor="city">
                         {t('language') === 'fr' ? 'Ville' : 'City'} *
                       </Label>
-                      <Popover open={cityOpen} onOpenChange={setCityOpen}>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            aria-expanded={cityOpen}
-                            className={`w-full justify-between ${errors.city ? 'border-red-500' : ''}`}
-                          >
-                            <div className="flex items-center space-x-2">
-                              <MapPin className="h-4 w-4 text-gray-400" />
-                              <span className={formData.city ? "text-gray-900 dark:text-white" : "text-muted-foreground"}>
-                                {formData.city || (t('language') === 'fr' ? 'Sélectionner une ville...' : 'Select a city...')}
-                              </span>
-                            </div>
-                            <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-full p-0" align="start">
-                          <Command>
-                            <CommandInput
-                              placeholder={t('language') === 'fr' ? 'Rechercher une ville...' : 'Search for a city...'}
-                              value={citySearch}
-                              onValueChange={setCitySearch}
-                              className="h-9"
-                            />
-                            <CommandList>
-                              <CommandEmpty>
-                                {t('language') === 'fr' ? 'Aucune ville trouvée.' : 'No city found.'}
-                              </CommandEmpty>
-                              <CommandGroup>
-                                {formData.city && (
-                                  <CommandItem
-                                    value=""
-                                    onSelect={() => {
-                                      handleInputChange('city', '');
-                                      setCityOpen(false);
-                                      setCitySearch('');
-                                    }}
-                                    className="cursor-pointer text-red-600 hover:text-red-700"
-                                  >
-                                    <X className="mr-2 h-4 w-4" />
-                                    {t('language') === 'fr' ? 'Effacer la sélection' : 'Clear selection'}
-                                  </CommandItem>
-                                )}
-                                {filterCities(citySearch).map((city) => (
-                                  <CommandItem
-                                    key={city}
-                                    value={city}
-                                    onSelect={(currentValue) => {
-                                      handleInputChange('city', currentValue);
-                                      setCityOpen(false);
-                                      setCitySearch('');
-                                    }}
-                                    className="cursor-pointer"
-                                  >
-                                    <MapPin className="mr-2 h-4 w-4" />
-                                    {city}
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
+                      <CityAutocomplete
+                        value={formData.city || ''}
+                        onChange={(value) => {
+                          handleInputChange('city', value);
+                          if (!value) {
+                            setSelectedCity(null);
+                          }
+                        }}
+                        onSelect={handleCitySelect}
+                        placeholder={t('language') === 'fr' ? 'Rechercher une ville...' : 'Search for a city...'}
+                        variant="form"
+                        className={errors.city ? 'border-red-500' : ''}
+                      />
                       {errors.city && (
                         <p className="text-sm text-red-500">{errors.city}</p>
                       )}
