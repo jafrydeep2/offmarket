@@ -35,9 +35,20 @@ class CityService {
   private async initializeData() {
     if (this.isInitialized) return;
     
-    // For now, use fallback data to ensure it works
-    // TODO: Implement proper JSON loading later
-    this.cities = this.getFallbackCities();
+    try {
+      // Load the actual cities data from JSON file
+      const response = await fetch('/src/static/cities.json');
+      if (response.ok) {
+        this.cities = await response.json();
+      } else {
+        console.warn('Failed to load cities.json, using fallback data');
+        this.cities = this.getFallbackCities();
+      }
+    } catch (error) {
+      console.warn('Error loading cities.json, using fallback data:', error);
+      this.cities = this.getFallbackCities();
+    }
+    
     this.buildSearchIndex();
     this.isInitialized = true;
   }
