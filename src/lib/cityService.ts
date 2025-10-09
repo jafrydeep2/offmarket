@@ -37,9 +37,10 @@ class CityService {
     
     try {
       // Load the actual cities data from JSON file
-        const response = await fetch('/cities.json');
+      const response = await fetch('/cities.json');
       if (response.ok) {
         this.cities = await response.json();
+        console.log('Loaded cities data:', this.cities.length, 'cities');
       } else {
         console.warn('Failed to load cities.json, using fallback data');
         this.cities = this.getFallbackCities();
@@ -51,6 +52,7 @@ class CityService {
     
     this.buildSearchIndex();
     this.isInitialized = true;
+    console.log('Search index built with', this.searchIndex.size, 'keys');
   }
 
   private getFallbackCities(): SwissCity[] {
@@ -134,9 +136,12 @@ class CityService {
 
     // Check if search term is numeric (postal code search)
     const isNumericSearch = /^\d+$/.test(searchTerm);
+    
+    console.log('Searching for:', searchTerm, 'isNumeric:', isNumericSearch);
 
     // First, try exact matches (highest priority)
     const exactMatches = this.searchIndex.get(searchTerm) || [];
+    console.log('Exact matches for', searchTerm, ':', exactMatches.length);
     exactMatches.forEach(city => {
       if (!seen.has(city.id)) {
         suggestions.push(this.formatCitySuggestion(city));
@@ -184,7 +189,7 @@ class CityService {
     }
 
     // Sort suggestions by relevance (parent cities first, then by name length)
-    return suggestions
+    const finalSuggestions = suggestions
       .sort((a, b) => {
         // Parent cities first
         if (a.isParent && !b.isParent) return -1;
@@ -194,6 +199,9 @@ class CityService {
         return a.name.length - b.name.length;
       })
       .slice(0, limit);
+    
+    console.log('Final suggestions for', searchTerm, ':', finalSuggestions.length, finalSuggestions);
+    return finalSuggestions;
   }
 
   /**
