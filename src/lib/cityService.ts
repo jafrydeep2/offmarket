@@ -37,7 +37,7 @@ class CityService {
     
     try {
       // Load the actual cities data from JSON file
-      const response = await fetch('/src/static/cities.json');
+        const response = await fetch('/cities.json');
       if (response.ok) {
         this.cities = await response.json();
       } else {
