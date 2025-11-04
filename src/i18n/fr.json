@@ -1,7 +1,7 @@
 {
   "navigation": {
     "home": "Accueil",
-    "properties": "Propriétés",
+    "properties": "Nos biens",
     "services": "Services",
     "becomeMember": "Devenir membre",
     "contact": "Nous contacter",
@@ -10,20 +10,20 @@
   },
   "home": {
     "hero": {
-      "title": "Propriétés Hors-Marché Exclusives",
-      "subtitle": "Découvrez des opportunités immobilières uniques, disponibles uniquement pour nos membres privilégiés",
-      "cta": "Voir toutes les propriétés"
+      "title": "Accédez à l’exclusivité et trouvez votre chez-vous",
+      "subtitle": "Découvrez des biens immobiliers hors marché et déléguez votre recherche en toute simplicité",
+      "cta": "Voir tous les biens"
     },
     "featured": {
-      "title": "Propriétés en Vedette",
-      "subtitle": "Une sélection soignée de nos meilleures opportunités"
+      "title": "Biens en vedette",
+      "subtitle": "Une sélection exclusive de nos biens"
     }
   },
   "properties": {
-    "title": "Toutes les Propriétés",
-    "subtitle": "Découvrez notre sélection exclusive de propriétés hors-marché",
+    "title": "Tous les biens",
+    "subtitle": "Parcourez nos biens hors-marché et accédez en priorité aux visites",
     "search": {
-      "placeholder": "Rechercher par ville, quartier ou type...",
+      "placeholder": "Rechercher par ville",
       "button": "Rechercher"
     },
     "filters": {
@@ -44,19 +44,19 @@
     },
     "viewDetails": "Voir les détails",
     "rooms": "pièces",
-    "contactInfo": "Informations de contact",
-    "results": "propriétés trouvées",
+    "contactInfo": "Vous souhaitez des précisions sur ce bien ?",
+    "results": "Biens trouvés",
     "clearFilters": "Effacer les filtres",
-    "noResults": "Aucune propriété trouvée",
-    "ownerDetails": "Détails du propriétaire",
+    "noResults": "Aucun bien trouvé",
+    "ownerDetails": "Organiser une visite",
     "memberAccessRequired": "Accès réservé aux membres",
-    "memberAccessDescription": "Devenez membre pour accéder aux informations de contact du propriétaire et à d'autres avantages exclusifs.",
+    "memberAccessDescription": "Devenez membre et accédez aux contacts pour organiser une visite ainsi qu’à d’autres avantages exclusifs.",
     "becomeMember": "Devenir membre",
     "name": "Nom",
     "phone": "Téléphone"
   },
   "property": {
-    "details": "Détails de la Propriété",
+    "details": "Détails du bien",
     "description": "Description",
     "features": "Caractéristiques",
     "contact": "Contact",
@@ -75,72 +75,72 @@
     "password": "Mot de passe",
     "submit": "Se connecter",
     "loginRequired": "Connexion requise pour voir les informations de contact",
-    "accessExpired": "Votre abonnement a expiré. Merci de le renouveler."
+    "accessExpired": "Votre compte a expiré. Merci de le renouveler en contactant Exclusimmo."
   },
   "contact": {
-    "title": "Nous Contacter",
+    "title": "Nous contacter",
     "name": "Nom",
     "email": "E-mail",
     "message": "Message",
     "send": "Envoyer",
     "phone": "Téléphone",
-    "emailAddress": "contact@offmarket.ch",
-    "phoneNumber": "+41 22 123 45 67"
+    "emailAddress": "info@exclusimmo.ch",
+    "phoneNumber": "41797115813"
   },
   "becomeMember": {
-    "title": "Rejoignez Notre Réseau Immobilier Exclusif Hors-Marché",
-    "subtitle": "Accédez à des opportunités uniques et confidentielles d'achat, location ou vente de propriétés hors-marché. Devenir membre signifie intégrer un cercle privé où confiance, discrétion et opportunités sur mesure sont prioritaires.",
-    "cta": "Demander l'Adhésion",
-    "intro": "Notre adhésion est conçue pour deux profils :\n- Acheteurs et locataires qui souhaitent un accès privilégié aux propriétés hors-marché.\n- Propriétaires immobiliers qui souhaitent louer ou vendre discrètement à un public qualifié.\n\nL'adhésion est gratuite et sans engagement. Une fois votre demande soumise, un membre de notre équipe vous contactera rapidement pour comprendre vos besoins et vous guider dans les prochaines étapes.",
+    "title": "Rejoignez à notre réseau de biens hors-marché",
+    "subtitle": "Devenez membre et soyez parmi les premiers à découvrir et visiter nos opportunités hors-marché.",
+    "cta": "Devenir membre",
+    "intro": "",
     "services": {
-      "title": "Nos Services Hors-Marché",
-      "subtitle": "Solutions complètes pour tous vos besoins immobiliers",
+      "title": "Nos services",
+      "subtitle": "",
       "privateSales": {
-        "title": "Ventes Privées de Propriétés",
-        "description": "Pour les propriétaires souhaitant vendre avec une discrétion totale. Connexion avec des acheteurs qualifiés sans mise en ligne publique.",
-        "cta": "Contactez-nous pour votre vente privée"
+        "title": "Vendez votre bien",
+        "description": "Exclusimmo vous accompagne de l'estimation à la signature finale, avec un service personnalisé et transparent.",
+        "cta": "Etre contacté par l'un de nos experts"
       },
       "videos": {
-        "title": "Vidéos de Présentation de Propriétés",
-        "description": "Création de vidéos professionnelles : visite guidée, prises de vue drone, ambiance. Mise en valeur des caractéristiques clés de la propriété pour attirer les acheteurs sérieux.",
-        "cta": "Demandez votre vidéo professionnelle"
+        "title": "Création de vidéos immobilières",
+        "description": "Des vidéos attractives pour présenter votre bien et séduire vos acheteurs.",
+        "cta": "Etre contacté par l'un de nos experts"
       },
       "exclusiveAccess": {
-        "title": "Accès Exclusif aux Propriétés",
-        "description": "Nos membres bénéficient d'un accès privilégié aux propriétés hors-marché. Opportunités rares soigneusement sélectionnées selon leurs critères.",
-        "cta": "Devenez membre"
+        "title": "Accès aux biens hors-marché",
+        "description": "Devenez membre et visiter en avant-première des bien hors-marché.",
+        "cta": "Devenir membre"
       },
       "personalized": {
-        "title": "Assistance Personnalisée",
-        "description": "Recherche sur mesure de propriétés basée sur vos besoins et critères. Support personnalisé à chaque étape pour trouver rapidement votre propriété idéale.",
-        "cta": "Commencez votre recherche personnalisée"
+        "title": "Déléguez votre recherche immobilière",
+        "description": "Nous trouvons pour vous le logement idéal, conforme à toutes vos attentes.",
+        "cta": "Etre contacté par l'un de nos experts"
       }
     },
     "form": {
-      "title": "Demande d'Adhésion Exclusive",
+      "title": "Demande d'adhésion",
       "fullName": "Nom complet",
       "email": "Email",
       "phone": "Numéro de téléphone",
       "profile": "Vous êtes ?",
       "profileOptions": {
-        "looking": "À la recherche d'une propriété",
+        "looking": "À la recherche d'un bien",
         "owner": "Propriétaire cherchant à louer ou vendre",
         "other": "Autre"
       },
       "project": "Votre projet",
-      "projectPlaceholder": "Ex: Appartement 3 chambres à Lausanne / Location villa à Genève...",
+      "projectPlaceholder": "Ex: À la recherche d'un 3,5 pièces à Lausanne",
       "submit": "Soumettre ma demande",
-      "success": "Demande envoyée avec succès !",
+      "success": "Demande envoyée avec succès. Nous vous contacterons dans les plus brefs délais !",
       "error": "Erreur lors de l'envoi. Veuillez réessayer."
     }
   },
   "privateSales": {
     "title": "Vendez votre bien",
-    "subtitle": "Offrez votre propriété avec une discrétion totale, en dehors des canaux publics. Nous vous connectons avec des acheteurs qualifiés tout en garantissant la confidentialité complète de votre projet.",
-    "cta": "Contactez-nous pour votre vente privée",
+    "subtitle": "",
+    "cta": "Etre contacté par l'un de nos experts",
     "process": {
-      "title": "Comment Ça Marche",
-      "subtitle": "Notre processus éprouvé garantit que votre vente privée est gérée avec la plus grande discrétion et efficacité",
+      "title": "Comment ça Marche?",
+      "subtitle": "",
       "estimation": {
         "title": "Estimation de votre bien",
         "description": "Nous établissons une estimation rigoureuse en intégrant le marché actuel, la localisation et les spécificités de votre propriété. L'objectif est de déterminer un prix juste qui favorise une vente rapide et met en avant la valeur réelle de votre bien immobilier."
@@ -159,36 +159,36 @@
       }
     },
     "description": {
-      "title": "Pourquoi Choisir les Ventes Privées ?",
-      "content": "Les ventes privées offrent une discrétion totale et aboutissent souvent à de meilleurs prix en connectant directement avec des acheteurs qualifiés qui sont sérieux dans leur achat. Notre réseau garantit que votre propriété atteint le bon public sans exposition publique."
+      "title": "",
+      "content": ""
     },
     "benefits": {
-      "confidentiality": "Confidentialité Totale",
-      "qualified": "Acheteurs Qualifiés",
-      "expertise": "Négociation Expert",
-      "personalized": "Service Personnalisé"
+      "confidentiality": "",
+      "qualified": "",
+      "expertise": "",
+      "personalized": ""
     },
     "testimonials": {
-      "title": "Ce Que Disent Nos Clients",
-      "subtitle": "Expériences réelles de clients satisfaits qui ont vendu en privé",
+      "title": "",
+      "subtitle": "",
       "client1": {
-        "name": "Robert Müller",
-        "location": "Zurich, Suisse",
-        "text": "Le processus de vente privée était fluide et discret. Nous avons obtenu un meilleur prix que prévu sans aucune exposition publique."
+        "name": "",
+        "location": "",
+        "text": ""
       },
       "client2": {
-        "name": "Isabelle Dubois",
-        "location": "Genève, Suisse",
-        "text": "Service professionnel avec une confidentialité totale. L'équipe a trouvé l'acheteur parfait en quelques semaines."
+        "name": "",
+        "location": "",
+        "text": ""
       },
       "client3": {
-        "name": "Thomas Weber",
-        "location": "Bâle, Suisse",
-        "text": "Excellentes compétences de négociation et un réseau d'acheteurs sérieux. Hautement recommandé pour les ventes privées."
+        "name": "",
+        "location": "",
+        "text": ""
       }
     },
     "form": {
-      "title": "Démarrez la vente de votre bien",
+      "title": "Votre projet de vente commence ici",
       "subtitle": "Un service complet, de l'estimation à la signature.",
       "firstName": "Prénom",
       "lastName": "Nom de famille",
@@ -201,12 +201,12 @@
         "villa": "Villa",
         "penthouse": "Penthouse"
       },
-      "location": "Localisation de la propriété",
+      "location": "Localisation du bien",
       "locationPlaceholder": "Ex: Lausanne, Genève, Zurich...",
-      "message": "Détails de la propriété",
-      "messagePlaceholder": "Parlez-nous de votre propriété, vos attentes de prix et toute exigence spécifique...",
-      "submit": "Commencez ma vente privée",
-      "success": "Demande de vente privée soumise avec succès !",
+      "message": "Détails du bien",
+      "messagePlaceholder": "Présentez-nous votre bien en quelques mots",
+      "submit": "Envoyer ma demande",
+      "success": "Votre demande a bien été envoyée. Nous vous contacterons rapidement!",
       "error": "Erreur lors de l'envoi. Veuillez réessayer."
     },
     "bottomCta": {
@@ -215,57 +215,57 @@
     }
   },
   "propertyVideos": {
-    "title": "Vidéos immobilières professionnelles",
-    "subtitle": "Nous créons des vidéos professionnelles personnalisées pour chaque propriété : visites guidées, prises de vue drone et vidéos d'ambiance. Ces vidéos mettent en valeur l'architecture, la disposition et l'atmosphère, aidant à attirer rapidement les acheteurs sérieux.",
-    "cta": "Demandez votre vidéo professionnelle",
+    "title": "Création de vidéos immobilières",
+    "subtitle": "Chaque propriété mérite une mise en scène unique. Nous créons des vidéos professionnelles personnalisées combinant prises de vue aériennes, visites guidées et ambiances soignées pour révéler tout le caractère et l'élégance de votre bien.",
+    "cta": "Etre contacté par l'un de nos experts",
     "process": {
-      "title": "Notre Processus de Production Vidéo",
-      "subtitle": "Du concept à la livraison finale, nous créons des vidéos époustouflantes qui mettent en valeur les caractéristiques uniques de votre propriété",
+      "title": "Une création sur mesure",
+      "subtitle": "Du concept à la vidéo finale, nous transformons chaque bien en une expérience visuelle exceptionnelle.",
       "production": {
-        "title": "Production Professionnelle",
-        "description": "Tournage de haute qualité avec équipement professionnel"
+        "title": "Production professionnelle",
+        "description": "Tournage de haute qualité avec avec caméra et drone professionnels"
       },
       "editing": {
-        "title": "Montage Expert",
-        "description": "Post-production et montage professionnels"
+        "title": "Montage professionnel",
+        "description": "Un montage précis et créatif pour sublimer chaque détail."
       },
       "delivery": {
-        "title": "Livraison Rapide",
-        "description": "Délai de traitement rapide avec plusieurs options de format"
+        "title": "Livraison rapide",
+        "description": "Des délais courts et plusieurs formats prêts pour le web et les réseaux sociaux."
       }
     },
     "description": {
-      "title": "Pourquoi Choisir les Vidéos Professionnelles ?",
-      "content": "Les vidéos professionnelles de propriétés augmentent considérablement l'engagement des acheteurs et aident les propriétés à se vendre plus rapidement. Nos vidéos mettent en valeur les meilleures caractéristiques de votre propriété et créent une connexion émotionnelle avec les acheteurs potentiels."
+      "title": "Pourquoi choisir des vidéos professionnelles ?",
+      "content": "Les vidéos professionnelles permettent d'augmenter significativement l'engagement des acheteurs et de vendre les biens plus rapidement. Nos productions mettent en avant les atouts uniques de votre bien tout en créant une connexion émotionnelle avec les acheteurs potentiels."
     },
     "benefits": {
-      "professional": "Qualité Professionnelle",
-      "engaging": "Contenu Engageant",
-      "attraction": "Attirer les Acheteurs",
-      "showcase": "Mettre en Valeur"
+      "professional": "Qualité professionnelle",
+      "engaging": "Contenu engageant",
+      "attraction": "Attirer les acheteurs",
+      "showcase": "Mettre en valeur"
     },
     "testimonials": {
-      "title": "Ce Que Disent Nos Clients",
-      "subtitle": "Expériences réelles de clients satisfaits qui ont utilisé nos services vidéo",
+      "title": "",
+      "subtitle": "",
       "client1": {
-        "name": "Marie Laurent",
-        "location": "Lausanne, Suisse",
-        "text": "La vidéo était absolument magnifique et nous a aidés à vendre notre propriété en seulement 2 semaines. La qualité a dépassé nos attentes."
+        "name": "",
+        "location": "",
+        "text": ""
       },
       "client2": {
-        "name": "David Schmidt",
-        "location": "Genève, Suisse",
-        "text": "Service professionnel du début à la fin. Les prises de vue drone ont vraiment mis en valeur les caractéristiques uniques de notre propriété."
+        "name": "",
+        "location": "",
+        "text": ""
       },
       "client3": {
-        "name": "Sophie Martin",
-        "location": "Zurich, Suisse",
-        "text": "L'équipe de production vidéo était incroyablement professionnelle et le résultat final était parfait pour notre marketing."
+        "name": "",
+        "location": "",
+        "text": ""
       }
     },
     "form": {
-      "title": "Demandez Votre Vidéo Professionnelle",
-      "subtitle": "Parlez-nous de votre propriété et nous créerons une vidéo époustouflante",
+      "title": "Votre bien en vidéo",
+      "subtitle": "",
       "firstName": "Prénom",
       "lastName": "Nom de famille",
       "email": "Email",
@@ -279,69 +279,69 @@
       },
       "location": "Localisation de la propriété",
       "locationPlaceholder": "Ex: Lausanne, Genève, Zurich...",
-      "message": "Exigences vidéo",
-      "messagePlaceholder": "Parlez-nous de votre propriété, des caractéristiques spécifiques à mettre en valeur et de toute exigence particulière...",
-      "submit": "Demandez ma vidéo professionnelle",
-      "success": "Demande de vidéo soumise avec succès !",
+      "message": "Description",
+      "messagePlaceholder": "Parlez-nous de votre bien, nous nous occupons du reste",
+      "submit": "Envoyer ma demande",
+      "success": "Votre demande a bien été envoyée. Nous vous contacterons rapidement!",
       "error": "Erreur lors de l'envoi. Veuillez réessayer."
     },
     "bottomCta": {
-      "title": "Prêt à Mettre en Valeur Votre Propriété ?",
-      "description": "Laissez notre équipe professionnelle créer une vidéo époustouflante qui fera ressortir votre propriété."
+      "title": "Prêt à sublimer votre Bien ?",
+      "description": "Laissez notre équipe créer une vidéo qui mettra en valeur votre propriété."
     }
   },
   "exclusiveAccess": {
-    "title": "Accès Exclusif – Propriétés Hors-Marché",
-    "subtitle": "Devenez membre et profitez d'un accès exclusif aux propriétés hors-marché, souvent indisponibles ailleurs. Nos propriétés sont soigneusement sélectionnées pour répondre aux besoins de nos clients, offrant des opportunités rares.",
-    "cta": "Devenez membre et accédez aux propriétés exclusives",
+    "title": "Biens Hors-Marché",
+    "subtitle": "Accédez à des biens hors-marché, introuvables sur les sites immobiliers classiques, exclusivement réservés à nos membres.",
+    "cta": "Devenez membre pour accéder à nos biens hors-marché",
     "process": {
-      "title": "Comment Obtenir un Accès Exclusif",
-      "subtitle": "Rejoignez notre réseau exclusif et accédez aux propriétés hors-marché les plus recherchées",
+      "title": "Comment bénéficier d'un accès exclusif ?",
+      "subtitle": "Rejoignez notre réseau et accédez aux biens hors-marché",
       "membership": {
-        "title": "Demande d'Adhésion",
-        "description": "Postulez pour un accès membre exclusif"
+        "title": "Demande d'adhésion",
+        "description": "Soumettez votre demande d'adhésion"
       },
       "verification": {
-        "title": "Processus de Vérification",
+        "title": "Processus de vérification",
         "description": "Vérification rapide de vos références"
       },
       "access": {
         "title": "Accès Exclusif",
-        "description": "Accès aux propriétés hors-marché"
+        "description": "Accès aux bien hors-marché"
       }
     },
     "description": {
-      "title": "Pourquoi Choisir l'Accès Exclusif ?",
-      "content": "Notre réseau exclusif fournit l'accès à des propriétés qui ne sont jamais listées publiquement. Ces opportunités hors-marché offrent souvent une meilleure valeur et moins de concurrence, vous donnant un avantage significatif sur le marché immobilier."
+      "title": "Pourquoi devenir membre ?",
+      "content": "Grâce à notre réseau exclusif de particuliers, découvrez des biens hors-marché, disponibles uniquement sur Exclusimmo."
     },
     "benefits": {
-      "exclusive": "Propriétés Exclusives",
-      "verified": "Membres Vérifiés",
+      "exclusive": "Biens exclusifs ",
+      "verified": "Membres vérifiés",
       "network": "Réseau Premium",
       "opportunities": "Opportunités Rares"
     },
     "testimonials": {
-      "title": "Ce Que Disent Nos Membres",
-      "subtitle": "Expériences réelles de nos membres exclusifs",
+      "title": "",
+      "subtitle": "",
       "client1": {
-        "name": "Alexandre Moreau",
-        "location": "Lausanne, Suisse",
-        "text": "L'accès exclusif a été incroyable. J'ai trouvé des propriétés qui n'ont jamais été sur le marché public et j'ai obtenu des offres incroyables."
+        "name": "",
+        "location": "",
+        "text": ""
       },
       "client2": {
-        "name": "Claire Dubois",
-        "location": "Genève, Suisse",
-        "text": "Être membre me donne accès aux meilleures propriétés avant tout le monde. C'est comme avoir un avantage secret."
+        "name": "",
+        "location": "",
+        "text": ""
       },
       "client3": {
-        "name": "Marc Schneider",
-        "location": "Zurich, Suisse",
-        "text": "La qualité des propriétés dans le réseau exclusif est exceptionnelle. Chaque propriété que j'ai vue a été remarquable."
+        "name": "",
+        "location": "",
+        "text": ""
       }
     },
     "form": {
-      "title": "Rejoignez Notre Réseau Exclusif",
-      "subtitle": "Postulez pour l'adhésion et accédez aux propriétés hors-marché",
+      "title": "Rejoignez notre réseau exclusif",
+      "subtitle": "Faites votre demande d'adhésion et accédez aux biens hors-marché",
       "firstName": "Prénom",
       "lastName": "Nom de famille",
       "email": "Email",
@@ -352,71 +352,71 @@
         "purchase": "Achat",
         "both": "Les Deux"
       },
-      "location": "Localisation Préférée",
+      "location": "Localisation préférée",
       "locationPlaceholder": "Ex: Lausanne, Genève, Zurich...",
       "message": "Informations Supplémentaires",
-      "messagePlaceholder": "Parlez-nous de vos préférences de propriété, votre gamme de budget et toute exigence spécifique...",
-      "submit": "Postuler pour l'adhésion",
-      "success": "Demande d'adhésion soumise avec succès !",
+      "messagePlaceholder": "Parlez-nous de vos critères de recherche, de votre budget et de vos exigences spécifiques...",
+      "submit": "Devenir membre",
+      "success": "Demande d'adhésion envoyée avec succès !",
       "error": "Erreur lors de l'envoi. Veuillez réessayer."
     },
     "bottomCta": {
-      "title": "Prêt à Rejoindre Notre Réseau Exclusif ?",
-      "description": "Postulez pour l'adhésion aujourd'hui et accédez aux propriétés hors-marché les plus exclusives."
+      "title": "Prêt à rejoindre notre réseau exclusif ?",
+      "description": "Demandez votre adhésion dès aujourd'hui et accédez aux bien hors-marché."
     }
   },
   "propertyFinder": {
     "title": "Déléguez votre recherche immobilière",
-    "subtitle": "Nous vous guidons étape par étape pour trouver votre propriété idéale. Notre service de recherche de propriété comprend la recherche, la sélection et la négociation, vous faisant gagner du temps et vous aidant à trouver la propriété qui correspond parfaitement à vos critères.",
+    "subtitle": "Nous vous accompagnons à chaque étape pour trouver votre bien idéal.\nNotre service de recherche de propriété couvre la prospection, la sélection et la négociation, afin de vous faire gagner du temps et de vous aider à trouver le bien qui répond parfaitement à vos critères.",
     "cta": "Commencer maintenant",
     "process": {
-      "title": "Notre Processus de Recherche de Propriété",
-      "subtitle": "De la consultation initiale à l'achat final, nous vous guidons à chaque étape pour trouver votre propriété parfaite",
+      "title": "Nous trouvons pour vous. Vous gagnez du temps !",
+      "subtitle": "De la définition de vos besoins à la signature du bail, nous vous accompagnons à chaque étape pour trouver le logement idéal",
       "search": {
         "title": "Recherche",
-        "description": "Recherche complète de propriétés basée sur vos critères"
+        "description": "Nous effectuons une recherche complète de biens à louer, adaptée à vos critères : emplacement, budget, type de bien, durée etc."
       },
       "selection": {
         "title": "Sélection",
-        "description": "Évaluation minutieuse et présélection des meilleures options"
+        "description": "Nous analysons le marché et vous proposons une sélection ciblée de logements correspondant à vos critères."
       },
       "negotiation": {
-        "title": "Négociation",
-        "description": "Négociation experte pour obtenir la meilleure offre"
+        "title": "Accompagnement",
+        "description": "Nous vous accompagnons dans toutes les démarches jusqu'à la signature du bail."
       }
     },
     "description": {
-      "title": "Pourquoi Choisir Notre Service de Recherche de Propriété ?",
-      "content": "Notre équipe expérimentée combine la connaissance du marché local avec des techniques de recherche avancées pour trouver des propriétés qui correspondent exactement à vos exigences. Nous gérons tous les aspects du processus de recherche de propriété, de la consultation initiale aux négociations finales."
+      "title": "Pourquoi nous choisir ?",
+      "content": "Parce qu'une opportunité peut se présenter à tout moment, notre force réside dans notre disponibilité permanente. Avec un suivi humain et attentif, nous vous accompagnons avec passion pour dénicher le logement idéal."
     },
     "benefits": {
-      "time": "Gagnez du Temps",
-      "expertise": "Connaissance Expert",
-      "network": "Réseau Exclusif",
-      "personalized": "Service Personnalisé"
+      "time": "Gain de Temps",
+      "expertise": "Service Personnalisé",
+      "network": "Suivi Humain",
+      "personalized": "Biens hors-marché"
     },
     "testimonials": {
-      "title": "Ce Que Disent Nos Clients",
-      "subtitle": "Expériences réelles de clients satisfaits qui ont trouvé leurs propriétés de rêve",
+      "title": "",
+      "subtitle": "",
       "client1": {
-        "name": "Sarah Johnson",
-        "location": "Lausanne, Suisse",
-        "text": "L'équipe nous a trouvé l'appartement parfait en seulement 3 semaines. Leur attention aux détails et leur compréhension de nos besoins étaient exceptionnelles."
+        "name": "",
+        "location": "",
+        "text": ""
       },
       "client2": {
-        "name": "Michael Chen",
-        "location": "Genève, Suisse",
-        "text": "Service professionnel du début à la fin. Ils ont négocié une excellente affaire et ont rendu tout le processus sans stress."
+        "name": "",
+        "location": "",
+        "text": ""
       },
       "client3": {
-        "name": "Elena Rodriguez",
-        "location": "Zurich, Suisse",
-        "text": "Expertise exceptionnelle sur le marché local. Ils ont trouvé des propriétés que nous n'aurions jamais découvertes seuls."
+        "name": "",
+        "location": "",
+        "text": ""
       }
     },
     "form": {
-      "title": "Commencer Maintenant",
-      "subtitle": "Parlez-nous de votre propriété idéale et nous la trouverons pour vous",
+      "title": "Trouvez votre logement avec nous",
+      "subtitle": "Ne perdez plus de temps, nous trouvons le logement idéal pour vous.",
       "firstName": "Prénom",
       "lastName": "Nom de famille",
       "email": "Email",
@@ -432,35 +432,35 @@
       "location": "Localisation souhaitée",
       "locationPlaceholder": "Ex: Lausanne, Genève, Zurich...",
       "budget": "Budget",
-      "budgetPlaceholder": "Ex: CHF 500'000 - 1'000'000",
-      "message": "Exigences supplémentaires",
-      "messagePlaceholder": "Parlez-nous de vos exigences spécifiques, préférences ou questions...",
-      "submit": "Commencez ma recherche personnalisée",
-      "success": "Demande de recherche soumise avec succès !",
+      "budgetPlaceholder": "Ex: CHF 1'800 - 2'500",
+      "message": "Vos critères ou besoins spécifiques",
+      "messagePlaceholder": "Parlez-nous de vos besoins ou critères spécifiques…",
+      "submit": "Envoyer ma demande",
+      "success": "Demande de recherche soumise avec succès ! Nous vous contacterons dans les plus brefs délais.",
       "error": "Erreur lors de l'envoi. Veuillez réessayer."
     },
     "bottomCta": {
-      "title": "Prêt à Trouver Votre Propriété de Rêve ?",
-      "description": "Laissez nos experts vous guider à travers tout le processus et trouver la propriété parfaite qui correspond à vos critères et à votre budget."
+      "title": "Prêt à trouver votre propriété de rêve ?",
+      "description": "Laissez nos experts vous accompagner à chaque étape pour trouver le bien idéal, adapté à vos critères et à votre budget."
     }
   },
   "legal": {
     "terms": "Conditions Générales",
     "privacy": "Politique de Confidentialité",
     "notices": "Mentions Légales",
-    "safety": "Conseils de Sécurité"
+    "safety": ""
   },
   "footer": {
-    "description": "Plateforme exclusive de propriétés hors-marché pour les investisseurs privilégiés."
+    "description": "Biens hors-marché en Suisse romande et accompagnement personnalisé pour vos projets immobiliers"
   },
   "alerts": {
     "title": "Mes Alertes",
-    "subtitle": "Gérez vos alertes de propriétés et recevez des notifications personnalisées",
+    "subtitle": "Paramétrez vos alertes et recevez directement les biens correspondant à vos critères",
     "manage": "Gérer",
     "create": "Créer",
     "createNew": "Créer une nouvelle alerte",
-    "createSubtitle": "Configurez vos critères pour recevoir des notifications personnalisées",
-    "transactionType": "Type de transaction",
+    "createSubtitle": "Configurez vos critères et restez informé des biens qui vous intéressent",
+    "transactionType": "Type de projet",
     "propertyType": "Type de bien",
     "location": "Localisation",
     "rooms": "Nombre de pièces",
@@ -479,8 +479,8 @@
     "minRoomsPlaceholder": "Pièces min",
     "maxRoomsPlaceholder": "Pièces max",
     "roomsHelpText": "Laissez vide pour rechercher tous les nombres de pièces",
-    "minBudgetPlaceholder": "Ex: 500000",
-    "maxBudgetPlaceholder": "Ex: 2000000",
+    "minBudgetPlaceholder": "Ex: 1'750",
+    "maxBudgetPlaceholder": "Ex: 2'500",
     "cancel": "Annuler",
     "createAlert": "Créer l'alerte",
     "editAlert": "Modifier l'alerte",
@@ -490,7 +490,7 @@
     "updating": "Mise à jour...",
     "edit": "Modifier",
     "noAlerts": "Aucune alerte",
-    "noAlertsSubtitle": "Vous n'avez pas encore créé d'alerte. Créez-en une pour recevoir des notifications personnalisées.",
+    "noAlertsSubtitle": "Aucune alerte configurée pour le moment. Définissez vos critères pour être informé des biens qui vous intéressent",
     "createFirstAlert": "Créer une alerte",
     "active": "Actif",
     "inactive": "Inactif",
@@ -498,7 +498,7 @@
     "lastUpdated": "Dernière mise à jour:",
     "delete": "Supprimer",
     "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cette alerte ?",
-    "removeFavoriteConfirm": "Êtes-vous sûr de vouloir retirer cette propriété de vos favoris ?",
+    "removeFavoriteConfirm": "Êtes-vous sûr de vouloir retirer ce bien de vos favoris ?",
     "removeFavoriteTitle": "Retirer des favoris",
     "createdSuccess": "Alerte créée avec succès",
     "updatedSuccess": "Alerte mise à jour avec succès",
@@ -507,7 +507,7 @@
     "errorCreating": "Erreur lors de la création de l'alerte",
     "errorUpdating": "Erreur lors de la mise à jour de l'alerte",
     "errorDeleting": "Erreur lors de la suppression de l'alerte",
-    "selectTransactionType": "Veuillez sélectionner le type de transaction et le type de bien",
+    "selectTransactionType": "Veuillez sélectionner le projet et le type de bien",
     "invalidMinBudget": "Budget minimum invalide",
     "invalidMaxBudget": "Budget maximum invalide",
     "invalidMinRooms": "Nombre minimum de pièces invalide",
@@ -536,14 +536,14 @@
     },
     "dashboard": {
       "title": "Tableau de Bord",
-      "subtitle": "Vue d'ensemble de votre plateforme immobilière",
-      "totalProperties": "Propriétés Totales",
-      "activeUsers": "Utilisateurs Actifs",
-      "totalViews": "Vues Totales",
+      "subtitle": "Vue d'ensemble ",
+      "totalProperties": "Total de biens",
+      "activeUsers": "Utilisateurs actifs",
+      "totalViews": "Vues totales",
       "revenue": "Revenus",
-      "recentProperties": "Propriétés Récentes",
-      "recentUsers": "Utilisateurs Récents",
-      "quickActions": "Actions Rapides",
+      "recentProperties": "Biens récents",
+      "recentUsers": "Utilisateurs récents",
+      "quickActions": "Actions rapides",
       "viewAll": "Voir tout",
       "addProperty": "Ajouter une propriété",
       "addAccount": "Ajouter un compte",
@@ -552,21 +552,21 @@
     },
     "properties": {
       "title": "Gestion des Propriétés",
-      "subtitle": "Gérez toutes vos propriétés exclusives",
-      "add": "Ajouter une propriété",
+      "subtitle": "Gérez toutes vos biens exclusifs",
+      "add": "Ajouter un bien",
       "edit": "Modifier",
       "delete": "Supprimer",
       "duplicate": "Dupliquer",
       "view": "Voir",
       "export": "Exporter",
       "import": "Importer",
-      "search": "Rechercher des propriétés...",
+      "search": "Rechercher des biens...",
       "filters": "Filtres",
       "bulkActions": "Actions en lot",
-      "propertiesSelected": "propriétés sélectionnées",
+      "propertiesSelected": "biens sélectionnés",
       "feature": "Mettre en vedette",
-      "list": "Liste des propriétés",
-      "propertiesFound": "propriétés trouvées",
+      "list": "Liste des biens",
+      "propertiesFound": "biens trouvés",
       "showing": "Affichage de 1 à 10 sur 24 résultats",
       "previous": "Précédent",
       "next": "Suivant"
@@ -574,23 +574,23 @@
     "propertyForm": {
       "newProperty": "Nouvelle propriété",
       "editProperty": "Modifier la propriété",
-      "subtitle": "Remplissez les informations de la propriété",
+      "subtitle": "Remplissez les informations du bien",
       "basicInfo": "Informations de base",
       "title": "Titre",
       "titlePlaceholder": "Ex: Appartement 4.5 pièces - Lausanne Centre",
       "status": "Statut",
       "description": "Description",
-      "descriptionPlaceholder": "Décrivez la propriété en détail...",
+      "descriptionPlaceholder": "Décrivez le bien en détail...",
       "location": "Localisation",
       "city": "Ville",
       "cityPlaceholder": "Ex: Lausanne",
       "neighborhood": "Quartier",
       "neighborhoodPlaceholder": "Ex: Centre-ville",
-      "propertyDetails": "Détails de la propriété",
+      "propertyDetails": "Détails du bien",
       "rooms": "Pièces",
       "surface": "Surface (m²)",
       "price": "Prix",
-      "pricePlaceholder": "CHF 2'800'000",
+      "pricePlaceholder": "CHF 2'500",
       "features": "Caractéristiques",
       "addFeature": "Ajouter une caractéristique...",
       "images": "Images",
