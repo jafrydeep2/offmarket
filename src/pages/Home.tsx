@@ -49,7 +49,6 @@ const PropertiesSection: React.FC<{
 export const HomePage: React.FC = () => {
   const { t } = useTranslation();
   const [properties, setProperties] = useState<any[]>([]);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLoadingProperties, setIsLoadingProperties] = useState(true);
 
   // Memoized property mapping function
@@ -123,28 +122,6 @@ export const HomePage: React.FC = () => {
     }
   }, []);
 
-  // Hero images for carousel
-  const heroImages = [
-    '/property-hero.jpg',
-    'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-    'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2053&q=80',
-    'https://htmldemo.net/tm/haven/haven/img/slider/2.jpg',
-    'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-    'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-    'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2053&q=80',
-    'https://htmldemo.net/tm/haven/haven/img/slider/2.jpg',
-  ];
-
-  // Auto-advance carousel
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => 
-        prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1
-      );
-    }, 5000); // Change image every 5 seconds
-
-    return () => clearInterval(interval);
-  }, [heroImages.length]);
 
   // Handle loading state for properties
   React.useEffect(() => {
@@ -172,19 +149,20 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Image Carousel Section */}
+      {/* Hero Video Background Section */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Image Carousel Background */}
+        {/* Video Background */}
         <div className="absolute inset-0 z-0">
-          <motion.img
-            key={currentImageIndex}
-            src={heroImages[currentImageIndex]}
-            alt="Luxury Property"
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
             className="w-full h-full object-cover"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-          />
+            style={{ pointerEvents: 'none' }}
+          >
+            <source src="/videos/exclusimmo.mp4" type="video/mp4" />
+          </video>
           <div className="absolute inset-0 bg-black/40"></div>
         </div>
 

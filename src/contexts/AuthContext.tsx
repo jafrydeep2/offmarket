@@ -70,7 +70,8 @@ async function fetchUserProfile(userId: string): Promise<UserProfile | null> {
     }
 
     if (!data) {
-      console.log('No profile data found');
+      console.warn('No profile data found for userId:', userId);
+      console.warn('This could mean: 1) Profile does not exist, 2) RLS policy is blocking access');
       return null;
     }
 
@@ -87,6 +88,7 @@ async function fetchUserProfile(userId: string): Promise<UserProfile | null> {
       avatar_url: profile.avatar_url ?? null,
     };
     console.log('Profile processed:', result);
+    console.log('Profile isAdmin value:', profile.is_admin, '->', result.isAdmin);
     return result;
   } catch (err) {
     console.error('fetchUserProfile error:', err);

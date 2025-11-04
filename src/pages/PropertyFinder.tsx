@@ -74,7 +74,7 @@ export const PropertyFinderPage: React.FC = () => {
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <img
-            src="/property-hero.jpg"
+            src="/images/property-finder.png"
             alt="Personalized property finder service"
             className="w-full h-full object-cover"
           />

@@ -71,7 +71,7 @@ export const PropertyVideosPage: React.FC = () => {
                 {/* Background Image */}
                 <div className="absolute inset-0 z-0">
                     <img
-                        src="/property-hero.jpg"
+                        src="/images/videos-service.png"
                         alt="Property showcase video production"
                         className="w-full h-full object-cover"
                     />

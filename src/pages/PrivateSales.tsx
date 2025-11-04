@@ -71,9 +71,9 @@ export const PrivateSalesPage: React.FC = () => {
                 {/* Background Image */}
                 <div className="absolute inset-0 z-0">
                     <img
-                        src="/property-hero.jpg"
+                        src="/images/sell-your-property.png"
                         alt="Elegant luxury home for private sales"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover object-center"
                     />
                     <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/50"></div>
                 </div>
