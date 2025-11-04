@@ -15,8 +15,8 @@ export const AdminLoginPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { login, user: ctxUser, isAuthenticated } = useAuth();
-  const { loginSuccess, redirectPath, isAdmin } = useAppSelector((state) => state.auth);
+  const { login, user: ctxUser, isAuthenticated, isAdmin: ctxIsAdmin } = useAuth();
+  const { loginSuccess, redirectPath, isAdmin: reduxIsAdmin } = useAppSelector((state) => state.auth);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -25,20 +25,30 @@ export const AdminLoginPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Check admin status from both sources
+  const isAdmin = ctxIsAdmin || reduxIsAdmin || ctxUser?.isAdmin;
+
   // Redirect if user is already logged in
   useEffect(() => {
     if (isAuthenticated && ctxUser) {
-      console.log('User already logged in, redirecting to home page');
-      navigate('/');
+      console.log('User already logged in, checking admin status...', { isAdmin, ctxIsAdmin, reduxIsAdmin, userIsAdmin: ctxUser?.isAdmin });
+      
+      // If user is admin, redirect to admin dashboard
+      if (isAdmin) {
+        console.log('User is admin, redirecting to admin dashboard');
+        navigate('/admin/dashboard');
+      } else {
+        console.log('User is not admin, redirecting to home page');
+        navigate('/');
+      }
     }
-  }, [isAuthenticated, ctxUser, navigate]);
+  }, [isAuthenticated, ctxUser, isAdmin, ctxIsAdmin, reduxIsAdmin, navigate]);
 
   // Handle redirect after successful login
   useEffect(() => {
     if (loginSuccess) {
-      console.log('Admin login successful, checking admin status...');
-      
-      // Check if user is admin
+      console.log('Admin login successful, checking admin status...', { isAdmin, ctxIsAdmin, reduxIsAdmin, userIsAdmin: ctxUser?.isAdmin });
+      // Check if user is admin from any source
       if (isAdmin) {
         const targetPath = redirectPath || '/admin/dashboard';
         console.log('User is admin, redirecting to:', targetPath);
@@ -50,7 +60,7 @@ export const AdminLoginPage: React.FC = () => {
         dispatch(clearLoginSuccess());
       }
     }
-  }, [loginSuccess, redirectPath, isAdmin, navigate, dispatch, t]);
+  }, [loginSuccess, redirectPath, isAdmin, ctxIsAdmin, reduxIsAdmin, ctxUser, navigate, dispatch, t]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

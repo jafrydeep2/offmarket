@@ -38,6 +38,7 @@ import { AdminDashboard } from "@/pages/admin/AdminDashboard";
 import { PropertyManagement } from "@/pages/admin/PropertyManagement";
 import { PropertyForm } from "@/pages/admin/PropertyForm";
 import { AccountManagement } from "@/pages/admin/AccountManagement";
+import { AccountForm } from "@/pages/admin/AccountForm";
 import AdminSettingsPage from "@/pages/admin/Settings";
 import AdminPropertyDetailPage from "@/pages/admin/PropertyDetailAdmin";
 import AdminUserProfilePage from "@/pages/admin/UserProfileAdmin";
@@ -87,6 +88,8 @@ const App = () => (
                 <Route path="/admin/properties/:id/edit" element={<RequireAdmin><PropertyForm /></RequireAdmin>} />
                 <Route path="/admin/properties/:id" element={<RequireAdmin><AdminPropertyDetailPage /></RequireAdmin>} />
                 <Route path="/admin/accounts" element={<RequireAdmin><AccountManagement /></RequireAdmin>} />
+                <Route path="/admin/accounts/new" element={<RequireAdmin><AccountForm /></RequireAdmin>} />
+                <Route path="/admin/accounts/:id/edit" element={<RequireAdmin><AccountForm /></RequireAdmin>} />
                 <Route path="/admin/accounts/:id" element={<RequireAdmin><AdminUserProfilePage /></RequireAdmin>} />
                 <Route path="/admin/analytics" element={<RequireAdmin><Analytics /></RequireAdmin>} />
                 <Route path="/admin/form-submissions" element={<RequireAdmin><FormSubmissionsPage /></RequireAdmin>} />

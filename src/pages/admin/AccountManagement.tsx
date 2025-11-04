@@ -18,7 +18,9 @@ import {
   Shield,
   AlertTriangle,
   CheckCircle,
-  XCircle
+  XCircle,
+  ActivitySquareIcon,
+  ToggleLeft
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -346,7 +348,7 @@ export const AccountManagement: React.FC = () => {
             </p>
           </div>
           <div className="flex space-x-3">
-            <Button 
+            {/* <Button 
               variant="outline"
               onClick={checkAndSendExpiryNotifications}
             >
@@ -356,7 +358,7 @@ export const AccountManagement: React.FC = () => {
             <Button variant="outline">
               <Mail className="h-4 w-4 mr-2" />
               {t('language') === 'fr' ? 'Envoyer un email' : 'Send Email'}
-            </Button>
+            </Button> */}
             <Link to="/admin/accounts/new">
               <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
                 <UserPlus className="h-4 w-4 mr-2" />
@@ -633,17 +635,23 @@ export const AccountManagement: React.FC = () => {
                                 {t('language') === 'fr' ? 'Voir le profil' : 'View Profile'}
                               </Link>
                             </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                              <Link to={`/admin/accounts/${user.id}/edit`} className="flex items-center">
+                                <Edit className="h-4 w-4 mr-2" />
+                                {t('language') === 'fr' ? 'Modifier le compte' : 'Edit Account'}
+                              </Link>
+                            </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => toggleUserStatus(user.id, !user.is_active)}>
-                              <Edit className="h-4 w-4 mr-2" />
-                              {user.is_active 
+                            <ToggleLeft className="h-4 w-4 mr-2" />
+                            {user.is_active 
                                 ? (t('language') === 'fr' ? 'Suspendre' : 'Suspend')
                                 : (t('language') === 'fr' ? 'Activer' : 'Activate')
                               }
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            {/* <DropdownMenuItem>
                               <Mail className="h-4 w-4 mr-2" />
                               {t('language') === 'fr' ? 'Envoyer un email' : 'Send Email'}
-                            </DropdownMenuItem>
+                            </DropdownMenuItem> */}
                             <DropdownMenuSeparator />
                             <DropdownMenuItem 
                               className="text-orange-600"
