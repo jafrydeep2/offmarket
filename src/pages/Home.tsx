@@ -168,7 +168,7 @@ export const HomePage: React.FC = () => {
 
         
         {/* Hero Content */}
-        <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-6">
+        <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-6">
           <motion.h1 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -317,7 +317,7 @@ export const HomePage: React.FC = () => {
       </section> */}
 
       {/* Off-Market Services Section */}
-      <section className="section-padding bg-background">
+      <section id="off-market-services" className="section-padding bg-background">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}

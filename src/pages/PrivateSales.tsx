@@ -107,7 +107,7 @@ export const PrivateSalesPage: React.FC = () => {
                     >
                         <Button
                             size="lg"
-                            className="bg-primary hover:bg-primary-hover text-primary-foreground group px-8 py-4 text-lg"
+                            className="min-h-[70px] lg:min-h-[50px] max-w-[300px] lg:max-w-fit text-wrap bg-primary hover:bg-primary-hover text-primary-foreground group px-8 py-4 text-lg lg:w-full sm:w-auto"
                             onClick={() => {
                                 document.getElementById('contact-form')?.scrollIntoView({
                                     behavior: 'smooth',
@@ -116,7 +116,7 @@ export const PrivateSalesPage: React.FC = () => {
                             }}
                         >
                             {t('privateSales.cta')}
-                            <Lock className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                            <Home className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                         </Button>
                     </motion.div>
                 </div>

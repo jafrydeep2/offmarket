@@ -9,7 +9,7 @@ export const Footer: React.FC = () => {
     { key: 'terms', path: '/legal/terms' },
     { key: 'privacy', path: '/legal/privacy' },
     { key: 'notices', path: '/legal/notices' },
-    { key: 'safety', path: '/legal/safety' },
+    // { key: 'safety', path: '/legal/safety' },
   ];
 
   return (

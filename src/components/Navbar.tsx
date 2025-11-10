@@ -220,7 +220,7 @@ export const Navbar: React.FC = () => {
   const navItems = [
     { key: 'home', path: '/' },
     { key: 'properties', path: '/properties' },
-    { key: 'services', path: '/services', scrollTo: 'services-section' },
+    { key: 'services', path: '/', scrollTo: 'off-market-services' },
     ...(isAuthenticated ? [] : [{ key: 'becomeMember', path: '/become-member' }]),
     { key: 'contact', path: '/contact' },
   ];

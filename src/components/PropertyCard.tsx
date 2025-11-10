@@ -304,19 +304,19 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
           </div>
 
           {/* Property Features */}
-          <div className="grid grid-cols-3 gap-4 py-3 border-t border-b border-gray-light">
+          <div className="grid grid-cols-2 gap-4 py-3 border-t border-b border-gray-light">
             <div className="text-center">
               <div className="flex items-center justify-center space-x-1 text-primary">
                 <Home className="h-4 w-4" />
               </div>
               <span className="text-xs text-muted-foreground mt-1 block">{property.rooms} {t('properties.rooms')}</span>
             </div>
-            <div className="text-center">
+            {/* <div className="text-center">
               <div className="flex items-center justify-center space-x-1 text-primary">
                 <span className="text-sm font-semibold">2</span>
               </div>
               <span className="text-xs text-muted-foreground mt-1 block">Bath</span>
-            </div>
+            </div> */}
             <div className="text-center">
               <div className="flex items-center justify-center space-x-1 text-primary">
                 <span className="text-sm font-semibold">{property.surface}</span>
