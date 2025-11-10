@@ -20,6 +20,7 @@ interface MembershipSubmission {
   phone?: string;
   profile?: string;
   project?: string;
+  listing_intent?: string;
   status: string;
   handled_by?: string;
   notes?: string;
@@ -38,6 +39,12 @@ const MembershipsPage: React.FC = () => {
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
   const [savingNotes, setSavingNotes] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
+
+  const listingIntentLabels: Record<string, string> = {
+    yes: 'Yes',
+    maybe: 'Maybe / To discuss',
+    no: 'Not at the moment'
+  };
 
   const load = async () => {
     try {
@@ -96,7 +103,16 @@ const MembershipsPage: React.FC = () => {
     try {
       setExporting(true);
       const header = [
-        'id', 'full_name', 'email', 'phone', 'profile', 'project', 'status', 'notes', 'created_at'
+        'id',
+        'full_name',
+        'email',
+        'phone',
+        'profile',
+        'project',
+        'listing_intent',
+        'status',
+        'notes',
+        'created_at'
       ];
       const csv = [header, ...filtered.map(r => header.map(h => String(r[h as keyof MembershipSubmission] ?? '')))]
         .map(r => r.map(v => `"${v.replace(/"/g,'""')}"`).join(','))
@@ -300,6 +316,11 @@ const MembershipsPage: React.FC = () => {
                         </div>
                         <p className="text-sm text-gray-600">{submission.email}</p>
                         {submission.phone && <p className="text-sm text-gray-600">{submission.phone}</p>}
+                        {submission.listing_intent && (
+                          <p className="text-xs text-gray-500">
+                            Listing intent: {listingIntentLabels[submission.listing_intent] ?? submission.listing_intent}
+                          </p>
+                        )}
                       </div>
                       
                       <div className="flex items-center gap-2">
@@ -367,6 +388,12 @@ const MembershipsPage: React.FC = () => {
                                     <p className="text-sm">{getProfileBadge(submission.profile)}</p>
                                   </div>
                                 )}
+                              {submission.listing_intent && (
+                                <div>
+                                  <label className="text-sm font-medium">Listing Intent</label>
+                                  <p className="text-sm">{listingIntentLabels[submission.listing_intent] ?? submission.listing_intent}</p>
+                                </div>
+                              )}
                                 <div>
                                   <label className="text-sm font-medium">Submitted</label>
                                   <p className="text-sm">{formatDate(submission.created_at)}</p>

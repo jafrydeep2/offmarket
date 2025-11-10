@@ -26,6 +26,7 @@ interface FormSubmission {
   interest?: string;
   profile?: string;
   project?: string;
+  listing_intent?: string;
   message?: string;
   status: string;
   handled_by?: string;
@@ -107,9 +108,24 @@ const FormSubmissionsPage: React.FC = () => {
     try {
       setExporting(true);
       const header = [
-        'id', 'form_type', 'first_name', 'last_name', 'full_name', 'email', 'phone', 
-        'property_type', 'location', 'budget', 'interest', 'profile', 'project', 
-        'message', 'status', 'notes', 'created_at'
+        'id',
+        'form_type',
+        'first_name',
+        'last_name',
+        'full_name',
+        'email',
+        'phone',
+        'property_type',
+        'location',
+        'budget',
+        'interest',
+        'profile',
+        'project',
+        'listing_intent',
+        'message',
+        'status',
+        'notes',
+        'created_at'
       ];
       const csv = [header, ...filtered.map(r => header.map(h => String(r[h as keyof FormSubmission] ?? '')))]
         .map(r => r.map(v => `"${v.replace(/"/g,'""')}"`).join(','))
@@ -412,6 +428,12 @@ const FormSubmissionsPage: React.FC = () => {
                                 <div>
                                   <label className="text-sm font-medium">Project</label>
                                   <p className="text-sm">{submission.project}</p>
+                                </div>
+                              )}
+                              {submission.listing_intent && (
+                                <div>
+                                  <label className="text-sm font-medium">Listing Intent</label>
+                                  <p className="text-sm">{submission.listing_intent}</p>
                                 </div>
                               )}
                             </div>

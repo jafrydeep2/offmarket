@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Send, CheckCircle, AlertCircle, Users, Shield, Star, Home, Video, Key, Search, Lock, Camera, Play, Award, Phone } from 'lucide-react';
+import { ArrowLeft, LockOpen, CheckCircle, AlertCircle, Users, Shield, Star, Home, Video, Key, Search, Camera, Play, Award, Phone, Send } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -19,7 +19,8 @@ export const BecomeMemberPage: React.FC = () => {
     email: '',
     phone: '',
     profile: '',
-    project: ''
+    project: '',
+    listingIntent: ''
   });
 
   const handleInputChange = (field: string, value: string) => {
@@ -28,6 +29,12 @@ export const BecomeMemberPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formData.listingIntent) {
+      toast.error(t('becomeMember.form.listingIntentRequired'));
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -38,12 +45,13 @@ export const BecomeMemberPage: React.FC = () => {
         phone: formData.phone,
         profile: formData.profile,
         project: formData.project,
+        listing_intent: formData.listingIntent,
       };
       const { error } = await supabase.from('form_submissions').insert(payload);
       if (error) throw error;
 
       toast.success(t('becomeMember.form.success'));
-      setFormData({ fullName: '', email: '', phone: '', profile: '', project: '' });
+      setFormData({ fullName: '', email: '', phone: '', profile: '', project: '', listingIntent: '' });
     } catch (error) {
       toast.error(t('becomeMember.form.error'));
     } finally {
@@ -128,10 +136,17 @@ export const BecomeMemberPage: React.FC = () => {
               size="lg" 
               className="bg-primary hover:bg-primary-hover text-primary-foreground group px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg w-full sm:w-auto"
               onClick={() => {
-                document.getElementById('membership-form')?.scrollIntoView({ 
-                  behavior: 'smooth',
-                  block: 'start'
-                });
+                const target = document.getElementById('membership-form');
+                if (target) {
+                  const headerOffset = 50;
+                  const elementPosition = target.getBoundingClientRect().top + window.pageYOffset;
+                  const offsetPosition = elementPosition - headerOffset;
+
+                  window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                  });
+                }
               }}
             >
               {t('becomeMember.cta')}
@@ -222,7 +237,7 @@ export const BecomeMemberPage: React.FC = () => {
               className="text-center group"
             >
               <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
-                <Phone className="h-8 w-8 text-primary" />
+                <LockOpen className="h-8 w-8 text-primary" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">
                 {t('language') === 'fr' ? '3. Appel' : '3. Call'}
@@ -248,9 +263,9 @@ export const BecomeMemberPage: React.FC = () => {
             viewport={{ once: true }}
             className="max-w-2xl mx-auto"
           >
-            <Card className="shadow-xl border border-border/50 bg-card/95 backdrop-blur-md overflow-hidden hover:shadow-2xl transition-all duration-300">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-primary/80 to-primary" />
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-50" />
+            <Card className="relative shadow-xl border border-border/50 bg-card/95 backdrop-blur-md overflow-hidden hover:shadow-2xl transition-all duration-300">
+              <div className="pointer-events-none absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-primary/80 to-primary" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-50" />
               
               <CardHeader className="text-center py-4 sm:py-6 px-4 sm:px-6">
                 <motion.div
@@ -371,6 +386,33 @@ export const BecomeMemberPage: React.FC = () => {
                     />
                   </div>
 
+                  {/* Listing Intent */}
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold text-foreground flex items-center">
+                      {t('becomeMember.form.listingQuestion')}
+                      <span className="text-destructive ml-1">*</span>
+                    </Label>
+                    <Select
+                      value={formData.listingIntent}
+                      onValueChange={(value) => handleInputChange('listingIntent', value)}
+                    >
+                      <SelectTrigger className="h-10 text-sm border-2 transition-all duration-300 focus:border-primary focus:shadow-lg focus:shadow-primary/20">
+                        <SelectValue placeholder={t('becomeMember.form.listingPlaceholder')} />
+                      </SelectTrigger>
+                      <SelectContent className="bg-background border-2 shadow-xl">
+                        <SelectItem value="yes" className="text-sm py-2">
+                          {t('becomeMember.form.listingOptions.yes')}
+                        </SelectItem>
+                        <SelectItem value="maybe" className="text-sm py-2">
+                          {t('becomeMember.form.listingOptions.maybe')}
+                        </SelectItem>
+                        <SelectItem value="no" className="text-sm py-2">
+                          {t('becomeMember.form.listingOptions.no')}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
                   {/* Submit Button */}
                   <div className="pt-1">
                     <Button 
@@ -407,7 +449,7 @@ export const BecomeMemberPage: React.FC = () => {
       </section>
 
       {/* Contact Info Footer */}
-      <section className="py-6 sm:py-8 bg-background border-t">
+      {/* <section className="py-6 sm:py-8 bg-background border-t">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -441,7 +483,7 @@ export const BecomeMemberPage: React.FC = () => {
             </div>
           </motion.div>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 };

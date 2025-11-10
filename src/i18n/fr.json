@@ -74,6 +74,8 @@
     "login": "Connexion",
     "password": "Mot de passe",
     "submit": "Se connecter",
+    "becomeMemberLink": "Devenir Membre",
+    "forgotPasswordLink": "Mot de passe oublié ?",
     "loginRequired": "Connexion requise pour voir les informations de contact",
     "accessExpired": "Votre compte a expiré. Merci de le renouveler en contactant Exclusimmo."
   },
@@ -129,6 +131,14 @@
       },
       "project": "Votre projet",
       "projectPlaceholder": "Ex: À la recherche d'un 3,5 pièces à Lausanne",
+      "listingQuestion": "Souhaitez-vous proposer gratuitement votre logement actuel sur notre réseau exclusif ?",
+      "listingOptions": {
+        "yes": "Oui",
+        "maybe": "Peut-être / à discuter",
+        "no": "Pas pour le moment"
+      },
+      "listingPlaceholder": "Sélectionnez une option",
+      "listingIntentRequired": "Veuillez préciser si vous souhaitez proposer votre logement actuel.",
       "submit": "Soumettre ma demande",
       "success": "Demande envoyée avec succès. Nous vous contacterons dans les plus brefs délais !",
       "error": "Erreur lors de l'envoi. Veuillez réessayer."

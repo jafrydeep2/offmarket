@@ -32,7 +32,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 
 export const UserProfilePage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const isFrench = language === 'fr';
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -50,8 +51,10 @@ export const UserProfilePage: React.FC = () => {
     new: false,
     confirm: false
   });
-  const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [profileMessage, setProfileMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [passwordMessage, setPasswordMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -83,9 +86,15 @@ export const UserProfilePage: React.FC = () => {
     }
   }, [isAuthenticated, user, reduxUser, navigate, profilePicture]);
 
+  const passwordFields = new Set(['currentPassword', 'newPassword', 'confirmPassword']);
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    setMessage(null);
+    if (passwordFields.has(field)) {
+      setPasswordMessage(null);
+    } else {
+      setProfileMessage(null);
+    }
   };
 
   const togglePasswordVisibility = (field: 'current' | 'new' | 'confirm') => {
@@ -102,24 +111,24 @@ export const UserProfilePage: React.FC = () => {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      setMessage({ 
+      setProfileMessage({ 
         type: 'error', 
-        text: t('language') === 'fr' ? 'Veuillez sélectionner un fichier image valide' : 'Please select a valid image file' 
+        text: isFrench ? 'Veuillez sélectionner un fichier image valide' : 'Please select a valid image file' 
       });
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      setMessage({ 
+      setProfileMessage({ 
         type: 'error', 
-        text: t('language') === 'fr' ? 'La taille du fichier ne doit pas dépasser 5MB' : 'File size must not exceed 5MB' 
+        text: isFrench ? 'La taille du fichier ne doit pas dépasser 5MB' : 'File size must not exceed 5MB' 
       });
       return;
     }
 
     setIsUploading(true);
-    setMessage(null);
+    setProfileMessage(null);
 
     try {
       // Delete old profile picture if it exists
@@ -174,15 +183,15 @@ export const UserProfilePage: React.FC = () => {
       dispatch(setUser(updatedUser));
 
       setProfilePicture(publicUrl);
-      setMessage({ 
+      setProfileMessage({ 
         type: 'success', 
-        text: t('language') === 'fr' ? 'Photo de profil mise à jour avec succès' : 'Profile picture updated successfully' 
+        text: isFrench ? 'Photo de profil mise à jour avec succès' : 'Profile picture updated successfully' 
       });
     } catch (error: any) {
       console.error('Error uploading profile picture:', error);
-      setMessage({ 
+      setProfileMessage({ 
         type: 'error', 
-        text: t('language') === 'fr' ? 'Erreur lors de la mise à jour de la photo de profil' : 'Error updating profile picture' 
+        text: isFrench ? 'Erreur lors de la mise à jour de la photo de profil' : 'Error updating profile picture' 
       });
     } finally {
       setIsUploading(false);
@@ -193,18 +202,18 @@ export const UserProfilePage: React.FC = () => {
 
   const handleSaveProfile = async () => {
     console.log('handleSaveProfile called');
-    setIsLoading(true);
-    setMessage(null);
+    setIsSavingProfile(true);
+    setProfileMessage(null);
 
     try {
       // Validate form
       if (!formData.username.trim()) {
-        setMessage({ type: 'error', text: t('language') === 'fr' ? 'Le nom d\'utilisateur est requis' : 'Username is required' });
+        setProfileMessage({ type: 'error', text: isFrench ? 'Le nom d\'utilisateur est requis' : 'Username is required' });
         return;
       }
 
       if (!formData.email.trim()) {
-        setMessage({ type: 'error', text: t('language') === 'fr' ? 'L\'email est requis' : 'Email is required' });
+        setProfileMessage({ type: 'error', text: isFrench ? 'L\'email est requis' : 'Email is required' });
         return;
       }
 
@@ -225,9 +234,9 @@ export const UserProfilePage: React.FC = () => {
 
       if (error) {
         console.error('Profile update error:', error);
-        setMessage({ 
+        setProfileMessage({ 
           type: 'error', 
-          text: t('language') === 'fr' ? 'Erreur lors de la mise à jour du profil: ' + error.message : 'Error updating profile: ' + error.message
+          text: isFrench ? 'Erreur lors de la mise à jour du profil: ' + error.message : 'Error updating profile: ' + error.message
         });
         return;
       }
@@ -240,45 +249,45 @@ export const UserProfilePage: React.FC = () => {
       };
       dispatch(setUser(updatedUser));
       
-      setMessage({ 
+      setProfileMessage({ 
         type: 'success', 
-        text: t('language') === 'fr' ? 'Profil mis à jour avec succès' : 'Profile updated successfully' 
+        text: isFrench ? 'Profil mis à jour avec succès' : 'Profile updated successfully' 
       });
     } catch (error: any) {
       console.error('Profile update error:', error);
-      setMessage({ 
+      setProfileMessage({ 
         type: 'error', 
-        text: t('language') === 'fr' ? 'Erreur lors de la mise à jour du profil' : 'Error updating profile'
+        text: isFrench ? 'Erreur lors de la mise à jour du profil' : 'Error updating profile'
       });
     } finally {
-      setIsLoading(false);
+      setIsSavingProfile(false);
     }
   };
 
   const handleChangePassword = async () => {
     console.log('handleChangePassword called');
-    setIsLoading(true);
-    setMessage(null);
+    setIsChangingPassword(true);
+    setPasswordMessage(null);
 
     try {
       // Validate passwords
       if (!formData.currentPassword) {
-        setMessage({ type: 'error', text: t('language') === 'fr' ? 'Le mot de passe actuel est requis' : 'Current password is required' });
+        setPasswordMessage({ type: 'error', text: isFrench ? 'Le mot de passe actuel est requis' : 'Current password is required' });
         return;
       }
 
       if (!formData.newPassword) {
-        setMessage({ type: 'error', text: t('language') === 'fr' ? 'Le nouveau mot de passe est requis' : 'New password is required' });
+        setPasswordMessage({ type: 'error', text: isFrench ? 'Le nouveau mot de passe est requis' : 'New password is required' });
         return;
       }
 
       if (formData.newPassword.length < 6) {
-        setMessage({ type: 'error', text: t('language') === 'fr' ? 'Le nouveau mot de passe doit contenir au moins 6 caractères' : 'New password must be at least 6 characters' });
+        setPasswordMessage({ type: 'error', text: isFrench ? 'Le nouveau mot de passe doit contenir au moins 6 caractères' : 'New password must be at least 6 characters' });
         return;
       }
 
       if (formData.newPassword !== formData.confirmPassword) {
-        setMessage({ type: 'error', text: t('language') === 'fr' ? 'Les mots de passe ne correspondent pas' : 'Passwords do not match' });
+        setPasswordMessage({ type: 'error', text: isFrench ? 'Les mots de passe ne correspondent pas' : 'Passwords do not match' });
         return;
       }
 
@@ -289,16 +298,16 @@ export const UserProfilePage: React.FC = () => {
 
       if (error) {
         console.error('Password change error:', error);
-        setMessage({ 
+        setPasswordMessage({ 
           type: 'error', 
-          text: t('language') === 'fr' ? 'Erreur lors du changement de mot de passe: ' + error.message : 'Error changing password: ' + error.message
+          text: isFrench ? 'Erreur lors du changement de mot de passe: ' + error.message : 'Error changing password: ' + error.message
         });
         return;
       }
       
-      setMessage({ 
+      setPasswordMessage({ 
         type: 'success', 
-        text: t('language') === 'fr' ? 'Mot de passe modifié avec succès' : 'Password changed successfully' 
+        text: isFrench ? 'Mot de passe modifié avec succès' : 'Password changed successfully' 
       });
 
       // Clear password fields
@@ -310,12 +319,12 @@ export const UserProfilePage: React.FC = () => {
       }));
     } catch (error: any) {
       console.error('Password change error:', error);
-      setMessage({ 
+      setPasswordMessage({ 
         type: 'error', 
-        text: t('language') === 'fr' ? 'Erreur lors du changement de mot de passe' : 'Error changing password' 
+        text: isFrench ? 'Erreur lors du changement de mot de passe' : 'Error changing password' 
       });
     } finally {
-      setIsLoading(false);
+      setIsChangingPassword(false);
     }
   };
 
@@ -339,9 +348,9 @@ export const UserProfilePage: React.FC = () => {
     const today = new Date();
     const daysLeft = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
     
-    if (daysLeft < 0) return { status: 'expired', color: 'destructive', text: t('language') === 'fr' ? 'Expiré' : 'Expired' };
-    if (daysLeft < 30) return { status: 'expiring', color: 'warning', text: t('language') === 'fr' ? 'Expire bientôt' : 'Expiring Soon' };
-    return { status: 'active', color: 'success', text: t('language') === 'fr' ? 'Actif' : 'Active' };
+    if (daysLeft < 0) return { status: 'expired', color: 'destructive', text: isFrench ? 'Expiré' : 'Expired' };
+    if (daysLeft < 30) return { status: 'expiring', color: 'warning', text: isFrench ? 'Expire bientôt' : 'Expiring Soon' };
+    return { status: 'active', color: 'success', text: isFrench ? 'Actif' : 'Active' };
   };
 
   const subscriptionStatus = getSubscriptionStatus();
@@ -364,14 +373,14 @@ export const UserProfilePage: React.FC = () => {
               className="flex items-center space-x-2"
             >
               <ArrowLeft className="h-4 w-4" />
-              <span>{t('language') === 'fr' ? 'Retour' : 'Back'}</span>
+              <span>{isFrench ? 'Retour' : 'Back'}</span>
             </Button>
             <div>
               <h1 className="text-3xl font-heading font-bold text-foreground">
-                {t('language') === 'fr' ? 'Mon Profil' : 'My Profile'}
+                {isFrench ? 'Mon Profil' : 'My Profile'}
               </h1>
               <p className="text-muted-foreground">
-                {t('language') === 'fr' 
+                {isFrench 
                   ? 'Gérez vos informations personnelles et vos paramètres de compte'
                   : 'Manage your personal information and account settings'
                 }
@@ -405,7 +414,7 @@ export const UserProfilePage: React.FC = () => {
                   <label 
                     htmlFor="profile-picture-upload"
                     className="absolute bottom-0 right-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center cursor-pointer hover:bg-primary/90 transition-colors"
-                    title={t('language') === 'fr' ? 'Changer la photo' : 'Change photo'}
+                    title={isFrench ? 'Changer la photo' : 'Change photo'}
                   >
                     {isUploading ? (
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -423,54 +432,25 @@ export const UserProfilePage: React.FC = () => {
                   />
                 </div>
                 <CardTitle className="text-xl">
-                  {currentUser.username || currentUser.email?.split('@')[0] || 'Utilisateur'}
+                  {currentUser.username || currentUser.email?.split('@')[0] || (isFrench ? 'Utilisateur' : 'User')}
                 </CardTitle>
                 <CardDescription>{currentUser.email}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-muted-foreground">
-                      {t('language') === 'fr' ? 'Type d\'abonnement' : 'Subscription Type'}
-                    </span>
-                    <Badge variant="outline">{currentUser.subscriptionType}</Badge>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-muted-foreground">
-                      {t('language') === 'fr' ? 'Statut' : 'Status'}
-                    </span>
-                    <Badge variant={subscriptionStatus.color as any}>
-                      {subscriptionStatus.text}
-                    </Badge>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-muted-foreground">
-                      {t('language') === 'fr' ? 'Expire le' : 'Expires on'}
-                    </span>
-                    <span className="text-sm">
-                      {new Date(currentUser.subscriptionExpiry).toLocaleDateString()}
-                    </span>
-                  </div>
-                </div>
-
-                <Separator />
-
                 <div className="space-y-2">
-                  <h4 className="font-medium text-sm">
-                    {t('language') === 'fr' ? 'Actions du compte' : 'Account Actions'}
+                  <h4 className="font-medium text-sm mb-2">
+                    {isFrench ? 'Actions du compte' : 'Account Actions'}
                   </h4>
                   <Link to="/settings">
-                    <Button type="button" variant="outline" size="sm" className="w-full justify-start">
+                    <Button type="button" variant="outline" size="sm" className="w-full justify-start mb-1">
                       <Settings className="h-4 w-4 mr-2" />
-                      {t('language') === 'fr' ? 'Paramètres' : 'Settings'}
+                      {isFrench ? 'Paramètres' : 'Settings'}
                     </Button>
                   </Link>
                   <Link to="/alerts">
                     <Button type="button" variant="outline" size="sm" className="w-full justify-start">
                       <Bell className="h-4 w-4 mr-2" />
-                      {t('language') === 'fr' ? 'Alertes' : 'Alerts'}
+                      {isFrench ? 'Alertes' : 'Alerts'}
                     </Button>
                   </Link>
                 </div>
@@ -490,10 +470,10 @@ export const UserProfilePage: React.FC = () => {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <User className="h-5 w-5 mr-2" />
-                  {t('language') === 'fr' ? 'Informations personnelles' : 'Personal Information'}
+                  {isFrench ? 'Informations personnelles' : 'Personal Information'}
                 </CardTitle>
                 <CardDescription>
-                  {t('language') === 'fr' 
+                  {isFrench 
                     ? 'Mettez à jour vos informations de base'
                     : 'Update your basic information'
                   }
@@ -503,39 +483,39 @@ export const UserProfilePage: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="username">
-                      {t('language') === 'fr' ? 'Nom d\'utilisateur' : 'Username'}
+                      {isFrench ? 'Nom d\'utilisateur' : 'Username'}
                     </Label>
                     <Input
                       id="username"
                       value={formData.username}
                       onChange={(e) => handleInputChange('username', e.target.value)}
-                      placeholder={t('language') === 'fr' ? 'Entrez votre nom d\'utilisateur' : 'Enter your username'}
+                      placeholder={isFrench ? 'Entrez votre nom d\'utilisateur' : 'Enter your username'}
                     />
                   </div>
                   
                   <div className="space-y-2">
                     <Label htmlFor="email">
-                      {t('language') === 'fr' ? 'Email' : 'Email'}
+                      {isFrench ? 'Email' : 'Email'}
                     </Label>
                     <Input
                       id="email"
                       type="email"
                       value={formData.email}
                       onChange={(e) => handleInputChange('email', e.target.value)}
-                      placeholder={t('language') === 'fr' ? 'Entrez votre email' : 'Enter your email'}
+                      placeholder={isFrench ? 'Entrez votre email' : 'Enter your email'}
                     />
                   </div>
                 </div>
 
-                {message && (
-                  <Alert variant={message.type === 'success' ? 'default' : 'destructive'}>
+                {profileMessage && (
+                  <Alert variant={profileMessage.type === 'success' ? 'default' : 'destructive'}>
                     <div className="flex items-center">
-                      {message.type === 'success' ? (
+                      {profileMessage.type === 'success' ? (
                         <Check className="h-4 w-4 mr-2" />
                       ) : (
                         <X className="h-4 w-4 mr-2" />
                       )}
-                      <AlertDescription>{message.text}</AlertDescription>
+                      <AlertDescription>{profileMessage.text}</AlertDescription>
                     </div>
                   </Alert>
                 )}
@@ -543,13 +523,13 @@ export const UserProfilePage: React.FC = () => {
                 <Button 
                   type="button"
                   onClick={handleSaveProfile} 
-                  disabled={isLoading}
+                  disabled={isSavingProfile}
                   className="w-full md:w-auto"
                 >
                   <Save className="h-4 w-4 mr-2" />
-                  {isLoading 
-                    ? (t('language') === 'fr' ? 'Sauvegarde...' : 'Saving...')
-                    : (t('language') === 'fr' ? 'Sauvegarder' : 'Save Changes')
+                  {isSavingProfile 
+                    ? (isFrench ? 'Sauvegarde...' : 'Saving...')
+                    : (isFrench ? 'Sauvegarder' : 'Save Changes')
                   }
                 </Button>
               </CardContent>
@@ -560,19 +540,31 @@ export const UserProfilePage: React.FC = () => {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Shield className="h-5 w-5 mr-2" />
-                  {t('language') === 'fr' ? 'Changer le mot de passe' : 'Change Password'}
+                  {isFrench ? 'Changer le mot de passe' : 'Change Password'}
                 </CardTitle>
                 <CardDescription>
-                  {t('language') === 'fr' 
+                  {isFrench 
                     ? 'Mettez à jour votre mot de passe pour sécuriser votre compte'
                     : 'Update your password to secure your account'
                   }
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                {passwordMessage && (
+                  <Alert variant={passwordMessage.type === 'success' ? 'default' : 'destructive'}>
+                    <div className="flex items-center">
+                      {passwordMessage.type === 'success' ? (
+                        <Check className="h-4 w-4 mr-2" />
+                      ) : (
+                        <X className="h-4 w-4 mr-2" />
+                      )}
+                      <AlertDescription>{passwordMessage.text}</AlertDescription>
+                    </div>
+                  </Alert>
+                )}
                 <div className="space-y-2">
                   <Label htmlFor="currentPassword">
-                    {t('language') === 'fr' ? 'Mot de passe actuel' : 'Current Password'}
+                    {isFrench ? 'Mot de passe actuel' : 'Current Password'}
                   </Label>
                   <div className="relative">
                     <Input
@@ -580,7 +572,7 @@ export const UserProfilePage: React.FC = () => {
                       type={showPasswords.current ? 'text' : 'password'}
                       value={formData.currentPassword}
                       onChange={(e) => handleInputChange('currentPassword', e.target.value)}
-                      placeholder={t('language') === 'fr' ? 'Entrez votre mot de passe actuel' : 'Enter your current password'}
+                      placeholder={isFrench ? 'Entrez votre mot de passe actuel' : 'Enter your current password'}
                     />
                     <Button
                       type="button"
@@ -601,7 +593,7 @@ export const UserProfilePage: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="newPassword">
-                      {t('language') === 'fr' ? 'Nouveau mot de passe' : 'New Password'}
+                      {isFrench ? 'Nouveau mot de passe' : 'New Password'}
                     </Label>
                     <div className="relative">
                       <Input
@@ -609,7 +601,7 @@ export const UserProfilePage: React.FC = () => {
                         type={showPasswords.new ? 'text' : 'password'}
                         value={formData.newPassword}
                         onChange={(e) => handleInputChange('newPassword', e.target.value)}
-                        placeholder={t('language') === 'fr' ? 'Entrez le nouveau mot de passe' : 'Enter new password'}
+                        placeholder={isFrench ? 'Entrez le nouveau mot de passe' : 'Enter new password'}
                       />
                       <Button
                         type="button"
@@ -629,7 +621,7 @@ export const UserProfilePage: React.FC = () => {
                   
                   <div className="space-y-2">
                     <Label htmlFor="confirmPassword">
-                      {t('language') === 'fr' ? 'Confirmer le mot de passe' : 'Confirm Password'}
+                      {isFrench ? 'Confirmer le mot de passe' : 'Confirm Password'}
                     </Label>
                     <div className="relative">
                       <Input
@@ -637,7 +629,7 @@ export const UserProfilePage: React.FC = () => {
                         type={showPasswords.confirm ? 'text' : 'password'}
                         value={formData.confirmPassword}
                         onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                        placeholder={t('language') === 'fr' ? 'Confirmez le nouveau mot de passe' : 'Confirm new password'}
+                        placeholder={isFrench ? 'Confirmez le nouveau mot de passe' : 'Confirm new password'}
                       />
                       <Button
                         type="button"
@@ -659,13 +651,13 @@ export const UserProfilePage: React.FC = () => {
                 <Button 
                   type="button"
                   onClick={handleChangePassword}
-                  disabled={isLoading}
+                  disabled={isChangingPassword}
                   className="w-full md:w-auto"
                 >
                   <Shield className="h-4 w-4 mr-2" />
-                  {isLoading 
-                    ? (t('language') === 'fr' ? 'Modification...' : 'Changing...')
-                    : (t('language') === 'fr' ? 'Changer le mot de passe' : 'Change Password')
+                  {isChangingPassword 
+                    ? (isFrench ? 'Modification...' : 'Changing...')
+                    : (isFrench ? 'Changer le mot de passe' : 'Change Password')
                   }
                 </Button>
               </CardContent>

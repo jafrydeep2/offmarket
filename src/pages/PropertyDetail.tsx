@@ -547,18 +547,14 @@ export const PropertyDetailPage: React.FC = () => {
               </div>
 
               {/* Listed Info */}
-              <div className="grid grid-cols-1 md:grid-cols-1 gap-6 py-4">
-                {/* <div>
-                  <span className="text-muted-foreground">Listed on:</span>
-                  <span className="ml-2 font-medium">02 May 2025</span>
-                </div> */}
+              {/* <div className="grid grid-cols-1 md:grid-cols-1 gap-6 py-4">
                 <div>
                   <span className="text-muted-foreground">Category:</span>
                   <span className="ml-2 font-medium">
                     {t('language') === 'fr' ? 'Appartement' : 'Apartment'}
                   </span>
                 </div>
-              </div>
+              </div> */}
             </motion.div>
 
             {/* Tabs Navigation */}
@@ -753,7 +749,7 @@ export const PropertyDetailPage: React.FC = () => {
           {/* Enhanced Sidebar */}
           <div className="space-y-8">
             {/* Inquiry Form - Member Only */}
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5 }}
@@ -809,7 +805,7 @@ export const PropertyDetailPage: React.FC = () => {
                   )}
                 </CardContent>
               </Card>
-            </motion.div>
+            </motion.div> */}
 
             {/* Owner Details - Member Only - Hidden for Sales Properties */}
             {listingType !== 'sale' && (

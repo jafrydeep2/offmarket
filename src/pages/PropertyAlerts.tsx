@@ -65,6 +65,13 @@ const PropertyAlertsPage: React.FC = () => {
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
   const [activeTab, setActiveTab] = useState('manage');
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    if (value === 'create') {
+      setSuccess('');
+      setError('');
+    }
+  };
   const [selectedCity, setSelectedCity] = useState<CitySuggestion | null>(null);
 
   // Handle city selection
@@ -234,6 +241,8 @@ const PropertyAlertsPage: React.FC = () => {
         min_rooms: '',
         max_rooms: ''
       });
+      setActiveTab('manage');
+      setSelectedCity(null);
       fetchAlerts();
     } catch (err: any) {
       console.error('Error creating alert:', err);
@@ -294,7 +303,7 @@ const PropertyAlertsPage: React.FC = () => {
       min_rooms: alert.min_rooms ? alert.min_rooms.toString() : '',
       max_rooms: alert.max_rooms ? alert.max_rooms.toString() : ''
     });
-    setActiveTab('create');
+    handleTabChange('create');
   };
 
   const handleUpdateAlert = async (e: React.FormEvent) => {
@@ -397,6 +406,8 @@ const PropertyAlertsPage: React.FC = () => {
       });
       setEditingAlert(null);
       setIsEditing(null);
+      setActiveTab('manage');
+      setSelectedCity(null);
       fetchAlerts();
     } catch (err: any) {
       console.error('Error updating alert:', err);
@@ -503,7 +514,7 @@ const PropertyAlertsPage: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="manage" className="flex items-center space-x-2">
                 <Bell className="h-4 w-4" />
@@ -548,7 +559,7 @@ const PropertyAlertsPage: React.FC = () => {
                     <p className="text-muted-foreground mb-4">
                       {t('alerts.noAlertsSubtitle')}
                     </p>
-                    <Button onClick={() => setActiveTab('create')}>
+                    <Button onClick={() => handleTabChange('create')}>
                       <Plus className="h-4 w-4 mr-2" />
                       {t('alerts.createFirstAlert')}
                     </Button>

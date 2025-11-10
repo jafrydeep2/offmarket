@@ -107,7 +107,7 @@ export const PropertyVideosPage: React.FC = () => {
                     >
                         <Button
                             size="lg"
-                            className="bg-primary hover:bg-primary-hover text-primary-foreground group px-8 py-4 text-lg"
+                            className="min-h-[70px] lg:min-h-[50px] max-w-[300px] lg:max-w-fit text-wrap bg-primary hover:bg-primary-hover text-primary-foreground group px-8 py-4 text-lg lg:w-full sm:w-auto"
                             onClick={() => {
                                 document.getElementById('contact-form')?.scrollIntoView({
                                     behavior: 'smooth',

@@ -12,7 +12,7 @@ import { CityAutocomplete } from '@/components/CityAutocomplete';
 import { CitySuggestion } from '@/lib/cityService';
 // Remove context dependency to avoid loading delays
 // import { useProperties } from '@/contexts/PropertyContext';
-import { supabase } from '@/lib/supabaseClient';
+import { supabasePublic } from '@/lib/supabasePublicClient';
 import { analyticsService } from '@/lib/analyticsService';
 
 export const PropertiesPage: React.FC = () => {
@@ -53,7 +53,7 @@ export const PropertiesPage: React.FC = () => {
       setError('');
       
       // Fetch properties with optimized query for latest properties first
-      const { data, error } = await supabase
+      const { data, error } = await supabasePublic
         .from('properties')
         .select('*')
         .order('created_at', { ascending: false })
@@ -109,7 +109,7 @@ export const PropertiesPage: React.FC = () => {
   // Background fetch for remaining properties
   const fetchRemainingProperties = useCallback(async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabasePublic
         .from('properties')
         .select('*')
         .order('created_at', { ascending: false })

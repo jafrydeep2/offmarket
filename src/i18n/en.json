@@ -74,6 +74,8 @@
     "login": "Login",
     "password": "Password",
     "submit": "Sign In",
+    "becomeMemberLink": "Become a Member",
+    "forgotPasswordLink": "Forgot password?",
     "loginRequired": "Login required to view contact information",
     "accessExpired": "Your subscription has expired. Please renew your access."
   },
@@ -129,6 +131,14 @@
       },
       "project": "Your project",
       "projectPlaceholder": "e.g., 3-bedroom apartment in Lausanne / Villa rental in Geneva...",
+      "listingQuestion": "Would you like to list your current accommodation on our exclusive network free of charge?",
+      "listingOptions": {
+        "yes": "Yes",
+        "maybe": "Maybe / To discuss",
+        "no": "Not at the moment"
+      },
+      "listingPlaceholder": "Select an option",
+      "listingIntentRequired": "Please select whether you would like to list your current accommodation.",
       "submit": "Submit my request",
       "success": "Request submitted successfully!",
       "error": "Error sending request. Please try again."

@@ -25,14 +25,14 @@ export const LoginPage: React.FC = () => {
   useEffect(() => {
     if (isAuthenticated && user) {
       console.log('User already logged in, redirecting to home page');
-      navigate('/');
+      navigate('/alerts');
     }
   }, [isAuthenticated, user, navigate]);
 
   // Handle redirect after successful login
   useEffect(() => {
     if (loginSuccess) {
-      const targetPath = redirectPath || '/';
+      const targetPath = '/alerts';
       console.log('Login successful, redirecting to:', targetPath);
       navigate(targetPath);
       dispatch(clearLoginSuccess());
@@ -40,7 +40,7 @@ export const LoginPage: React.FC = () => {
   }, [loginSuccess, redirectPath, navigate, dispatch]);
 
   // Debug: Check if login function is available
-  console.log('LoginPage rendered, login function:', typeof login);
+  // console.log('LoginPage rendered, login function:', typeof login);
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -184,17 +184,15 @@ export const LoginPage: React.FC = () => {
                 to="/forgot-password" 
                 className="text-sm text-primary hover:underline"
               >
-                {t('language') === 'fr' ? 'Mot de passe oublié ?' : 'Forgot password?'}
+                {t('auth.forgotPasswordLink')}
               </Link>
             </div>
 
             <div className="mt-6 text-center">
               <p className="text-xs text-muted-foreground">
-                {t('language') === 'fr' 
-                  ? 'Pas de compte ? '
-                  : "Don't have an account? "
-                }
-                <Link to="/register" className="text-primary underline">{t('language') === 'fr' ? 'Créer un compte' : 'Create one'}</Link>
+                <Link to="/become-member" className="text-primary underline">
+                  {t('auth.becomeMemberLink')}
+                </Link>
               </p>
             </div>
           </CardContent>

@@ -46,9 +46,9 @@ interface AuthProviderProps {
 }
 
 async function fetchUserProfile(userId: string): Promise<UserProfile | null> {
-  console.log('fetchUserProfile called with userId:', userId);
+  // console.log('fetchUserProfile called with userId:', userId);
   try {
-    console.log('Querying profiles table...');
+    // console.log('Querying profiles table...');
     
     // Add timeout to prevent hanging
     const queryPromise = supabase
@@ -62,7 +62,7 @@ async function fetchUserProfile(userId: string): Promise<UserProfile | null> {
     );
     
     const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any;
-    console.log('Profile query result:', { data, error });
+    // console.log('Profile query result:', { data, error });
 
     if (error) {
       console.error('Error fetching profile:', error.message);
@@ -75,7 +75,7 @@ async function fetchUserProfile(userId: string): Promise<UserProfile | null> {
       return null;
     }
 
-    console.log('Processing profile data...');
+    // console.log('Processing profile data...');
     const profile = data as ProfileRow;
     const result = {
       id: profile.id,
@@ -87,8 +87,8 @@ async function fetchUserProfile(userId: string): Promise<UserProfile | null> {
       isAdmin: Boolean(profile.is_admin ?? false),
       avatar_url: profile.avatar_url ?? null,
     };
-    console.log('Profile processed:', result);
-    console.log('Profile isAdmin value:', profile.is_admin, '->', result.isAdmin);
+    // console.log('Profile processed:', result);
+    // console.log('Profile isAdmin value:', profile.is_admin, '->', result.isAdmin);
     return result;
   } catch (err) {
     console.error('fetchUserProfile error:', err);
