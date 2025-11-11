@@ -403,21 +403,21 @@ export const Navbar: React.FC = () => {
                   <Link to="/profile">
                     <DropdownMenuItem className="px-4 py-2">
                       <User className="mr-3 h-4 w-4" />
-                      {t('language') === 'fr' ? 'Mon Profil' : 'My Profile'}
+                      {t('userPanel.menu.myProfile')}
                     </DropdownMenuItem>
                   </Link>
                   
                   <Link to="/favorites">
                     <DropdownMenuItem className="px-4 py-2">
                       <Heart className="mr-3 h-4 w-4" />
-                      {t('language') === 'fr' ? 'Mes Favoris' : 'My Favorites'}
+                      {t('userPanel.menu.myFavorites')}
                     </DropdownMenuItem>
                   </Link>
                   
                   <Link to="/alerts">
                     <DropdownMenuItem className="px-4 py-2">
                       <Bell className="mr-3 h-4 w-4" />
-                      {t('language') === 'fr' ? 'Mes Alertes' : 'My Alerts'}
+                      {t('userPanel.menu.myAlerts')}
                     </DropdownMenuItem>
                   </Link>
                   
@@ -426,7 +426,7 @@ export const Navbar: React.FC = () => {
                   <Link to="/settings">
                     <DropdownMenuItem className="px-4 py-2">
                       <Settings className="mr-3 h-4 w-4" />
-                      {t('language') === 'fr' ? 'Paramètres' : 'Settings'}
+                      {t('userPanel.menu.settings')}
                     </DropdownMenuItem>
                   </Link>
                   
@@ -434,7 +434,7 @@ export const Navbar: React.FC = () => {
                   
                   <DropdownMenuItem onClick={logout} className="px-4 py-2 text-destructive hover:bg-destructive/10">
                     <LogOut className="mr-3 h-4 w-4" />
-                    {t('language') === 'fr' ? 'Déconnexion' : 'Logout'}
+                    {t('userPanel.common.logout')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -542,7 +542,7 @@ export const Navbar: React.FC = () => {
                           className="w-full text-left px-4 py-3 text-base font-semibold text-destructive hover:bg-destructive/10 transition-all duration-300 rounded-lg"
                         >
                           <LogOut className="inline h-4 w-4 mr-3" />
-                          {t('language') === 'fr' ? 'Déconnexion' : 'Logout'}
+                          {t('userPanel.common.logout')}
                         </button>
                       </div>
                     ) : (

@@ -12,7 +12,7 @@ import { CityAutocomplete } from '@/components/CityAutocomplete';
 import { CitySuggestion } from '@/lib/cityService';
 // Remove context dependency to avoid loading delays
 // import { useProperties } from '@/contexts/PropertyContext';
-import { supabasePublic } from '@/lib/supabasePublicClient';
+import { supabase } from '@/lib/supabaseClient';
 import { analyticsService } from '@/lib/analyticsService';
 
 export const PropertiesPage: React.FC = () => {
@@ -53,7 +53,7 @@ export const PropertiesPage: React.FC = () => {
       setError('');
       
       // Fetch properties with optimized query for latest properties first
-      const { data, error } = await supabasePublic
+      const { data, error } = await supabase
         .from('properties')
         .select('*')
         .order('created_at', { ascending: false })
@@ -109,7 +109,7 @@ export const PropertiesPage: React.FC = () => {
   // Background fetch for remaining properties
   const fetchRemainingProperties = useCallback(async () => {
     try {
-      const { data, error } = await supabasePublic
+      const { data, error } = await supabase
         .from('properties')
         .select('*')
         .order('created_at', { ascending: false })
@@ -372,7 +372,7 @@ export const PropertiesPage: React.FC = () => {
                   setPage(1);
                 }}
                 onSelect={handleCitySelect}
-                placeholder={t('language') === 'fr' ? 'Rechercher par ville ou code postal' : 'Search by city or postal code'}
+                placeholder={t('properties.search.placeholder')}
                 disabled={isInitialLoading}
               />
             </motion.div>

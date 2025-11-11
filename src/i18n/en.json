@@ -535,6 +535,86 @@
     "matchesAlert": "Matches your alert",
     "matchesCriteria": "Matches your alert criteria"
   },
+  "userPanel": {
+    "common": {
+      "back": "Back",
+      "backToHome": "Back to home",
+      "loadingProperties": "Loading properties...",
+      "loadingLatestProperties": "Loading latest properties...",
+      "fetchingLatest": "We are fetching the most recent properties for you traduite",
+      "view": "View",
+      "rent": "Rent",
+      "buy": "Buy",
+      "rooms": "rooms",
+      "newest": "Newest",
+      "exclusiveProperties": "Exclusive properties available",
+      "showingRange": "Showing 1 to 7 of 7 results",
+      "previous": "Previous",
+      "next": "Next",
+      "remove": "Remove",
+      "cancel": "Cancel",
+      "logout": "Logout"
+    },
+    "menu": {
+      "myProfile": "My Profile",
+      "myFavorites": "My Favorites",
+      "myAlerts": "My alerts",
+      "settings": "Settings"
+    },
+    "dashboard": {
+      "noNotifications": "No notifications"
+    },
+    "profile": {
+      "title": "My Profile",
+      "subtitle": "Manage your personal information and account settings",
+      "accountActions": "Account Actions",
+      "personalInformation": "Personal Information",
+      "username": "Username",
+      "usernamePlaceholder": "Enter your username",
+      "email": "Your email",
+      "emailPlaceholder": "Enter your email",
+      "updateInfo": "Update your basic information",
+      "saveChanges": "Save changes",
+      "saving": "Saving...",
+      "changePassword": "Change Password",
+      "changePasswordDescription": "Update your password to secure your account",
+      "subscriptionType": "Subscription Type",
+      "active": "Active",
+      "expiresOn": "Expires on",
+      "basic": "Basic",
+      "currentPassword": "Current Password",
+      "currentPasswordPlaceholder": "Enter your current password",
+      "newPassword": "New Password",
+      "newPasswordPlaceholder": "Enter new password",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm new password",
+      "currentPasswordRequired": "Current password is required",
+      "checkEmailForReset": "Check your email for a reset link.",
+      "changePasswordButton": "Change Password",
+      "changing": "Changing..."
+    },
+    "favorites": {
+      "title": "My Favorites",
+      "loading": "Loading latest properties...",
+      "fetching": "We are fetching the most recent properties for you traduite"
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Customize your experience and manage your preferences",
+      "notifications": "Notifications",
+      "notificationsDescription": "Choose how you want to be notified",
+      "emailNotifications": "Email Notifications",
+      "emailNotificationsDescription": "Receive notifications via email",
+      "propertyAlerts": "Property Alerts",
+      "propertyAlertsDescription": "Get alerted about new properties matching your criteria",
+      "priceUpdates": "Price Updates",
+      "priceUpdatesDescription": "Get notified about price changes",
+      "deleteAccount": "Delete My Account",
+      "deleteAccountDescription": "This action is irreversible and will permanently delete your account",
+      "deleteAccountCta": "Delete Account",
+      "saveSettings": "Save Settings"
+    }
+  },
   "common": {
     "loading": "Loading...",
     "error": "An error occurred",

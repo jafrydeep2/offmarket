@@ -373,17 +373,14 @@ export const UserProfilePage: React.FC = () => {
               className="flex items-center space-x-2"
             >
               <ArrowLeft className="h-4 w-4" />
-              <span>{isFrench ? 'Retour' : 'Back'}</span>
+              <span>{t('userPanel.common.back')}</span>
             </Button>
             <div>
               <h1 className="text-3xl font-heading font-bold text-foreground">
-                {isFrench ? 'Mon Profil' : 'My Profile'}
+                {t('userPanel.profile.title')}
               </h1>
               <p className="text-muted-foreground">
-                {isFrench 
-                  ? 'Gérez vos informations personnelles et vos paramètres de compte'
-                  : 'Manage your personal information and account settings'
-                }
+                {t('userPanel.profile.subtitle')}
               </p>
             </div>
           </div>
@@ -439,18 +436,18 @@ export const UserProfilePage: React.FC = () => {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <h4 className="font-medium text-sm mb-2">
-                    {isFrench ? 'Actions du compte' : 'Account Actions'}
+                    {t('userPanel.profile.accountActions')}
                   </h4>
                   <Link to="/settings">
                     <Button type="button" variant="outline" size="sm" className="w-full justify-start mb-1">
                       <Settings className="h-4 w-4 mr-2" />
-                      {isFrench ? 'Paramètres' : 'Settings'}
+                      {t('userPanel.menu.settings')}
                     </Button>
                   </Link>
                   <Link to="/alerts">
                     <Button type="button" variant="outline" size="sm" className="w-full justify-start">
                       <Bell className="h-4 w-4 mr-2" />
-                      {isFrench ? 'Alertes' : 'Alerts'}
+                      {t('userPanel.menu.myAlerts')}
                     </Button>
                   </Link>
                 </div>
@@ -470,39 +467,36 @@ export const UserProfilePage: React.FC = () => {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <User className="h-5 w-5 mr-2" />
-                  {isFrench ? 'Informations personnelles' : 'Personal Information'}
+                  {t('userPanel.profile.personalInformation')}
                 </CardTitle>
                 <CardDescription>
-                  {isFrench 
-                    ? 'Mettez à jour vos informations de base'
-                    : 'Update your basic information'
-                  }
+                  {t('userPanel.profile.updateInfo')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="username">
-                      {isFrench ? 'Nom d\'utilisateur' : 'Username'}
+                      {t('userPanel.profile.username')}
                     </Label>
                     <Input
                       id="username"
                       value={formData.username}
                       onChange={(e) => handleInputChange('username', e.target.value)}
-                      placeholder={isFrench ? 'Entrez votre nom d\'utilisateur' : 'Enter your username'}
+                      placeholder={t('userPanel.profile.usernamePlaceholder')}
                     />
                   </div>
                   
                   <div className="space-y-2">
                     <Label htmlFor="email">
-                      {isFrench ? 'Email' : 'Email'}
+                      {t('userPanel.profile.email')}
                     </Label>
                     <Input
                       id="email"
                       type="email"
                       value={formData.email}
                       onChange={(e) => handleInputChange('email', e.target.value)}
-                      placeholder={isFrench ? 'Entrez votre email' : 'Enter your email'}
+                      placeholder={t('userPanel.profile.emailPlaceholder')}
                     />
                   </div>
                 </div>
@@ -527,10 +521,7 @@ export const UserProfilePage: React.FC = () => {
                   className="w-full md:w-auto"
                 >
                   <Save className="h-4 w-4 mr-2" />
-                  {isSavingProfile 
-                    ? (isFrench ? 'Sauvegarde...' : 'Saving...')
-                    : (isFrench ? 'Sauvegarder' : 'Save Changes')
-                  }
+                  {isSavingProfile ? t('userPanel.profile.saving') : t('userPanel.profile.saveChanges')}
                 </Button>
               </CardContent>
             </Card>
@@ -540,13 +531,10 @@ export const UserProfilePage: React.FC = () => {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Shield className="h-5 w-5 mr-2" />
-                  {isFrench ? 'Changer le mot de passe' : 'Change Password'}
+                  {t('userPanel.profile.changePassword')}
                 </CardTitle>
                 <CardDescription>
-                  {isFrench 
-                    ? 'Mettez à jour votre mot de passe pour sécuriser votre compte'
-                    : 'Update your password to secure your account'
-                  }
+                  {t('userPanel.profile.changePasswordDescription')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -564,7 +552,7 @@ export const UserProfilePage: React.FC = () => {
                 )}
                 <div className="space-y-2">
                   <Label htmlFor="currentPassword">
-                    {isFrench ? 'Mot de passe actuel' : 'Current Password'}
+                    {t('userPanel.profile.currentPassword')}
                   </Label>
                   <div className="relative">
                     <Input
@@ -572,7 +560,7 @@ export const UserProfilePage: React.FC = () => {
                       type={showPasswords.current ? 'text' : 'password'}
                       value={formData.currentPassword}
                       onChange={(e) => handleInputChange('currentPassword', e.target.value)}
-                      placeholder={isFrench ? 'Entrez votre mot de passe actuel' : 'Enter your current password'}
+                      placeholder={t('userPanel.profile.currentPasswordPlaceholder')}
                     />
                     <Button
                       type="button"
@@ -593,7 +581,7 @@ export const UserProfilePage: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="newPassword">
-                      {isFrench ? 'Nouveau mot de passe' : 'New Password'}
+                      {t('userPanel.profile.newPassword')}
                     </Label>
                     <div className="relative">
                       <Input
@@ -601,7 +589,7 @@ export const UserProfilePage: React.FC = () => {
                         type={showPasswords.new ? 'text' : 'password'}
                         value={formData.newPassword}
                         onChange={(e) => handleInputChange('newPassword', e.target.value)}
-                        placeholder={isFrench ? 'Entrez le nouveau mot de passe' : 'Enter new password'}
+                        placeholder={t('userPanel.profile.newPasswordPlaceholder')}
                       />
                       <Button
                         type="button"
@@ -621,7 +609,7 @@ export const UserProfilePage: React.FC = () => {
                   
                   <div className="space-y-2">
                     <Label htmlFor="confirmPassword">
-                      {isFrench ? 'Confirmer le mot de passe' : 'Confirm Password'}
+                      {t('userPanel.profile.confirmPassword')}
                     </Label>
                     <div className="relative">
                       <Input
@@ -629,7 +617,7 @@ export const UserProfilePage: React.FC = () => {
                         type={showPasswords.confirm ? 'text' : 'password'}
                         value={formData.confirmPassword}
                         onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                        placeholder={isFrench ? 'Confirmez le nouveau mot de passe' : 'Confirm new password'}
+                        placeholder={t('userPanel.profile.confirmPasswordPlaceholder')}
                       />
                       <Button
                         type="button"
@@ -655,10 +643,7 @@ export const UserProfilePage: React.FC = () => {
                   className="w-full md:w-auto"
                 >
                   <Shield className="h-4 w-4 mr-2" />
-                  {isChangingPassword 
-                    ? (isFrench ? 'Modification...' : 'Changing...')
-                    : (isFrench ? 'Changer le mot de passe' : 'Change Password')
-                  }
+                  {isChangingPassword ? t('userPanel.profile.changing') : t('userPanel.profile.changePasswordButton')}
                 </Button>
               </CardContent>
             </Card>

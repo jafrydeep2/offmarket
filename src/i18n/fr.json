@@ -24,10 +24,10 @@
     }
   },
   "properties": {
-    "title": "Tous les biens",
+    "title": "Tous nos biens",
     "subtitle": "Parcourez nos biens hors-marché et accédez en priorité aux visites",
     "search": {
-      "placeholder": "Rechercher par ville",
+      "placeholder": "Chercher par ville ou code postal",
       "button": "Rechercher"
     },
     "filters": {
@@ -100,7 +100,7 @@
   },
   "becomeMember": {
     "title": "Rejoignez à notre réseau de biens hors-marché",
-    "subtitle": "Devenez membre et soyez parmi les premiers à découvrir et visiter nos opportunités hors-marché.",
+    "subtitle": "Devenez membre et soyez les premiers à découvrir et à visiter nos opportunités hors-marché.",
     "cta": "Devenir membre",
     "intro": "",
     "services": {
@@ -242,7 +242,7 @@
       "subtitle": "Du concept à la vidéo finale, nous transformons chaque bien en une expérience visuelle exceptionnelle.",
       "production": {
         "title": "Production professionnelle",
-        "description": "Tournage de haute qualité avec avec caméra et drone professionnels"
+        "description": "Tournage de haute qualité avec avec caméra et drone professionnels."
       },
       "editing": {
         "title": "Montage professionnel",
@@ -284,7 +284,7 @@
     },
     "form": {
       "title": "Votre bien en vidéo",
-      "subtitle": "",
+      "subtitle": "Votre devis sans engagement",
       "firstName": "Prénom",
       "lastName": "Nom de famille",
       "email": "Email",
@@ -534,6 +534,86 @@
     "invalidRoomRange": "Le nombre minimum de pièces ne peut pas être supérieur au maximum",
     "matchesAlert": "Correspond à votre alerte",
     "matchesCriteria": "Correspond à vos critères d'alerte"
+  },
+  "userPanel": {
+    "common": {
+      "back": "Retour",
+      "backToHome": "Retour à l'acceuil",
+      "loadingProperties": "Chargement des biens...",
+      "loadingLatestProperties": "Chargement des derniers biens…",
+      "fetchingLatest": "Un peu de patience",
+      "view": "Vue",
+      "rent": "Louer",
+      "buy": "Acheter",
+      "rooms": "chambres",
+      "newest": "Plus récent",
+      "exclusiveProperties": "Biens exclusifs disponibles",
+      "showingRange": "Affichage de 1 à 7 sur 7 résultats",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "remove": "Retirer",
+      "cancel": "Annuler",
+      "logout": "Se déconnecter"
+    },
+    "menu": {
+      "myProfile": "Mon profile",
+      "myFavorites": "Mes favoris",
+      "myAlerts": "Mes alertes",
+      "settings": "Paramètres"
+    },
+    "dashboard": {
+      "noNotifications": "Aucune notifications"
+    },
+    "profile": {
+      "title": "Mon profile",
+      "subtitle": "Gérez vos informations personnelles et les paramètres de votre compte",
+      "accountActions": "Actions du compte",
+      "personalInformation": "Informations personnelles",
+      "username": "Nom d’utilisateur",
+      "usernamePlaceholder": "Entrez votre nom d’utilisateur",
+      "email": "E-mail",
+      "emailPlaceholder": "Entrez votre email",
+      "updateInfo": "Mettez à jour vos informations de base",
+      "saveChanges": "Enregistrer les modifications",
+      "saving": "Sauvegarde...",
+      "changePassword": "Changer le mot de passe",
+      "changePasswordDescription": "Mettez à jour votre mot de passe pour sécuriser votre compte",
+      "subscriptionType": "Type d’abonnement",
+      "active": "Actif",
+      "expiresOn": "Expire le",
+      "basic": "Basique",
+      "currentPassword": "Mot de passe actuel",
+      "currentPasswordPlaceholder": "Entrez votre mot de passe actuel",
+      "newPassword": "Nouveau mot de passe",
+      "newPasswordPlaceholder": "Entrez le nouveau mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "confirmPasswordPlaceholder": "Confirmez le nouveau mot de passe",
+      "currentPasswordRequired": "Le mot de passe actuel est requis",
+      "checkEmailForReset": "Vérifiez votre e-mail pour réinitialiser votre mot de passe.",
+      "changePasswordButton": "Changer le mot de passe",
+      "changing": "Modification..."
+    },
+    "favorites": {
+      "title": "Mes favoris",
+      "loading": "Chargement des derniers biens…",
+      "fetching": "Un peu de patience"
+    },
+    "settings": {
+      "title": "Paramètres",
+      "subtitle": "Personnalisez votre expérience et gérez vos préférences",
+      "notifications": "Notifications",
+      "notificationsDescription": "Choisissez comment vous souhaitez être notifié",
+      "emailNotifications": "Notifications par e-mail",
+      "emailNotificationsDescription": "Recevez des notifications par e-mail",
+      "propertyAlerts": "Alertes immobilières",
+      "propertyAlertsDescription": "Soyez alerté(e) des nouvelles propriétés correspondant à vos critères",
+      "priceUpdates": "Mises à jour de prix",
+      "priceUpdatesDescription": "Recevez des notifications en cas de changement de prix",
+      "deleteAccount": "Supprimer mon compte",
+      "deleteAccountDescription": "Cette action est irréversible et supprimera définitivement votre compte",
+      "deleteAccountCta": "Supprimer le compte",
+      "saveSettings": "Enregistrer les paramètres"
+    }
   },
   "common": {
     "loading": "Chargement...",
