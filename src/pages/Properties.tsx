@@ -15,6 +15,8 @@ import { CitySuggestion } from '@/lib/cityService';
 import { supabase } from '@/lib/supabaseClient';
 import { analyticsService } from '@/lib/analyticsService';
 
+const PROPERTIES_CACHE_KEY = 'properties_cache_v1';
+
 export const PropertiesPage: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useAuth(); // Keep user for optional tracking, but don't require authentication
@@ -38,6 +40,16 @@ export const PropertiesPage: React.FC = () => {
   const [pageSize, setPageSize] = useState(12);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const cacheLoadedRef = useRef(false);
+
+  const extractNumericPrice = useCallback((price: unknown): number | null => {
+    if (price == null) return null;
+    if (typeof price === 'number' && Number.isFinite(price)) return price;
+    const cleaned = String(price).replace(/[^\d.,-]+/g, '').replace(',', '.');
+    if (!cleaned) return null;
+    const parsed = parseFloat(cleaned);
+    return Number.isFinite(parsed) ? parsed : null;
+  }, []);
 
   // Generate room options
   const roomOptions = [] as string[];
@@ -49,7 +61,9 @@ export const PropertiesPage: React.FC = () => {
   // Direct fetch function for properties - optimized for immediate display
   const fetchPropertiesDirectly = useCallback(async () => {
     try {
-      setIsInitialLoading(true);
+      if (!cacheLoadedRef.current) {
+        setIsInitialLoading(true);
+      }
       setError('');
       
       // Fetch properties with optimized query for latest properties first
@@ -93,6 +107,18 @@ export const PropertiesPage: React.FC = () => {
 
       // Set properties immediately for faster display
       setAllProperties(mappedProperties);
+
+      // Cache the latest properties
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem(
+            PROPERTIES_CACHE_KEY,
+            JSON.stringify({ data: mappedProperties, timestamp: Date.now() })
+          );
+        } catch (cacheError) {
+          console.warn('Failed to cache properties:', cacheError);
+        }
+      }
       
       // If we have more than 50 properties, fetch the rest in background
       if (mappedProperties.length === 50) {
@@ -147,7 +173,20 @@ export const PropertiesPage: React.FC = () => {
         }));
 
         // Append remaining properties to existing ones
-        setAllProperties(prev => [...prev, ...mappedProperties]);
+        setAllProperties(prev => {
+          const merged = [...prev, ...mappedProperties];
+          if (typeof window !== 'undefined') {
+            try {
+              localStorage.setItem(
+                PROPERTIES_CACHE_KEY,
+                JSON.stringify({ data: merged, timestamp: Date.now() })
+              );
+            } catch (cacheError) {
+              console.warn('Failed to cache remaining properties:', cacheError);
+            }
+          }
+          return merged;
+        });
       }
     } catch (err: any) {
       console.error('Error fetching remaining properties:', err);
@@ -160,6 +199,28 @@ export const PropertiesPage: React.FC = () => {
     setSearchTerm(suggestion.name);
     setPage(1);
   };
+
+  // Load cached properties immediately for faster perceived load
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      cacheLoadedRef.current = true;
+      return;
+    }
+    try {
+      const cached = localStorage.getItem(PROPERTIES_CACHE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && Array.isArray(parsed.data)) {
+          setAllProperties(parsed.data);
+          setIsInitialLoading(false);
+        }
+      }
+    } catch (cacheError) {
+      console.warn('Failed to read cached properties:', cacheError);
+    } finally {
+      cacheLoadedRef.current = true;
+    }
+  }, []);
 
   // Fetch properties immediately when page loads (no auth dependency)
   useEffect(() => {
@@ -237,6 +298,26 @@ export const PropertiesPage: React.FC = () => {
     if (selectedStatus) {
       filteredProps = filteredProps.filter(prop => prop.listingType === selectedStatus);
     }
+
+    if (priceRange.min) {
+      const minPrice = parseFloat(priceRange.min);
+      if (!Number.isNaN(minPrice)) {
+        filteredProps = filteredProps.filter(prop => {
+          const price = extractNumericPrice(prop.price);
+          return price != null && price >= minPrice;
+        });
+      }
+    }
+
+    if (priceRange.max) {
+      const maxPrice = parseFloat(priceRange.max);
+      if (!Number.isNaN(maxPrice)) {
+        filteredProps = filteredProps.filter(prop => {
+          const price = extractNumericPrice(prop.price);
+          return price != null && price <= maxPrice;
+        });
+      }
+    }
     
     if (surfaceRange.min) {
       filteredProps = filteredProps.filter(prop => prop.surface >= parseFloat(surfaceRange.min));
@@ -247,7 +328,7 @@ export const PropertiesPage: React.FC = () => {
     }
     
     return filteredProps;
-  }, [allProperties, debouncedSearchTerm, selectedRooms, selectedType, selectedStatus, surfaceRange.min, surfaceRange.max]);
+  }, [allProperties, debouncedSearchTerm, selectedRooms, selectedType, selectedStatus, priceRange.min, priceRange.max, surfaceRange.min, surfaceRange.max, extractNumericPrice]);
 
   // Memoized paginated properties
   const paginatedProperties = useMemo(() => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Globe, LogOut, User, Menu, X, Phone, Mail, MapPin, Settings, Heart, Bell, BarChart3, Clock, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -37,13 +37,13 @@ export const Navbar: React.FC = () => {
   };
 
   // Fetch notifications
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     if (!user?.id) return;
-    
+
     try {
       setNotificationsLoading(true);
       console.log('Fetching notifications for user:', user.id);
-      
+
       const { data, error } = await supabase
         .from('notifications')
         .select('*')
@@ -64,7 +64,7 @@ export const Navbar: React.FC = () => {
     } finally {
       setNotificationsLoading(false);
     }
-  };
+  }, [user?.id]);
 
   // Mark notification as read
   const markAsRead = async (notificationId: string) => {
@@ -144,27 +144,40 @@ export const Navbar: React.FC = () => {
     return unsubscribe;
   }, []);
 
-  // Fetch notifications when user is available
-  useEffect(() => {
-    if (isAuthenticated && user?.id) {
-      fetchNotifications();
-    }
-  }, [isAuthenticated, user?.id]);
-
   // Set up real-time polling for notifications
   useEffect(() => {
     if (!isAuthenticated || !user?.id) return;
 
-    // Initial fetch
-    fetchNotifications();
+    let cancel = false;
+
+    const scheduleInitialFetch = () => {
+      if ('requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(() => {
+          if (!cancel) {
+            fetchNotifications();
+          }
+        });
+      } else {
+        setTimeout(() => {
+          if (!cancel) {
+            fetchNotifications();
+          }
+        }, 0);
+      }
+    };
+
+    scheduleInitialFetch();
 
     // Set up polling every 30 seconds
     const interval = setInterval(() => {
       fetchNotifications();
     }, 30000);
 
-    return () => clearInterval(interval);
-  }, [isAuthenticated, user?.id]);
+    return () => {
+      cancel = true;
+      clearInterval(interval);
+    };
+  }, [isAuthenticated, user?.id, fetchNotifications]);
 
   // Test function to create a user notification (for debugging)
   const createTestUserNotification = async () => {

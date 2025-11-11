@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Play, Home, Users, Award, Lock, Video, Key, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -8,6 +8,9 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { supabase } from '@/lib/supabaseClient';
 import { Button } from '@/components/ui/button';
 import { PropertyCard } from '@/components/PropertyCard';
+import { useAuth } from '@/contexts/AuthContext';
+
+const HOME_PROPERTIES_CACHE_KEY = 'home_properties_cache_v1';
 
 // Properties section component
 const PropertiesSection: React.FC<{
@@ -33,8 +36,8 @@ const PropertiesSection: React.FC<{
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {properties.map((property) => (
-          <PropertyCard 
-            key={property.id} 
+          <PropertyCard
+            key={property.id}
             property={property}
             showContactInfo={false}
           />
@@ -48,8 +51,11 @@ const PropertiesSection: React.FC<{
 
 export const HomePage: React.FC = () => {
   const { t } = useTranslation();
+  const { user } = useAuth();
+
   const [properties, setProperties] = useState<any[]>([]);
   const [isLoadingProperties, setIsLoadingProperties] = useState(true);
+  const cacheLoadedRef = useRef(false);
 
   // Memoized property mapping function
   const mapPropertyData = useMemo(() => (row: any) => ({
@@ -81,7 +87,9 @@ export const HomePage: React.FC = () => {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        setIsLoadingProperties(true);
+        if (!cacheLoadedRef.current) {
+          setIsLoadingProperties(true);
+        }
         const { data, error } = await supabase
           .from('properties')
           .select('*')
@@ -94,6 +102,17 @@ export const HomePage: React.FC = () => {
         } else {
           const mappedProperties = (data || []).map(mapPropertyData);
           setProperties(mappedProperties);
+
+          if (typeof window !== 'undefined') {
+            try {
+              localStorage.setItem(
+                HOME_PROPERTIES_CACHE_KEY,
+                JSON.stringify({ data: mappedProperties, timestamp: Date.now() })
+              );
+            } catch (cacheError) {
+              console.warn('Failed to cache home properties:', cacheError);
+            }
+          }
         }
       } catch (err) {
         console.error('Error fetching properties:', err);
@@ -106,6 +125,29 @@ export const HomePage: React.FC = () => {
     fetchProperties();
   }, [mapPropertyData]);
 
+  // Load cached properties on mount
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      cacheLoadedRef.current = true;
+      return;
+    }
+
+    try {
+      const cached = localStorage.getItem(HOME_PROPERTIES_CACHE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && Array.isArray(parsed.data)) {
+          setProperties(parsed.data);
+          setIsLoadingProperties(false);
+        }
+      }
+    } catch (cacheError) {
+      console.warn('Failed to read cached home properties:', cacheError);
+    } finally {
+      cacheLoadedRef.current = true;
+    }
+  }, []);
+
   // Handle hash navigation for smooth scrolling
   React.useEffect(() => {
     const hash = window.location.hash;
@@ -113,7 +155,7 @@ export const HomePage: React.FC = () => {
       const element = document.getElementById(hash.substring(1));
       if (element) {
         setTimeout(() => {
-          element.scrollIntoView({ 
+          element.scrollIntoView({
             behavior: 'smooth',
             block: 'start'
           });
@@ -133,13 +175,13 @@ export const HomePage: React.FC = () => {
   // Get latest off-market properties (featured properties or latest 3)
   const latestOffMarketProperties = React.useMemo(() => {
     if (!properties || properties.length === 0) return [];
-    
+
     // First try to get featured properties, then fall back to latest properties
     const featuredProps = properties.filter(prop => prop.featured === true);
     if (featuredProps.length >= 3) {
       return featuredProps.slice(0, 3);
     }
-    
+
     // If not enough featured properties, get the latest properties
     return properties
       .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
@@ -150,76 +192,78 @@ export const HomePage: React.FC = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Video Background Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Video Background */}
-        <div className="absolute inset-0 z-0">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-full object-cover"
-            style={{ pointerEvents: 'none' }}
-          >
-            <source src="/videos/exclusimmo.mp4" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-black/40"></div>
-        </div>
+      {!user?.id &&
+        <section className="relative h-screen flex items-center justify-center overflow-hidden">
+          {/* Video Background */}
+          <div className="absolute inset-0 z-0">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+              style={{ pointerEvents: 'none' }}
+            >
+              <source src="/videos/exclusimmo.mp4" type="video/mp4" />
+            </video>
+            <div className="absolute inset-0 bg-black/40"></div>
+          </div>
 
-        
-        {/* Hero Content */}
-        <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-6">
-          <motion.h1 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-5xl md:text-7xl font-heading font-bold leading-tight mb-6"
-          >
-            {t('home.hero.title')}
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-xl md:text-2xl mb-8 leading-relaxed"
-          >
-            {t('home.hero.subtitle')}
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-          >
-            <Link to="/become-member">
-              <Button size="lg" className="btn-primary group px-8 py-4 text-lg">
-                {t('navigation.becomeMember')}
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
-          </motion.div>
-        </div>
 
-        {/* Scroll Indicator */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white"
-        >
+          {/* Hero Content */}
+          <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-6">
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-5xl md:text-7xl font-heading font-bold leading-tight mb-6"
+            >
+              {t('home.hero.title')}
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-xl md:text-2xl mb-8 leading-relaxed"
+            >
+              {t('home.hero.subtitle')}
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            >
+              <Link to="/become-member">
+                <Button size="lg" className="btn-primary group px-8 py-4 text-lg">
+                  {t('navigation.becomeMember')}
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* Scroll Indicator */}
           <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="w-6 h-10 border-2 border-white rounded-full flex justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1 }}
+            className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white"
           >
             <motion.div
-              animate={{ y: [0, 12, 0] }}
+              animate={{ y: [0, 10, 0] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="w-1 h-3 bg-white rounded-full mt-2"
-            />
+              className="w-6 h-10 border-2 border-white rounded-full flex justify-center"
+            >
+              <motion.div
+                animate={{ y: [0, 12, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="w-1 h-3 bg-white rounded-full mt-2"
+              />
+            </motion.div>
           </motion.div>
-        </motion.div>
-      </section>
+        </section>
+      }
 
       {/* Featured Properties Section */}
       <section className="section-padding bg-muted/20">
@@ -233,7 +277,7 @@ export const HomePage: React.FC = () => {
             </p>
           </div>
 
-          <PropertiesSection 
+          <PropertiesSection
             properties={properties}
             isLoading={isLoadingProperties}
             t={t}
