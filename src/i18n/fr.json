@@ -11,12 +11,16 @@
   "home": {
     "hero": {
       "title": "Accédez à l’exclusivité et trouvez votre chez-vous",
-      "subtitle": "Découvrez des biens immobiliers hors marché et déléguez votre recherche en toute simplicité",
+      "subtitle": "Découvrez des biens immobiliers hors-marché et déléguez votre recherche en toute simplicité",
       "cta": "Voir tous les biens"
     },
     "featured": {
       "title": "Biens en vedette",
       "subtitle": "Une sélection exclusive de nos biens"
+    },
+    "latestListings": {
+      "title": "Nouveaux biens hors-marché",
+      "subtitle": "Soyez les premiers à découvrir nos exclusivités"
     }
   },
   "properties": {
@@ -42,6 +46,11 @@
       "rented": "Loué",
       "sold": "Vendu"
     },
+    "availability": {
+      "immediate": "Disponible de suite",
+      "arranged": "Date à convenir"
+    },
+    "surfaceUnit": "m²",
     "viewDetails": "Voir les détails",
     "rooms": "pièces",
     "contactInfo": "Vous souhaitez des précisions sur ce bien ?",
@@ -96,16 +105,16 @@
     "intro": "",
     "services": {
       "title": "Nos services",
-      "subtitle": "",
+      "subtitle": "Vendez, trouvez, découvrez, déléguez!",
       "privateSales": {
         "title": "Vendez votre bien",
         "description": "Exclusimmo vous accompagne de l'estimation à la signature finale, avec un service personnalisé et transparent.",
-        "cta": "Etre contacté par l'un de nos experts"
+        "cta": "Être contacté par l'un de nos experts"
       },
       "videos": {
         "title": "Création de vidéos immobilières",
         "description": "Des vidéos attractives pour présenter votre bien et séduire vos acheteurs.",
-        "cta": "Etre contacté par l'un de nos experts"
+        "cta": "Être contacté par l'un de nos experts"
       },
       "exclusiveAccess": {
         "title": "Accès aux biens hors-marché",
@@ -115,7 +124,7 @@
       "personalized": {
         "title": "Déléguez votre recherche immobilière",
         "description": "Nous trouvons pour vous le logement idéal, conforme à toutes vos attentes.",
-        "cta": "Etre contacté par l'un de nos experts"
+        "cta": "Être contacté par l'un de nos experts"
       }
     },
     "form": {
@@ -147,7 +156,7 @@
   "privateSales": {
     "title": "Vendez votre bien",
     "subtitle": "",
-    "cta": "Etre contacté par l'un de nos experts",
+    "cta": "Être contacté par l'un de nos experts",
     "process": {
       "title": "Comment ça Marche?",
       "subtitle": "",
@@ -227,7 +236,7 @@
   "propertyVideos": {
     "title": "Création de vidéos immobilières",
     "subtitle": "Chaque propriété mérite une mise en scène unique. Nous créons des vidéos professionnelles personnalisées combinant prises de vue aériennes, visites guidées et ambiances soignées pour révéler tout le caractère et l'élégance de votre bien.",
-    "cta": "Etre contacté par l'un de nos experts",
+    "cta": "Être contacté par l'un de nos experts",
     "process": {
       "title": "Une création sur mesure",
       "subtitle": "Du concept à la vidéo finale, nous transformons chaque bien en une expérience visuelle exceptionnelle.",
@@ -461,7 +470,7 @@
     "safety": ""
   },
   "footer": {
-    "description": "Biens hors-marché en Suisse romande et accompagnement personnalisé pour vos projets immobiliers"
+    "description": "Biens hors-marché en Suisse romande et accompagnement personnalisé pour vos projets immobiliers."
   },
   "alerts": {
     "title": "Mes Alertes",

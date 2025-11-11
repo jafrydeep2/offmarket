@@ -124,8 +124,8 @@ export const UserDashboard: React.FC = () => {
               </h1>
               <p className="text-muted-foreground text-lg">
                 {t('language') === 'fr'
-                  ? 'Voici un aperçu de votre activité sur OffMarket'
-                  : 'Here\'s an overview of your activity on OffMarket'
+                  ? 'Voici un aperçu de votre activité sur Exclusimmo'
+                  : 'Here\'s an overview of your activity on Exclusimmo'
                 }
               </p>
             </div>

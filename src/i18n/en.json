@@ -17,6 +17,10 @@
     "featured": {
       "title": "Featured Properties",
       "subtitle": "A curated selection of our best opportunities"
+    },
+    "latestListings": {
+      "title": "Latest Off Market Listings",
+      "subtitle": "Discover our latest exclusive real estate opportunities"
     }
   },
   "properties": {
@@ -42,6 +46,11 @@
       "rented": "Rented",
       "sold": "Sold"
     },
+    "availability": {
+      "immediate": "Available immediately",
+      "arranged": "To be arranged"
+    },
+    "surfaceUnit": "Sq Ft",
     "viewDetails": "View Details",
     "rooms": "rooms",
     "contactInfo": "Contact Information",

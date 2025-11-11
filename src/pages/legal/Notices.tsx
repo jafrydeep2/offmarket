@@ -40,7 +40,7 @@ export const NoticesPage: React.FC = () => {
                 {t('language') === 'fr' ? 'Éditeur du Site' : 'Website Publisher'}
               </h2>
               <div className="text-muted-foreground leading-relaxed space-y-2">
-                <p><strong>OffMarket SA</strong></p>
+                <p><strong>Exclusimmo SA</strong></p>
                 <p>Rue de la Paix 15</p>
                 <p>1201 Genève, Suisse</p>
                 <p>Téléphone: +41 22 123 45 67</p>

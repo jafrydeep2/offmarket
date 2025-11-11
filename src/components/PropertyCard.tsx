@@ -283,10 +283,11 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                 : 'bg-orange-100 text-orange-800 border-orange-200'
                 }`}
             >
-              {property.availabilityStatus === 'immediate'
-                ? (t('language') === 'fr' ? 'Disponible immédiatement' : 'Available immediately')
-                : (t('language') === 'fr' ? 'À convenir' : 'To be arranged')
-              }
+              {t(
+                property.availabilityStatus === 'immediate'
+                  ? 'properties.availability.immediate'
+                  : 'properties.availability.arranged'
+              )}
             </Badge>
           </div>
 
@@ -321,7 +322,9 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
               <div className="flex items-center justify-center space-x-1 text-primary">
                 <span className="text-sm font-semibold">{property.surface}</span>
               </div>
-              <span className="text-xs text-muted-foreground mt-1 block">Sq Ft</span>
+              <span className="text-xs text-muted-foreground mt-1 block">
+                {t('properties.surfaceUnit')}
+              </span>
             </div>
           </div>
 

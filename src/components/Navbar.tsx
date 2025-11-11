@@ -237,7 +237,7 @@ export const Navbar: React.FC = () => {
           {logoUrl && !logoError ? (
             <img 
               src={logoUrl} 
-              alt="OffMarket" 
+              alt="Exclusimmo" 
               className="h-12 w-auto object-contain"
               data-logo
               onError={() => {
@@ -249,7 +249,7 @@ export const Navbar: React.FC = () => {
           ) : (
             <img 
               src={LogoService.getDefaultLogoUrl()} 
-              alt="OffMarket" 
+              alt="Exclusimmo" 
               className="h-12 w-auto object-contain"
               data-logo
               onError={() => {
@@ -259,7 +259,7 @@ export const Navbar: React.FC = () => {
             />
           )}
           {logoError && (
-            <span className="ml-2">OffMarket</span>
+            <span className="ml-2">Exclusimmo</span>
           )}
         </Link>
 
@@ -478,7 +478,7 @@ export const Navbar: React.FC = () => {
                     {logoUrl && !logoError ? (
                       <img 
                         src={logoUrl} 
-                        alt="OffMarket" 
+                        alt="Exclusimmo" 
                         className="h-6 w-auto object-contain"
                         data-logo
                         onError={() => {
@@ -490,7 +490,7 @@ export const Navbar: React.FC = () => {
                     ) : (
                       <img 
                         src={LogoService.getDefaultLogoUrl()} 
-                        alt="OffMarket" 
+                        alt="Exclusimmo" 
                         className="h-6 w-auto object-contain"
                         data-logo
                         onError={() => {
@@ -500,7 +500,7 @@ export const Navbar: React.FC = () => {
                       />
                     )}
                     {logoError && (
-                      <span className="ml-2">OffMarket</span>
+                      <span className="ml-2">Exclusimmo</span>
                     )}
                   </SheetTitle>
                 </SheetHeader>

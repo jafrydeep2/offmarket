@@ -155,9 +155,9 @@ export const PrivateSalesPage: React.FC = () => {
                         <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground">
                             {t('privateSales.process.title')}
                         </h2>
-                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                        {/* <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                             {t('privateSales.process.subtitle')}
-                        </p>
+                        </p> */}
                     </motion.div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

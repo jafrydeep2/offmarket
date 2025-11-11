@@ -41,8 +41,8 @@ export const TermsPage: React.FC = () => {
               </h2>
               <p className="text-muted-foreground leading-relaxed">
                 {t('language') === 'fr' 
-                  ? 'En accédant et en utilisant OffMarket, vous acceptez d\'être lié par ces conditions d\'utilisation. Si vous n\'acceptez pas ces conditions, veuillez ne pas utiliser notre service.'
-                  : 'By accessing and using OffMarket, you agree to be bound by these terms of use. If you do not agree to these terms, please do not use our service.'
+                  ? 'En accédant et en utilisant Exclusimmo, vous acceptez d\'être lié par ces conditions d\'utilisation. Si vous n\'acceptez pas ces conditions, veuillez ne pas utiliser notre service.'
+                  : 'By accessing and using Exclusimmo, you agree to be bound by these terms of use. If you do not agree to these terms, please do not use our service.'
                 }
               </p>
             </section>
@@ -53,8 +53,8 @@ export const TermsPage: React.FC = () => {
               </h2>
               <p className="text-muted-foreground leading-relaxed">
                 {t('language') === 'fr' 
-                  ? 'OffMarket est une plateforme exclusive de propriétés hors-marché destinée aux investisseurs privilégiés. Nous offrons un accès à des opportunités immobilières uniques non disponibles sur le marché public.'
-                  : 'OffMarket is an exclusive off-market property platform for privileged investors. We provide access to unique real estate opportunities not available on the public market.'
+                  ? 'Exclusimmo est une plateforme exclusive de propriétés hors-marché destinée aux investisseurs privilégiés. Nous offrons un accès à des opportunités immobilières uniques non disponibles sur le marché public.'
+                  : 'Exclusimmo is an exclusive off-market property platform for privileged investors. We provide access to unique real estate opportunities not available on the public market.'
                 }
               </p>
             </section>
@@ -77,8 +77,8 @@ export const TermsPage: React.FC = () => {
               </h2>
               <p className="text-muted-foreground leading-relaxed">
                 {t('language') === 'fr' 
-                  ? 'Tous les contenus, images, et informations présents sur OffMarket sont protégés par le droit d\'auteur et appartiennent à OffMarket ou à ses partenaires. Toute reproduction non autorisée est interdite.'
-                  : 'All content, images, and information on OffMarket are protected by copyright and belong to OffMarket or its partners. Any unauthorized reproduction is prohibited.'
+                  ? 'Tous les contenus, images, et informations présents sur Exclusimmo sont protégés par le droit d\'auteur et appartiennent à Exclusimmo ou à ses partenaires. Toute reproduction non autorisée est interdite.'
+                  : 'All content, images, and information on Exclusimmo are protected by copyright and belong to Exclusimmo or its partners. Any unauthorized reproduction is prohibited.'
                 }
               </p>
             </section>
@@ -89,8 +89,8 @@ export const TermsPage: React.FC = () => {
               </h2>
               <p className="text-muted-foreground leading-relaxed">
                 {t('language') === 'fr' 
-                  ? 'OffMarket ne peut être tenu responsable des dommages directs ou indirects résultant de l\'utilisation de notre plateforme. Les informations fournies sont à titre informatif uniquement.'
-                  : 'OffMarket cannot be held liable for direct or indirect damages resulting from the use of our platform. Information provided is for informational purposes only.'
+                  ? 'Exclusimmo ne peut être tenu responsable des dommages directs ou indirects résultant de l\'utilisation de notre plateforme. Les informations fournies sont à titre informatif uniquement.'
+                  : 'Exclusimmo cannot be held liable for direct or indirect damages resulting from the use of our platform. Information provided is for informational purposes only.'
                 }
               </p>
             </section>

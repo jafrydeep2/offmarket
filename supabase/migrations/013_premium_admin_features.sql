@@ -257,11 +257,11 @@ CREATE POLICY "admin_only_system_health" ON public.system_health
 
 -- Insert default system settings
 INSERT INTO public.system_settings (key, value, description) VALUES
-('site_name', '"OffMarket"', 'Site name'),
+('site_name', '"Exclusimmo"', 'Site name'),
 ('site_tagline', '"Exclusive access to off-market properties"', 'Site tagline'),
 ('default_language', '"fr"', 'Default language'),
 ('maintenance_mode', 'false', 'Maintenance mode status'),
-('email_sender_name', '"OffMarket"', 'Default email sender name'),
+('email_sender_name', '"Exclusimmo"', 'Default email sender name'),
 ('email_sender_email', '"noreply@offmarket.ch"', 'Default email sender email'),
 ('email_reply_to', '"support@offmarket.ch"', 'Default reply-to email'),
 ('max_file_size', '10485760', 'Maximum file upload size in bytes (10MB)'),
@@ -298,7 +298,7 @@ ON CONFLICT (slug) DO UPDATE SET
 
 -- Insert default email templates
 INSERT INTO public.email_templates (name, subject, body_html, body_text, variables) VALUES
-('welcome', 'Welcome to OffMarket', '<h1>Welcome {{name}}!</h1><p>Thank you for joining OffMarket.</p>', 'Welcome {{name}}! Thank you for joining OffMarket.', '["name", "email"]'),
+('welcome', 'Welcome to Exclusimmo', '<h1>Welcome {{name}}!</h1><p>Thank you for joining Exclusimmo.</p>', 'Welcome {{name}}! Thank you for joining Exclusimmo.', '["name", "email"]'),
 ('subscription_expiry', 'Your subscription expires soon', '<h1>Subscription Expiry Notice</h1><p>Your subscription expires in {{days}} days.</p>', 'Your subscription expires in {{days}} days.', '["name", "days", "expiry_date"]'),
 ('subscription_expired', 'Your subscription has expired', '<h1>Subscription Expired</h1><p>Your subscription expired on {{expiry_date}}.</p>', 'Your subscription expired on {{expiry_date}}.', '["name", "expiry_date"]'),
 ('new_property', 'New property available', '<h1>New Property Available</h1><p>A new property matching your criteria is now available: {{property_title}}</p>', 'New property available: {{property_title}}', '["name", "property_title", "property_url"]'),

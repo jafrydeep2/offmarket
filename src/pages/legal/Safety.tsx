@@ -20,8 +20,8 @@ export const SafetyPage: React.FC = () => {
       icon: Phone,
       title: t('language') === 'fr' ? 'Communication Sécurisée' : 'Secure Communication',
       description: t('language') === 'fr' 
-        ? 'Utilisez uniquement les canaux de communication officiels fournis par OffMarket pour vos échanges.'
-        : 'Use only official communication channels provided by OffMarket for your exchanges.'
+        ? 'Utilisez uniquement les canaux de communication officiels fournis par Exclusimmo pour vos échanges.'
+        : 'Use only official communication channels provided by Exclusimmo for your exchanges.'
     },
     {
       icon: Lock,
@@ -134,7 +134,7 @@ export const SafetyPage: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h4 className="font-semibold text-foreground mb-2">
-                    {t('language') === 'fr' ? 'Support OffMarket' : 'OffMarket Support'}
+                    {t('language') === 'fr' ? 'Support Exclusimmo' : 'Exclusimmo Support'}
                   </h4>
                   <p className="text-muted-foreground">+41 22 123 45 67</p>
                   <p className="text-muted-foreground">support@offmarket.ch</p>

@@ -320,7 +320,7 @@ export const PropertyDetailPage: React.FC = () => {
   // Enhanced property features with icons - using actual property data
   const propertyFeatures = [
     { icon: Home, label: `${property.rooms} ${t('properties.rooms')}`, category: 'layout' },
-    { icon: Maximize, label: `${property.surface} m²`, category: 'layout' },
+    { icon: Maximize, label: `${property.surface} ${t('properties.surfaceUnit')}`, category: 'layout' },
     // Add actual features from property.features array
     ...(property.features || []).map(feature => ({
       icon: amenityIcons[feature] || Home,
@@ -468,10 +468,11 @@ export const PropertyDetailPage: React.FC = () => {
                           : 'bg-orange-100 text-orange-800 border-orange-200'
                           }`}
                       >
-                        {property.availabilityStatus === 'immediate'
-                          ? (t('language') === 'fr' ? 'Disponible immédiatement' : 'Available immediately')
-                          : (t('language') === 'fr' ? 'À convenir' : 'To be arranged')
-                        }
+                        {t(
+                          property.availabilityStatus === 'immediate'
+                            ? 'properties.availability.immediate'
+                            : 'properties.availability.arranged'
+                        )}
                       </Badge>
                     </div>
 
@@ -541,7 +542,7 @@ export const PropertyDetailPage: React.FC = () => {
                   </div>
                   <div className="text-2xl font-bold text-foreground">{property.surface}</div>
                   <div className="text-sm text-muted-foreground">
-                    {t('language') === 'fr' ? 'm²' : 'Sq Ft'}
+                    {t('properties.surfaceUnit')}
                   </div>
                 </div>
               </div>

@@ -441,7 +441,7 @@ export const EmailTemplates: React.FC = () => {
                           <Input
                             value={formData.subject}
                             onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
-                            placeholder="e.g., Welcome to OffMarket!"
+                            placeholder="e.g., Welcome to Exclusimmo!"
                           />
                         </div>
                         <div className="flex items-center justify-between">

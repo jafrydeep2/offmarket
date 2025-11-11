@@ -19,7 +19,7 @@ export const Footer: React.FC = () => {
           {/* Brand */}
           <div className="space-y-4">
             <h3 className="text-lg font-heading font-bold text-foreground">
-              OffMarket
+              Exclusimmo
             </h3>
             <p className="text-sm text-muted-foreground max-w-sm">
               {t('footer.description')}
@@ -64,7 +64,7 @@ export const Footer: React.FC = () => {
 
         <div className="border-t border-border mt-8 pt-8 text-center">
           <p className="text-xs text-muted-foreground">
-            © 2024 OffMarket. Tous droits réservés.
+            © 2026 Exclusimmo. Tous droits réservés.
           </p>
         </div>
       </div>

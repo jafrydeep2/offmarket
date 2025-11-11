@@ -33,11 +33,11 @@ export const AdminSettingsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<SystemSettings>({
-    site_name: 'OffMarket',
+    site_name: 'Exclusimmo',
     site_tagline: 'Exclusive access to off-market properties',
     default_language: 'fr',
     logo_url: null,
-    email_sender_name: 'OffMarket',
+    email_sender_name: 'Exclusimmo',
     email_sender_email: 'noreply@offmarket.ch',
     email_reply_to: 'support@offmarket.ch',
     maintenance_mode: false,
@@ -71,11 +71,11 @@ export const AdminSettingsPage: React.FC = () => {
       }, {} as Record<string, any>) || {};
 
       setSettings({
-        site_name: settingsMap.site_name || 'OffMarket',
+        site_name: settingsMap.site_name || 'Exclusimmo',
         site_tagline: settingsMap.site_tagline || 'Exclusive access to off-market properties',
         default_language: settingsMap.default_language || 'fr',
         logo_url: settingsMap.logo_url || null,
-        email_sender_name: settingsMap.email_sender_name || 'OffMarket',
+        email_sender_name: settingsMap.email_sender_name || 'Exclusimmo',
         email_sender_email: settingsMap.email_sender_email || 'noreply@offmarket.ch',
         email_reply_to: settingsMap.email_reply_to || 'support@offmarket.ch',
         maintenance_mode: settingsMap.maintenance_mode === true,
@@ -275,7 +275,7 @@ export const AdminSettingsPage: React.FC = () => {
                       id="siteName"
                       value={settings.site_name}
                       onChange={(e) => setSettings(prev => ({ ...prev, site_name: e.target.value }))}
-                      placeholder="OffMarket"
+                      placeholder="Exclusimmo"
                     />
                   </div>
                   <div className="space-y-2">
@@ -309,7 +309,7 @@ export const AdminSettingsPage: React.FC = () => {
                     <Input
                       value={settings.email_sender_name}
                       onChange={(e) => setSettings(prev => ({ ...prev, email_sender_name: e.target.value }))}
-                      placeholder="OffMarket"
+                      placeholder="Exclusimmo"
                     />
                   </div>
                   <div className="space-y-2">

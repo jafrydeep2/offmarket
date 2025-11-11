@@ -226,13 +226,10 @@ export const HomePage: React.FC = () => {
         <div className="container-custom">
           <div className="text-center space-y-4 mb-12">
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground">
-              {t('language') === 'fr' ? 'Dernières Propriétés Off Market' : 'Latest Off Market Listings'}
+              {t('home.latestListings.title')}
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              {t('language') === 'fr' 
-                ? 'Découvrez nos dernières opportunités immobilières exclusives'
-                : 'Discover our latest exclusive real estate opportunities'
-              }
+              {t('home.latestListings.subtitle')}
             </p>
           </div>
 

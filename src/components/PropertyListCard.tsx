@@ -115,10 +115,11 @@ export const PropertyListCard: React.FC<PropertyListCardProps> = ({
                       : 'bg-orange-100 text-orange-800 border-orange-200'
                   }`}
                 >
-                  {property.availabilityStatus === 'immediate' 
-                    ? (t('language') === 'fr' ? 'Disponible immédiatement' : 'Available immediately')
-                    : (t('language') === 'fr' ? 'À convenir' : 'To be arranged')
-                  }
+                  {t(
+                    property.availabilityStatus === 'immediate'
+                      ? 'properties.availability.immediate'
+                      : 'properties.availability.arranged'
+                  )}
                 </Badge>
               </div>
 
@@ -150,7 +151,9 @@ export const PropertyListCard: React.FC<PropertyListCardProps> = ({
               </div>
               <div className="flex items-center space-x-2">
                 <Maximize className="h-5 w-5 text-primary" />
-                <span className="text-sm font-medium">{property.surface} m²</span>
+                <span className="text-sm font-medium">
+                  {property.surface} {t('properties.surfaceUnit')}
+                </span>
               </div>
             </div>
 

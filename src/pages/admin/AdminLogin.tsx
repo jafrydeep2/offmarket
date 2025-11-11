@@ -245,7 +245,7 @@ export const AdminLoginPage: React.FC = () => {
           transition={{ delay: 0.8 }}
           className="text-center text-white/60 text-sm"
         >
-          <p>© 2024 OffMarket. {t('language') === 'fr' ? 'Tous droits réservés.' : 'All rights reserved.'}</p>
+          <p>© 2026 Exclusimmo. {t('language') === 'fr' ? 'Tous droits réservés.' : 'All rights reserved.'}</p>
         </motion.div>
       </div>
     </div>

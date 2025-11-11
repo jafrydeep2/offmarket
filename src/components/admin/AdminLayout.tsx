@@ -263,7 +263,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               {logoUrl && !logoError ? (
                 <img 
                   src={logoUrl} 
-                  alt="OffMarket" 
+                  alt="Exclusimmo" 
                   className="h-10 w-auto object-contain"
                   data-logo
                   onError={() => {
@@ -275,7 +275,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               ) : (
                 <img 
                   src={LogoService.getDefaultLogoUrl()} 
-                  alt="OffMarket" 
+                  alt="Exclusimmo" 
                   className="h-10 w-auto object-contain"
                   data-logo
                   onError={() => {
@@ -290,7 +290,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 </div>
               )}
               {/* <div>
-                <span className="text-xl font-bold text-white">OffMarket</span>
+                <span className="text-xl font-bold text-white">Exclusimmo</span>
                 <p className="text-xs text-slate-400">Admin Panel</p>
               </div> */}
             </Link>

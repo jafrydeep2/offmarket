@@ -1,0 +1,5 @@
+English  French
+To be arranged	Date à convenir
+Sq Ft	m²
+Available immedialtely	Dispnible de suite
+becomeMember.services.subtitle	Vendez, trouvez, découvrez, déléguez!
